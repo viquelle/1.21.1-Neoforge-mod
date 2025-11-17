@@ -1,5 +1,8 @@
-package com.example.examplemod;
+package com.viquelle.examplemod;
 
+import com.viquelle.examplemod.client.ClientPayloadHandler;
+import com.viquelle.examplemod.client.HudRenderer;
+import com.viquelle.examplemod.network.SanityPayload;
 import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -9,8 +12,9 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 
-// This class will not load on dedicated servers. Accessing client side code from here is safe.
 @Mod(value = ExampleMod.MODID, dist = Dist.CLIENT)
 // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
 @EventBusSubscriber(modid = ExampleMod.MODID, value = Dist.CLIENT)
@@ -20,8 +24,13 @@ public class ExampleModClient {
         // The config screen is accessed by going to the Mods screen > clicking on your mod > clicking on config.
         // Do not forget to add translations for your config options to the en_us.json file.
         container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
+        NeoForge.EVENT_BUS.register(HudRenderer.class);
     }
 
+    @SubscribeEvent
+    public static void onRegisterPayloads(RegisterPayloadHandlersEvent e) {
+        e.registrar("1").playToClient(SanityPayload.TYPE, SanityPayload.STREAM_CODEC, ClientPayloadHandler::handleSanityData);
+    }
     @SubscribeEvent
     static void onClientSetup(FMLClientSetupEvent event) {
         // Some client setup code
