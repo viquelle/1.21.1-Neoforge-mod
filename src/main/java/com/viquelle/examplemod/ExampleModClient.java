@@ -77,9 +77,10 @@ public class ExampleModClient {
         if (lightInit && Minecraft.getInstance().level != null) {
             LocalPlayer p = Minecraft.getInstance().player;
             Camera cam = Minecraft.getInstance().gameRenderer.getMainCamera();
+            Quaternionf camRot = new Quaternionf(cam.rotation()).rotateY(-(float)Math.PI).invert();
             light1.getPosition().set(p.getEyePosition().x,p.getEyePosition().y,p.getEyePosition().z);
             ExampleMod.LOGGER.info("{} {}",cam.rotation(),light1.getOrientation());
-            light1.getOrientation().mul(cam.rotation().rotateX((float)Math.PI));
+            light1.getOrientation().set(camRot);
         }
     }
 
