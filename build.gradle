@@ -113,7 +113,6 @@ configurations {
 
 dependencies {
     compileOnly files("libs/veil-neoforge-1.21.1-2.5.1.jar")
-    runtimeOnly files("libs/veil-neoforge-1.21.1-2.5.1.jar")
     // Example optional mod dependency with JEI
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime
     // compileOnly "mezz.jei:jei-${mc_version}-common-api:${jei_version}"

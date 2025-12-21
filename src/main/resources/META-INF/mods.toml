@@ -1,6 +1,6 @@
 [[dependencies.examplemod]]
-modId="veil"
-mandatory=true
-versionRange="[2.5.1,)"
-ordering="AFTER"
-side="CLIENT"
+    modId="veil"
+    mandatory=true
+    versionRange="[2.5.1,)"
+    ordering="AFTER"
+    side="CLIENT"
