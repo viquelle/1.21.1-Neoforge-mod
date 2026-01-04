@@ -2,7 +2,7 @@ package com.viquelle.examplemod;
 
 import com.viquelle.examplemod.client.ClientPayloadHandler;
 import com.viquelle.examplemod.client.HudRenderer;
-import com.viquelle.examplemod.client.light.AreaPlayerLight;
+import com.viquelle.examplemod.client.light.AreaLight;
 import com.viquelle.examplemod.network.SanityPayload;
 import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
@@ -22,7 +22,7 @@ import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 @EventBusSubscriber(modid = ExampleMod.MODID, value = Dist.CLIENT)
 public class ExampleModClient {
     static boolean lightInit = false;
-    static AreaPlayerLight test;
+    static AreaLight test;
     public ExampleModClient(ModContainer container) {
         // Allows NeoForge to create a config screen for this mod's configs.
         // The config screen is accessed by going to the Mods screen > clicking on your mod > clicking on config.
@@ -45,13 +45,15 @@ public class ExampleModClient {
 
     @SubscribeEvent
     public static void onRender(RenderLevelStageEvent event) {
-        if (Minecraft.getInstance().level == null) return;
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.level == null) return;
         if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_SKY) return;
         float pt = event.getPartialTick().getGameTimeDeltaPartialTick(false);
         if (test == null) {
-            test = new AreaPlayerLight();
-            test.create();
+            test = new AreaLight.Builder().build();
+            test.register();
         }
-        test.update(Minecraft.getInstance().player, pt);
+        test.syncWithObj(mc.player, pt);
+        test.tick(pt);
     }
 }
