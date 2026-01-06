@@ -12,6 +12,9 @@ public class ModItems {
     public static final DeferredItem<Item> FLASHLIGHT = ITEMS.register("flashlight",
             () -> new FlashlightItem(new Item.Properties()));
 
+    public static final DeferredItem<Item> LIGHTER = ITEMS.register("lighter",
+            () -> new LighterItem(new Item.Properties()));
+
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);
     }

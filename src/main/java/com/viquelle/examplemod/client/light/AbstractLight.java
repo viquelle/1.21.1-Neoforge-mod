@@ -1,5 +1,6 @@
 package com.viquelle.examplemod.client.light;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import foundry.veil.api.client.render.VeilRenderSystem;
 import foundry.veil.api.client.render.light.data.AreaLightData;
 import foundry.veil.api.client.render.light.data.LightData;
@@ -68,10 +69,12 @@ public abstract class AbstractLight<T extends LightData> implements IAbstractLig
     }
 
     public void unregister() {
-        if (handle == null) return;
-        handle.free();
-        handle = null;
-        registered = false;
+        VeilRenderSystem.renderThreadExecutor().execute(() -> {
+            if (handle == null) return;
+            handle.free();
+            handle = null;
+            registered = false;
+        });
     }
 
 //    protected Map<String, List<CurveSegment>> curves = new HashMap<>();

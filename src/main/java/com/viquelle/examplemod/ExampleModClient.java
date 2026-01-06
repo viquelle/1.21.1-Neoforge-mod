@@ -5,25 +5,29 @@ import com.viquelle.examplemod.client.ClientPayloadHandler;
 import com.viquelle.examplemod.client.HudRenderer;
 import com.viquelle.examplemod.client.light.AreaLight;
 import com.viquelle.examplemod.network.SanityPayload;
+import foundry.veil.api.client.render.VeilRenderSystem;
+import foundry.veil.api.client.render.light.data.AreaLightData;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 
 @Mod(value = ExampleMod.MODID, dist = Dist.CLIENT)
 // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
 @EventBusSubscriber(modid = ExampleMod.MODID, value = Dist.CLIENT)
 public class ExampleModClient {
-//    static boolean lightInit = false;
-//    static AreaLight test;
     public ExampleModClient(ModContainer container) {
         // Allows NeoForge to create a config screen for this mod's configs.
         // The config screen is accessed by going to the Mods screen > clicking on your mod > clicking on config.
@@ -50,4 +54,17 @@ public class ExampleModClient {
                 event.getPartialTick().getGameTimeDeltaPartialTick(false)
         );
     }
+
+    @SubscribeEvent
+    public static void bob(ClientPlayerNetworkEvent.LoggingIn e) {
+        Minecraft.getInstance().execute(() -> {
+            ExampleMod.LOGGER.info("Client TICK");
+            Minecraft mc = Minecraft.getInstance();
+            if (mc.player != null) {
+                ClientLightManager.initPlayerLight(mc.player);
+            }
+        });
+
+    }
+
 }

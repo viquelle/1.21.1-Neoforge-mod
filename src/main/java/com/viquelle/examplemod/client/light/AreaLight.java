@@ -1,5 +1,6 @@
 package com.viquelle.examplemod.client.light;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.viquelle.examplemod.ExampleMod;
 import foundry.veil.api.client.render.VeilRenderSystem;
 import foundry.veil.api.client.render.light.data.AreaLightData;
@@ -64,18 +65,21 @@ public class AreaLight extends AbstractLight<AreaLightData>{
 
     @Override
     public void register() {
-        AreaLightData light = new AreaLightData();
-        light.setBrightness(brightness)
-                .setColor(color)
-                .setDistance(32f)
-                .setAngle(0.6f)
-                .setSize(0.1f,0.1f);
+        VeilRenderSystem.renderThreadExecutor().execute(() -> {
+            AreaLightData light = new AreaLightData();
+            light.setBrightness(brightness)
+                    .setColor(color)
+                    .setDistance(32f)
+                    .setAngle(0.6f)
+                    .setSize(0.1f,0.1f);
 
-        handle = VeilRenderSystem.renderer()
-                .getLightRenderer()
-                .addLight(light);
+            handle = VeilRenderSystem.renderer()
+                    .getLightRenderer()
+                    .addLight(light);
 
-        registered = true;
+            registered = true;
+        });
+
     }
 
     @Override
@@ -84,7 +88,7 @@ public class AreaLight extends AbstractLight<AreaLightData>{
         if (!registered || p == null || handle == null) return;
         super.tick(partialTick, handle);
         if (brightness == 0f) return;
-        syncWithObj(getPlayer(), partialTick);
+        syncWithObj(p, partialTick);
     }
 
 
