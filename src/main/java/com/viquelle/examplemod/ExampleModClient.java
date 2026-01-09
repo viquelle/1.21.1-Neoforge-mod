@@ -1,9 +1,6 @@
 package com.viquelle.examplemod;
 
 import com.viquelle.examplemod.client.ClientLightManager;
-import com.viquelle.examplemod.client.ClientPayloadHandler;
-import com.viquelle.examplemod.client.HudRenderer;
-import com.viquelle.examplemod.network.SanityPayload;
 import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -27,12 +24,6 @@ public class ExampleModClient {
         // The config screen is accessed by going to the Mods screen > clicking on your mod > clicking on config.
         // Do not forget to add translations for your config options to the en_us.json file.
         container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
-        NeoForge.EVENT_BUS.register(HudRenderer.class);
-    }
-
-    @SubscribeEvent
-    public static void onRegisterPayloads(RegisterPayloadHandlersEvent e) {
-        e.registrar("1").playToClient(SanityPayload.TYPE, SanityPayload.STREAM_CODEC, ClientPayloadHandler::handleSanityData);
     }
 
     @SubscribeEvent
