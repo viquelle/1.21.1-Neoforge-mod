@@ -1,19 +1,18 @@
 package com.viquelle.examplemod.client;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.viquelle.examplemod.ExampleMod;
 import com.viquelle.examplemod.client.light.AbstractLight;
 import com.viquelle.examplemod.client.light.AreaLight;
 import com.viquelle.examplemod.client.light.PointLight;
-import foundry.veil.api.client.render.VeilRenderSystem;
-import foundry.veil.api.client.render.light.data.LightData;
+import com.viquelle.examplemod.item.AbstractLightItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
-import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.LightLayer;
-import net.minecraft.world.level.block.BambooSaplingBlock;
 
 import java.util.*;
 
@@ -23,7 +22,7 @@ public class ClientLightManager {
     private static final String AMBIENT_SUFFIX = "_ambient_aura";
     private static long lastFrameTime = System.currentTimeMillis();
 
-    public static void initPlayerLight(LocalPlayer player) {
+    public static void initPlayerAmbientLight(LocalPlayer player) {
         String ambientKey = player.getUUID() + AMBIENT_SUFFIX;
         PointLight light = new PointLight.Builder()
                 .setPlayer(player)
@@ -51,45 +50,34 @@ public class ClientLightManager {
     }
 
     public static void tick(float pT) {
+        LocalPlayer localPlayer = Minecraft.getInstance().player;
+        if (localPlayer == null) return;
         long now = System.currentTimeMillis();
-        LocalPlayer player = Minecraft.getInstance().player;
 
-        // 1. Handle Ambient Light Logic
-        if (player != null) {
-            updateAmbientLight(player, pT, now);
+        Set<String> currentFrameLights = new HashSet<>();
+        currentFrameLights.add(localPlayer.getUUID() + AMBIENT_SUFFIX);
+        updateAmbientLight(localPlayer, pT, now);
+        ;
+        for (Player player: localPlayer.level().players()) {
+            if (!checkHand(player, InteractionHand.MAIN_HAND, currentFrameLights)) checkHand(player, InteractionHand.OFF_HAND, currentFrameLights);
         }
 
-        // 2. Cleanup and Tick Logic
-        List<String> toRemove = new ArrayList<>();
-        for (Map.Entry<String, AbstractLight<?>> entry : activeLights.entrySet()) {
-            String key = entry.getKey();
-            AbstractLight<?> light = entry.getValue();
+        activeLights.keySet().removeIf(key -> {
+            if (!currentFrameLights.contains(key)) {
+                activeLights.get(key).unregister();
+                return true;
+            } return false;
+        });
 
-            // If brightness is low, mark as unused
-            if (light.brightness < 0.01f) {
-                lastUsed.putIfAbsent(key, now);
-                // remove if unused for 10s AND it is NOT our persistent ambient light
-                if (now - lastUsed.get(key) > 10_000 && !key.endsWith(AMBIENT_SUFFIX)) {
-                    toRemove.add(key);
-                }
-            } else {
-                lastUsed.put(key, now);
-            }
-
+        for (AbstractLight<?> light : activeLights.values()) {
             light.tick(pT);
-        }
-
-        for (String key : toRemove) {
-            remove(key);
-            lastUsed.remove(key);
         }
     }
 
     private static void updateAmbientLight(LocalPlayer player, float pT, long now) {
         String key = player.getUUID() + AMBIENT_SUFFIX;
-        AbstractLight<?> rawLight = activeLights.get(key);
+        PointLight ambient = (PointLight) activeLights.get(key);
         // Safety check: verify it's the right type and exists
-        if (!(rawLight instanceof PointLight ambient)) return;
 
         // Prevent garbage collection of this light
         lastUsed.put(key, now);
@@ -114,12 +102,43 @@ public class ClientLightManager {
         float fadeSpeed = 0.2f;
         ExampleMod.LOGGER.info("data: {} || {}", deltaTime, targetBrightness);
         if (ambient.brightness < targetBrightness) {
-            ambient.brightness = Math.min(ambient.brightness + deltaTime * fadeSpeed, targetBrightness);
+            ambient.setBrightness(Math.min(ambient.brightness + deltaTime * fadeSpeed, targetBrightness));
         } else if (ambient.brightness > targetBrightness) {
-            ambient.brightness = Math.max(ambient.brightness - deltaTime * fadeSpeed, targetBrightness);
+            ambient.setBrightness(Math.max(ambient.brightness - deltaTime * fadeSpeed, targetBrightness));
         }
-
-        ambient.syncWithObj(player, pT);
     }
 
+    private static boolean checkHand(Player player, InteractionHand hand, Set<String> currentFrameLights) {
+        ItemStack stack = player.getItemInHand(hand);
+        if (stack.getItem() instanceof AbstractLightItem lightItem) {
+            if (AbstractLightItem.isEnabled(stack)) {
+                String key = lightItem.getKey(player);
+                currentFrameLights.add(key);
+
+                if (!activeLights.containsKey(key)) {
+                    AbstractLight<?> light = createLight(lightItem.getSettings(stack), player);
+                    add(key, light);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private static AbstractLight<?> createLight(AbstractLightItem.LightSettings settings, Player player) {
+        return switch (settings.type()) {
+            case POINT -> new PointLight.Builder()
+                    .setPlayer(player)
+                    .setBrightness(settings.brightness())
+                    .setRadius(settings.radius())
+                    .setColor(settings.color())
+                    .build();
+            case AREA -> new AreaLight.Builder()
+                    .setPlayer(player)
+                    .setBrightness(settings.brightness())
+                    .setAngle(settings.angle())
+                    .setColor(settings.color())
+                    .build();
+        };
+    }
 }

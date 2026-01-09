@@ -12,11 +12,13 @@ import org.joml.Vector3dc;
 public class AreaLight extends AbstractLight<AreaLightData>{
     protected Vec3 pos; // EYEPOS
     protected Quaternionf orientation; // PITCH AND YAW EYES
+    protected float angle;
 
     public AreaLight(Builder builder) {
         super(builder);
         this.pos = builder.pos;
         this.orientation = builder.orientation;
+        this.angle = builder.angle;
     }
 
     public void syncWithObj(Player p, float pt) {
@@ -39,6 +41,7 @@ public class AreaLight extends AbstractLight<AreaLightData>{
     public static class Builder extends AbstractLight.Builder<AreaLight.Builder> {
         private Vec3 pos;
         private Quaternionf orientation;
+        private float angle;
 
         public Builder setPosition(Vec3 pos) {
             this.pos = pos;
@@ -52,6 +55,11 @@ public class AreaLight extends AbstractLight<AreaLightData>{
 
         public Builder setOrientation(Quaternionf orientation) {
             this.orientation = orientation;
+            return this;
+        }
+
+        public Builder setAngle(float angle) {
+            this.angle = angle;
             return this;
         }
 

@@ -14,18 +14,47 @@ import org.joml.Vector3dc;
 
 public class PointLight extends AbstractLight<PointLightData>{
     private Vec3 pos;
+    private float radius;
 
     protected PointLight(Builder builder) {
         super(builder);
         this.pos = builder.pos;
+        this.radius = builder.radius;
+    }
+
+    public static class Builder extends AbstractLight.Builder<PointLight.Builder> {
+        private Vec3 pos;
+        private float radius = 6f;
+        public Builder setPosition(Vec3 pos) {
+            this.pos = pos;
+            return this;
+        }
+
+        public Builder setPosition(double x, double y, double z) {
+            this.pos = new Vec3(x,y,z);
+            return this;
+        }
+
+        public Builder setRadius(float radius) {
+            this.radius = radius;
+            return this;
+        }
+
+        @Override
+        public PointLight build() {
+            return new PointLight(this);
+        }
+
+    }
+    @Override
+    public void tick(float partialTick) {
+        Player p = getPlayer();
+        if (!registered || p == null || handle == null) return;
+        super.tick(partialTick, handle);
+        syncWithObj(p, partialTick);
     }
 
     public void syncWithObj(Player p, float pt) {
-        Quaternionf orientation = new Quaternionf().rotateXYZ(
-                (float) -Math.toRadians(p.getXRot()),
-                (float) Math.toRadians(p.getYRot()),
-                0.0f
-        );
         this.pos = p.getEyePosition(pt);
         handle.getLightData().setPosition(
                 pos.x,
@@ -34,41 +63,13 @@ public class PointLight extends AbstractLight<PointLightData>{
         );
     }
 
-    public static class Builder extends AbstractLight.Builder<PointLight.Builder> {
-        private Vec3 pos;
-
-        public PointLight.Builder setPosition(Vec3 pos) {
-            this.pos = pos;
-            return this;
-        }
-
-        public PointLight.Builder setPosition(double x, double y, double z) {
-            this.pos = new Vec3(x,y,z);
-            return this;
-        }
-
-        @Override
-        public PointLight build() {
-            return new PointLight(this);
-        }
-    }
-
-    @Override
-    public void tick(float partialTick) {
-        Player p = getPlayer();
-        if (!registered || p == null || handle == null) return;
-        super.tick(partialTick, handle);
-        if (brightness == 0f) return;
-        syncWithObj(p, partialTick);
-    }
-
     @Override
     public void register() {
         VeilRenderSystem.renderThreadExecutor().execute(() -> {
             PointLightData light = new PointLightData();
             light.setBrightness(brightness)
                     .setColor(color)
-                    .setRadius(6f);
+                    .setRadius(radius);
 
             handle = VeilRenderSystem.renderer()
                     .getLightRenderer()

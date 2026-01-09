@@ -1,10 +1,8 @@
 package com.viquelle.examplemod.item;
 
-import com.viquelle.examplemod.ExampleMod;
-import com.viquelle.examplemod.ExampleModClient;
 import com.viquelle.examplemod.client.ClientLightManager;
-import com.viquelle.examplemod.client.light.AbstractLight;
 import com.viquelle.examplemod.client.light.AreaLight;
+import foundry.veil.api.client.registry.LightTypeRegistry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -12,46 +10,22 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
-import java.util.List;
-import java.util.UUID;
-
 public class FlashlightItem extends AbstractLightItem {
+    public static final String ITEM_NAME = "flashlight";
+
+    @Override
+    public LightSettings getSettings(ItemStack stack) {
+        return new LightSettings(LightType.AREA, 0xB4B4FF, 1f, 0f, 0.6f, 32f);
+    }
+
     public FlashlightItem(Properties properties) {
         super(properties.stacksTo(1));
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand){
-        ItemStack stack = player.getItemInHand(hand);
-        if (level.isClientSide) {
-            if (getCooldown(stack) > 0) { return InteractionResultHolder.pass(stack); }
-            boolean enabled = !isEnabled(stack);
-            toggle(stack);
-            setCooldown(stack, 10);
-
-            String key = "flashlight_" + player.getUUID();
-            AreaLight existing = (AreaLight) ClientLightManager.getLight(key);
-            if (enabled) {
-                if (existing == null) {
-                    AreaLight light = new AreaLight.Builder()
-                            .setPlayer(player)
-                            .setBrightness(1.0f)
-                            .setColor(0xFFFFFF)
-                            .build();
-                    ClientLightManager.add(key,light);
-                } else {
-                    existing.brightness = 1.0f;
-                }
-            } else {
-                if (existing != null) {
-                    ClientLightManager.remove(key);
-                }
-            }
-            player.displayClientMessage(Component.literal(enabled ? "ON" : "OFF"), true);
-        } else {
-            //
-        }
-
-        return InteractionResultHolder.pass(stack); // мне просто не нрав анимацияFlashlightItem
+    public String getKey(Player player) {
+        return ITEM_NAME + "_" + player.getUUID();
     }
+
+
 }

@@ -1,5 +1,6 @@
 {
   "item.examplemod.flashlight": "Flashlight",
+  "item.examplemod.lighter": "Lighter",
 
   "examplemod.configuration.title": "Example Mod Configs",
   "examplemod.configuration.section.examplemod.common.toml": "Example Mod Configs",
