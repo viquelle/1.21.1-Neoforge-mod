@@ -5,6 +5,8 @@ import com.viquelle.mikpik.client.light.AbstractLight;
 import com.viquelle.mikpik.client.light.PointLight;
 import com.viquelle.mikpik.datagen.ModConfig;
 import com.viquelle.mikpik.item.AbstractLightItem;
+import foundry.veil.api.client.render.light.DDALightData;
+import foundry.veil.api.client.render.light.renderer.DDALightRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
@@ -102,7 +104,6 @@ public class ClientLightManager {
     private static void updateAmbientKey(LocalPlayer player) {
         String ambientKey = player.getUUID() + AMBIENT_SUFFIX;
         AbstractLight<?> ambient = activeLights.get(ambientKey);
-
         if (environmentTickCounter++ % 10 == 0) {
             BlockPos pos = player.blockPosition();
             int skyLight = player.level().getBrightness(LightLayer.SKY, pos);

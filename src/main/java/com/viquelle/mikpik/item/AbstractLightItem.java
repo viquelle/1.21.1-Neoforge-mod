@@ -77,7 +77,6 @@ public abstract class AbstractLightItem extends Item {
 
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-        MikpikMod.LOGGER.info("TRYING TO USE is client: {}", level.isClientSide);
         ItemStack stack = player.getItemInHand(hand);
         float pitch = 1.15f + level.random.nextFloat() * 0.1f;
 

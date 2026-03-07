@@ -1,22 +1,26 @@
 package com.viquelle.mikpik.client.light;
 
+import foundry.veil.Veil;
 import foundry.veil.api.client.render.VeilRenderSystem;
 import foundry.veil.api.client.render.light.data.AreaLightData;
+import foundry.veil.impl.client.render.light.VoxelShadowGrid;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 public class AreaLight extends AbstractLight<AreaLightData> {
-    private final Vector3f pos = new Vector3f();
-    private final Quaternionf orientation = new Quaternionf();
+    private Vector3f pos = new Vector3f();
+    private Quaternionf orientation = new Quaternionf();
     private final float angle;
     private final float distance;
+    private final boolean occlusion;
 
     public AreaLight(Builder builder) {
         super(builder);
         this.angle = builder.angle;
         this.distance = builder.distance;
+        this.occlusion = builder.occlusion;
     }
 
     @Override
@@ -50,7 +54,8 @@ public class AreaLight extends AbstractLight<AreaLightData> {
                 .setDistance(distance)
                 .setBrightness(currentBrightness)
                 .setColor(color)
-                .setSize(0.01, 0.01);
+                .setSize(0.01, 0.01)
+                .setOcclusionEnabled(occlusion);
 
         VeilRenderSystem.renderThreadExecutor().execute(() -> {
             handle = VeilRenderSystem.renderer()
@@ -62,13 +67,15 @@ public class AreaLight extends AbstractLight<AreaLightData> {
     public static class Builder extends AbstractLight.Builder<AreaLight.Builder> {
         private float angle = 0.6f;
         private float distance = 20f;
-
+        private boolean occlusion = false;
         public Builder(Player player) { super(player); }
 
         public Builder setAngle(float angle) { this.angle = angle; return this; }
         public Builder setDistance(float distance) { this.distance = distance; return this; }
+        public Builder setOcclusion(boolean occlusion) { this.occlusion = occlusion; return this; }
 
         @Override
         public AreaLight build() { return new AreaLight(this); }
+
     }
 }

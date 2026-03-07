@@ -12,7 +12,6 @@ import java.util.Iterator;
 import java.util.List;
 
 public abstract class AbstractLight<T extends LightData> implements IAbstractLight<T> {
-
     public enum State {
         TURNING_ON,
         ON,
@@ -62,6 +61,7 @@ public abstract class AbstractLight<T extends LightData> implements IAbstractLig
     }
     @Override
     public void tick(float deltaTime, float partialTick) {
+
         if (handle == null) return;
         lifeTime += deltaTime;
 

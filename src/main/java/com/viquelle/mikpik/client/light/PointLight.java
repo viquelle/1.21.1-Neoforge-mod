@@ -8,11 +8,14 @@ import org.joml.Vector3f;
 
 public class PointLight extends AbstractLight<PointLightData> {
     private final float radius;
-    private final Vector3f posCache = new Vector3f();
+    private final boolean occlusion;
+
+    private Vector3f posCache = new Vector3f();
 
     protected PointLight(Builder builder) {
         super(builder);
         this.radius = builder.radius;
+        this.occlusion = builder.occlusion;
     }
 
     @Override
@@ -38,7 +41,8 @@ public class PointLight extends AbstractLight<PointLightData> {
         PointLightData lightData = new PointLightData();
         lightData.setBrightness(currentBrightness)
                 .setRadius(radius)
-                .setColor(color);
+                .setColor(color)
+                .setOcclusionEnabled(occlusion);
 
         VeilRenderSystem.renderThreadExecutor().execute(() -> {
             handle = VeilRenderSystem.renderer()
@@ -47,19 +51,16 @@ public class PointLight extends AbstractLight<PointLightData> {
         });
     }
 
-    public float getRadius() { return radius; }
-
     public static class Builder extends AbstractLight.Builder<PointLight.Builder> {
-        protected float radius = 6f;
+        private float radius = 6f;
+        private boolean occlusion = false;
 
         public Builder(Player player) {
             super(player);
         }
 
-        public Builder setRadius(float radius) {
-            this.radius = radius;
-            return this;
-        }
+        public Builder setRadius(float radius) { this.radius = radius; return this; }
+        public Builder setOcclusion(boolean occlusion) { this.occlusion = occlusion; return this; }
 
         @Override
         public PointLight build() {

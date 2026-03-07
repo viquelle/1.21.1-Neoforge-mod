@@ -32,6 +32,7 @@ public class FlashlightItem extends AbstractLightItem {
                 .setCurves(LightCurve.EASE_IN, LightCurve.EASE_OUT)
                 .setAngle(0.872f)
                 .setDistance(16f)
+                .setOcclusion(true)
                 .build();
         light.addModifier(new FlickerModifier(3.0f, 0.03f, 0.05f));
         return light;
