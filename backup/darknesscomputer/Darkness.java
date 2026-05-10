@@ -29,7 +29,9 @@ public class Darkness {
         var player = Minecraft.getInstance().player;
         if (player == null) return;
 
+        // Используем современную проверку NeoForge
         if (player.getEyeInFluidType() == (net.neoforged.neoforge.common.NeoForgeMod.WATER_TYPE.value())) {
+            // Делаем воду темной (почти черной)
             MikpikMod.LOGGER.info("{} {} {}", event.getRed(), event.getGreen(), event.getBlue());
             event.setRed(0.01f);
             event.setGreen(0.01f);
@@ -45,9 +47,10 @@ public class Darkness {
         if (player == null) return;
 
         if (player.getEyeInFluidType() == (net.neoforged.neoforge.common.NeoForgeMod.WATER_TYPE.value())) {
+            // Ограничиваем дистанцию рендера, чтобы не было "рентгена"
             event.setNearPlaneDistance(2.0f);
-            event.setFarPlaneDistance(10.0f);
-            event.setCanceled(true);
+            event.setFarPlaneDistance(10.0f); // Дальше 6 блоков - стена тьмы
+            event.setCanceled(true); // Сообщаем движку, что мы перехватили рендер
         }
     }
 

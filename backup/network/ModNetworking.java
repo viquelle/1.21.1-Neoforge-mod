@@ -1,9 +1,6 @@
 package com.viquelle.mikpik.network;
 
 import com.viquelle.mikpik.MikpikMod;
-import com.viquelle.mikpik.network.payload.ClientPayloadHandler;
-import com.viquelle.mikpik.network.payload.SanitySyncPayload;
-import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
@@ -14,6 +11,11 @@ public class ModNetworking {
     @SubscribeEvent
     public static void register(RegisterPayloadHandlersEvent event) {
         PayloadRegistrar registrar = event.registrar("1");
-        registrar.playToClient(SanitySyncPayload.TYPE, SanitySyncPayload.STREAM_CODEC, ClientPayloadHandler::handleDataOnNetwork);
+
+        registrar.playToClient(
+                LightTogglePacket.TYPE,
+                LightTogglePacket.STREAM_CODEC,
+                LightTogglePacket::handle
+        );
     }
 }

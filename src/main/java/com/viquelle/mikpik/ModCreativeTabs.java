@@ -1,6 +1,6 @@
 package com.viquelle.mikpik;
 
-import com.viquelle.mikpik.item.ModItems;
+//import com.viquelle.mikpik.item.ModItems;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
@@ -12,12 +12,12 @@ public class ModCreativeTabs {
     public static final DeferredRegister<CreativeModeTab> TAB =
             DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MikpikMod.MODID);
 
-    public static final DeferredHolder<CreativeModeTab,CreativeModeTab> MAIN_TAB =
-            TAB.register("example_tab", () -> CreativeModeTab.builder()
-                    .title(Component.translatable("itemGroup." + MikpikMod.MODID))
-                    .icon(() -> new ItemStack(ModItems.LIGHTER.get()))
-                    .displayItems(((itemDisplayParameters, output) -> {
-                        ModItems.ITEMS.getEntries().forEach(item -> output.accept(item.get()));
-                    })).build()
-            );
+//    public static final DeferredHolder<CreativeModeTab,CreativeModeTab> MAIN_TAB =
+//            TAB.register("example_tab", () -> CreativeModeTab.builder()
+//                    .title(Component.translatable("itemGroup." + MikpikMod.MODID))
+//                    .icon(() -> new ItemStack(ModItems.LIGHTER.get()))
+//                    .displayItems(((itemDisplayParameters, output) -> {
+//                        ModItems.ITEMS.getEntries().forEach(item -> output.accept(item.get()));
+//                    })).build()
+//            );
 }

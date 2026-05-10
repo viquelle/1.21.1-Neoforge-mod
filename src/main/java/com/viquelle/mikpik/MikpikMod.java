@@ -1,9 +1,8 @@
 package com.viquelle.mikpik;
-
-import com.viquelle.mikpik.datagen.ModLanguageProvider;
-import com.viquelle.mikpik.datagen.ModRecipeProvider;
-import com.viquelle.mikpik.item.AbstractLightItem;
+import com.viquelle.mikpik.command.ShadowGrabberDebugCommand;
+import com.viquelle.mikpik.entity.ModEntities;
 import com.viquelle.mikpik.item.ModItems;
+import com.viquelle.mikpik.sanity.ModAttachments;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
@@ -13,13 +12,10 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import org.slf4j.Logger;
-
 import com.mojang.logging.LogUtils;
-
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
@@ -35,16 +31,21 @@ public class MikpikMod {
     public static boolean IsDebugEnabled = true;
     public MikpikMod(IEventBus modEventBus, ModContainer modContainer) {
         NeoForge.EVENT_BUS.register(this);
-        ModItems.register(modEventBus);
+//        ModItems.register(modEventBus);
         ModCreativeTabs.TAB.register(modEventBus);
         modEventBus.addListener(this::gatherData);
-        modContainer.registerConfig(ModConfig.Type.COMMON, com.viquelle.mikpik.datagen.ModConfig.SPEC);
+//        modContainer.registerConfig(ModConfig.Type.COMMON, com.viquelle.mikpik.datagen.ModConfig.SPEC);
+        ModAttachments.register(modEventBus);
+        ModDataComponents.register(modEventBus);
+        ModItems.ITEMS.register(modEventBus);
+        ModEntities.ENTITY_TYPES.register(modEventBus);
+        NeoForge.EVENT_BUS.register(ShadowGrabberDebugCommand.class);
     }
 
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
         if (event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES) {
-            event.accept(ModItems.FLASHLIGHT);
-            event.accept(ModItems.LIGHTER);
+//            event.accept(ModItems.FLASHLIGHT);
+//            event.accept(ModItems.LIGHTER);
         }
     }
 
@@ -59,9 +60,9 @@ public class MikpikMod {
         if (event.getEntity() instanceof ItemEntity itemEntity) {
             ItemStack stack = itemEntity.getItem();
 
-            if (stack.getItem() instanceof AbstractLightItem && AbstractLightItem.isEnabled(stack)) {
-                AbstractLightItem.toggleTo(stack,false);
-            }
+//            if (stack.getItem() instanceof AbstractLightItem && AbstractLightItem.isEnabled(stack)) {
+//                AbstractLightItem.toggleTo(stack,false);
+//            }
         }
     }
 
@@ -70,8 +71,8 @@ public class MikpikMod {
         PackOutput output = generator.getPackOutput();
         CompletableFuture<HolderLookup.Provider> lookup = event.getLookupProvider();
 
-        generator.addProvider(event.includeServer(), new ModRecipeProvider(output, lookup));
-        generator.addProvider(event.includeClient(), new ModLanguageProvider(output, MikpikMod.MODID,"ru_ru"));
-        generator.addProvider(event.includeClient(), new ModLanguageProvider(output, MikpikMod.MODID,"en_us"));
+//        generator.addProvider(event.includeServer(), new ModRecipeProvider(output, lookup));
+//        generator.addProvider(event.includeClient(), new ModLanguageProvider(output, MikpikMod.MODID,"ru_ru"));
+//        generator.addProvider(event.includeClient(), new ModLanguageProvider(output, MikpikMod.MODID,"en_us"));
     }
 }

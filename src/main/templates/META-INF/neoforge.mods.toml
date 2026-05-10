@@ -89,7 +89,7 @@ config="${mod_id}.mixins.json"
 [[dependencies.${mod_id}]]
     modId="veil"
     type="required"
-    versionRange = "[2.5.1,)"
+    versionRange = "[3.6.0,)"
     ordering = "AFTER"
     side = "CLIENT"
 
