@@ -22,7 +22,7 @@ public class LightFactor implements SanityFactor {
 
         // Дневной свет неба регенит рассудок.
         if (level.isDay() && skyLight > 8) {
-            return SanityConstants.perTick(SanityConstants.SKY_DAY_REGEN_PER_SECOND);
+            return SanityConstants.SKY_DAY_REGEN_PER_TICK;
         }
 
         // Темнота отнимает рассудок.
@@ -32,7 +32,7 @@ public class LightFactor implements SanityFactor {
         int effectiveDarknessLight = Math.max(localLight, veilLight);
 
         if (effectiveDarknessLight <= 5) {
-            return SanityConstants.perTick(SanityConstants.DARK_DRAIN_PER_SECOND);
+            return SanityConstants.DARK_DRAIN_PER_TICK;
         }
 
         return 0.0f;

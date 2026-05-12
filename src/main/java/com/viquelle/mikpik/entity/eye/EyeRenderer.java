@@ -63,7 +63,6 @@ public class EyeRenderer extends EntityRenderer<EyeEntity> {
 
         float yaw = (float) Math.toDegrees(Math.atan2(dir.x, dir.z));
         float pitch = (float) -Math.toDegrees(Math.asin(dir.y));
-        MikpikMod.LOGGER.info("y: {} || p: {}", yaw, pitch);
         poseStack.mulPose(Axis.YP.rotationDegrees(yaw));
         poseStack.mulPose(Axis.XP.rotationDegrees(pitch));
     }

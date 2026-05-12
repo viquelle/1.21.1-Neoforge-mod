@@ -1,6 +1,8 @@
 package com.viquelle.mikpik.item;
 
 import com.viquelle.mikpik.MikpikMod;
+import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -16,4 +18,13 @@ public class ModItems {
 
     public static final Supplier<Item> PLUSHY =
             ITEMS.register("plushy", () -> new PlushyItem(new Item.Properties()));
+
+    public static final Supplier<Item> FLOWER_CROWN =
+            ITEMS.register("flower_crown", () -> new FlowerCrownItem(
+                    ModArmorMaterials.FLOWER_CROWN,
+                    ArmorItem.Type.HELMET,
+                    new Item.Properties()
+                            .stacksTo(1)
+                            .durability(20*60*16)
+            ));
 }

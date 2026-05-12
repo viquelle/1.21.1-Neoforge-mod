@@ -1,5 +1,7 @@
 package com.viquelle.mikpik;
 import com.viquelle.mikpik.command.ShadowGrabberDebugCommand;
+import com.viquelle.mikpik.datagen.ModLanguageProvider;
+import com.viquelle.mikpik.datagen.ModRecipeProvider;
 import com.viquelle.mikpik.entity.ModEntities;
 import com.viquelle.mikpik.item.ModItems;
 import com.viquelle.mikpik.sanity.ModAttachments;
@@ -55,24 +57,13 @@ public class MikpikMod {
         LOGGER.info("HELLO from server starting");
     }
 
-    @SubscribeEvent
-    public void onItemTick(EntityTickEvent.Post event) {
-        if (event.getEntity() instanceof ItemEntity itemEntity) {
-            ItemStack stack = itemEntity.getItem();
-
-//            if (stack.getItem() instanceof AbstractLightItem && AbstractLightItem.isEnabled(stack)) {
-//                AbstractLightItem.toggleTo(stack,false);
-//            }
-        }
-    }
-
     public void gatherData(GatherDataEvent event) {
         DataGenerator generator = event.getGenerator();
         PackOutput output = generator.getPackOutput();
         CompletableFuture<HolderLookup.Provider> lookup = event.getLookupProvider();
 
-//        generator.addProvider(event.includeServer(), new ModRecipeProvider(output, lookup));
-//        generator.addProvider(event.includeClient(), new ModLanguageProvider(output, MikpikMod.MODID,"ru_ru"));
-//        generator.addProvider(event.includeClient(), new ModLanguageProvider(output, MikpikMod.MODID,"en_us"));
+        generator.addProvider(event.includeServer(), new ModRecipeProvider(output, lookup));
+        generator.addProvider(event.includeClient(), new ModLanguageProvider(output, MikpikMod.MODID,"ru_ru"));
+        generator.addProvider(event.includeClient(), new ModLanguageProvider(output, MikpikMod.MODID,"en_us"));
     }
 }

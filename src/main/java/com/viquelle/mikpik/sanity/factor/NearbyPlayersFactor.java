@@ -29,12 +29,12 @@ public class NearbyPlayersFactor implements SanityFactor {
             double dist = player.distanceTo(other);
             float closeness = (float) (1.0 - Math.min(dist / RADIUS, 1.0));
 
-            total += SanityConstants.NEAR_PLAYER_REGEN_PER_SECOND * closeness;
+            total += SanityConstants.NEAR_PLAYER_REGEN_PER_TICK * closeness;
         }
 
         // Чтобы пачка игроков не разгоняла реген в космос.
-        total = Math.min(total, SanityConstants.NEAR_PLAYER_REGEN_PER_SECOND);
+        total = Math.min(total, SanityConstants.NEAR_PLAYER_REGEN_PER_TICK);
 
-        return SanityConstants.perTick(total);
+        return total;
     }
 }

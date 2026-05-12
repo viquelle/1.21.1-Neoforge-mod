@@ -23,7 +23,7 @@ public class ShelterFactor implements SanityFactor {
             return 0.0f;
         }
 
-        return SanityConstants.perTick(SanityConstants.SHELTER_REGEN_PER_SECOND);
+        return SanityConstants.SHELTER_REGEN_PER_TICK;
     }
 
     public static boolean isSheltered(Player player) {

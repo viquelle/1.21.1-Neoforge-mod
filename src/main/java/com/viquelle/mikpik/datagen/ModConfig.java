@@ -1,4 +1,4 @@
-ёpackage com.viquelle.mikpik.datagen;
+package com.viquelle.mikpik.datagen;
 
 import net.neoforged.neoforge.common.ModConfigSpec;
 

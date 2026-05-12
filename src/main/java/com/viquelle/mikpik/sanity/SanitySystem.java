@@ -3,10 +3,7 @@ package com.viquelle.mikpik.sanity;
 import com.viquelle.mikpik.MikpikMod;
 import com.viquelle.mikpik.item.PlushyItem;
 import com.viquelle.mikpik.network.payload.SanitySyncPayload;
-import com.viquelle.mikpik.sanity.factor.LightFactor;
-import com.viquelle.mikpik.sanity.factor.NearbyPlayersFactor;
-import com.viquelle.mikpik.sanity.factor.SanityFactor;
-import com.viquelle.mikpik.sanity.factor.ShelterFactor;
+import com.viquelle.mikpik.sanity.factor.*;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -24,7 +21,8 @@ public class SanitySystem {
     private static final List<SanityFactor> FACTORS = List.of(
             new LightFactor(),
             new ShelterFactor(),
-            new NearbyPlayersFactor()
+            new NearbyPlayersFactor(),
+            new FlowerCrownFactor()
     );
 
     public static float get(Player player) {

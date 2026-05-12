@@ -28,7 +28,7 @@ public final class GrueSystem {
     private static final int HIT_EXTRA_TICKS = 10;
 
     private static final float LOCK_PROGRESS = 0.80f;
-    private static final float DAMAGE = 1000.0f;
+    private static final float DAMAGE = 14f;
 
     private static final Map<UUID, GrueRuntime> RUNTIME = new HashMap<>();
 
@@ -172,7 +172,7 @@ public final class GrueSystem {
     }
 
     private static void hit(ServerPlayer player) {
-        var source = player.damageSources().source(DamageTypes.MAGIC);
+        var source = player.damageSources().source(DamageTypes.GENERIC);
         player.hurt(source, DAMAGE);
     }
 
