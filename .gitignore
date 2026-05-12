@@ -24,10 +24,4 @@ runs
 run-data
 
 repo
-/src/generated/resources/.cache/9fb1092f32d4fcbf9e061ffd718d4ec689c6c95e
-/src/generated/resources/.cache/bc209e2c6a64eb38967678b291897d514956a2f8
-/src/generated/resources/.cache/e2c7dbc6555f7a94f583f702c647995c1c6d4cf5
-/src/generated/resources/assets/mikpik/lang/en_us.json
-/src/generated/resources/data/mikpik/advancement/recipes/tools/flower_crown.json
-/src/generated/resources/data/mikpik/recipe/flower_crown.json
-/src/generated/resources/assets/mikpik/lang/ru_ru.json
+/src/generated/
