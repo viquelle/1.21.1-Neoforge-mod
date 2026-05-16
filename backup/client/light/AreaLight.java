@@ -1,4 +1,4 @@
-package com.viquelle.mikpik.client.light;
+package com.viquelle.mikpik.light;
 
 import foundry.veil.Veil;
 import foundry.veil.api.client.render.VeilRenderSystem;

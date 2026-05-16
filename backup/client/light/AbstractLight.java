@@ -1,7 +1,7 @@
-package com.viquelle.mikpik.client.light;
+package com.viquelle.mikpik.light;
 
-import com.viquelle.mikpik.client.light.modifiers.ActiveModifier;
-import com.viquelle.mikpik.client.light.modifiers.LightModifier;
+import com.viquelle.mikpik.light.modifiers.ActiveModifier;
+import com.viquelle.mikpik.light.modifiers.LightModifier;
 import foundry.veil.api.client.render.VeilRenderSystem;
 import foundry.veil.api.client.render.light.data.LightData;
 import foundry.veil.api.client.render.light.renderer.LightRenderHandle;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public abstract class AbstractLight<T extends LightData> implements IAbstractLight<LightData> {
+public abstract class AbstractLight<T extends LightData>  {
     public enum State {
         TURNING_ON,
         ON,
@@ -35,6 +35,7 @@ public abstract class AbstractLight<T extends LightData> implements IAbstractLig
     protected float progress = 0f;    // 0.0 (OFF) <-> 1.0 (ON)
     protected float lifeTime = 0f;
     protected float currentBrightness;
+    float epsilon = 0.001f;
 
     protected LightRenderHandle<T> handle = null;
     private final List<ActiveModifier> activeModifiers = new ArrayList<>();
@@ -59,7 +60,7 @@ public abstract class AbstractLight<T extends LightData> implements IAbstractLig
     public void addModifier(LightModifier modifier) {
         this.activeModifiers.add(new ActiveModifier(modifier));
     }
-    @Override
+
     public void tick(float deltaTime, float partialTick) {
 
         if (handle == null) return;
@@ -178,4 +179,5 @@ public abstract class AbstractLight<T extends LightData> implements IAbstractLig
     public State getState() { return state; }
     public void setState(State state) { this.state = state; }
     public Player getPlayer() { return player; }
+
 }

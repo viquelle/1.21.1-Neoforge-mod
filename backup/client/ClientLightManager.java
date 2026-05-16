@@ -1,8 +1,8 @@
 package com.viquelle.mikpik.client;
 
 import com.viquelle.mikpik.MikpikMod;
-import com.viquelle.mikpik.client.light.AbstractLight;
-import com.viquelle.mikpik.client.light.PointLight;
+import com.viquelle.mikpik.light.AbstractLight;
+import com.viquelle.mikpik.light.PointLight;
 import com.viquelle.mikpik.datagen.ModConfig;
 import com.viquelle.mikpik.item.AbstractLightItem;
 import foundry.veil.api.client.render.light.DDALightData;

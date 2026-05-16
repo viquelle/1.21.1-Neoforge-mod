@@ -5,11 +5,6 @@ import net.minecraft.client.animation.AnimationDefinition;
 import net.minecraft.client.animation.Keyframe;
 import net.minecraft.client.animation.KeyframeAnimations;
 
-/**
- * Made with Blockbench 5.1.4
- * Exported for Minecraft version 1.19 or later with Mojang mappings
- * @author Author
- */
 public class ShadowPortalAnimations {
 	public static final AnimationDefinition spawning = AnimationDefinition.Builder.withLength(3.0F)
 		.addAnimation("bone", new AnimationChannel(AnimationChannel.Targets.SCALE, 

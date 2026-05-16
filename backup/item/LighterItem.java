@@ -1,8 +1,8 @@
 package com.viquelle.mikpik.item;
 
-import com.viquelle.mikpik.client.light.LightCurve;
-import com.viquelle.mikpik.client.light.PointLight;
-import com.viquelle.mikpik.client.light.modifiers.FlickerModifier;
+import com.viquelle.mikpik.light.LightCurve;
+import com.viquelle.mikpik.light.PointLight;
+import com.viquelle.mikpik.light.modifiers.FlickerModifier;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;

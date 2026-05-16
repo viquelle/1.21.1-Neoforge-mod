@@ -1,6 +1,6 @@
-package com.viquelle.mikpik.client.light.modifiers;
+package com.viquelle.mikpik.light.modifiers;
 
-import com.viquelle.mikpik.client.light.AbstractLight;
+import com.viquelle.mikpik.light.AbstractLight;
 
 public interface LightModifier {
     enum Type{

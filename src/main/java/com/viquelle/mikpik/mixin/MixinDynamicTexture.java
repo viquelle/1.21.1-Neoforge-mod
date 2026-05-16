@@ -10,8 +10,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import static com.viquelle.mikpik.darknesscomputer.Darkness.enabled;
-
 @Mixin(DynamicTexture.class)
 public class MixinDynamicTexture implements TextureAccess {
     @Shadow
@@ -21,7 +19,7 @@ public class MixinDynamicTexture implements TextureAccess {
 
     @Inject(method = "upload", at = @At(value = "HEAD"))
     private void onUpload(CallbackInfo ci) {
-        if (enableHook && pixels != null && enabled) {
+        if (enableHook && pixels != null) {
             final NativeImage img = pixels;
 
             for (int b = 0; b < 16; b++) {

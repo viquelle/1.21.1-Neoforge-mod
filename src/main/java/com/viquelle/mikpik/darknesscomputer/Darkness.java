@@ -30,7 +30,6 @@ public class Darkness {
         if (player == null) return;
 
         if (player.getEyeInFluidType() == (net.neoforged.neoforge.common.NeoForgeMod.WATER_TYPE.value())) {
-            MikpikMod.LOGGER.info("{} {} {}", event.getRed(), event.getGreen(), event.getBlue());
             event.setRed(0.01f);
             event.setGreen(0.01f);
             event.setBlue(0.02f);

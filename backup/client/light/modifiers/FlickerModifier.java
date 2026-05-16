@@ -1,6 +1,6 @@
-package com.viquelle.mikpik.client.light.modifiers;
+package com.viquelle.mikpik.light.modifiers;
 
-import com.viquelle.mikpik.client.light.AbstractLight;
+import com.viquelle.mikpik.light.AbstractLight;
 import net.minecraft.util.Mth;
 
 import java.util.Random;

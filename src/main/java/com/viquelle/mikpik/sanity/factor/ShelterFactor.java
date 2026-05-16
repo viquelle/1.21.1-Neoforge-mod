@@ -18,7 +18,7 @@ public class ShelterFactor implements SanityFactor {
 
         int blockLight = level.getBrightness(LightLayer.BLOCK, pos);
 
-        // В укрытии должен быть свет. Иначе это не safe shelter, а просто нора.
+        // В укрытии должен быть свет.
         if (blockLight < 7) {
             return 0.0f;
         }

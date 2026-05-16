@@ -1,4 +1,4 @@
-package com.viquelle.mikpik.client.light.modifiers;
+package com.viquelle.mikpik.light.modifiers;
 
 public class ActiveModifier {
     private final LightModifier modifier;

@@ -1,4 +1,4 @@
-package com.viquelle.mikpik.client.light;
+package com.viquelle.mikpik.light;
 
 import java.util.function.Function;
 

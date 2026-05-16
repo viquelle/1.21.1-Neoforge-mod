@@ -1,7 +1,6 @@
 package com.viquelle.mikpik.item;
 
-import com.viquelle.mikpik.MikpikMod;
-import com.viquelle.mikpik.client.light.AbstractLight;
+import com.viquelle.mikpik.light.AbstractLight;
 import com.viquelle.mikpik.network.LightTogglePacket;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;

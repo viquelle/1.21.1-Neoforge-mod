@@ -15,7 +15,6 @@ public class LightFactor implements SanityFactor {
         int skyLight = level.getBrightness(LightLayer.SKY, pos);
         int blockLight = level.getBrightness(LightLayer.BLOCK, pos);
 
-        // WIP: потом сюда добавишь Veil light
         int veilLight = 0;
 
         int maxLight = Math.max(blockLight, veilLight);
@@ -26,7 +25,7 @@ public class LightFactor implements SanityFactor {
         }
 
         // Темнота отнимает рассудок.
-        // Тут специально используем maxLocalRawBrightness,
+        // Тут используем maxLocalRawBrightness,
         // потому что он лучше отражает фактическую локальную яркость.
         int localLight = level.getMaxLocalRawBrightness(pos);
         int effectiveDarknessLight = Math.max(localLight, veilLight);
