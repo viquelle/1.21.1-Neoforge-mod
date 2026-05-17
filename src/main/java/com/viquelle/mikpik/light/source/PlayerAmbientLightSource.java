@@ -39,7 +39,7 @@ public class PlayerAmbientLightSource implements LightSource{
         float deltaSeconds = (now - lastTime) / 1_000_000_000f;
         lastTime = now;
 
-        int localBrightness = level.getMaxLocalRawBrightness(player.blockPosition());
+        int localBrightness = player.level().getMaxLocalRawBrightness(player.blockPosition());
         float targetRadius =
                 (localBrightness <= BRIGHTNESS_THRESHOLD) && ClientLightManager.sampleLight(player.getEyePosition(partialTick)) < 0.5f ? MAX_RADIUS : 0.0f;
 
@@ -68,6 +68,5 @@ public class PlayerAmbientLightSource implements LightSource{
     public Collection<? extends LightHandle> getLights() {
         return List.of(light);
     }
-
 
 }

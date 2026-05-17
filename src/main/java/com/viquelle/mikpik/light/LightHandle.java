@@ -27,6 +27,11 @@ public abstract class LightHandle<T extends LightData> {
             VeilRenderSystem.renderThreadExecutor().execute(() -> updatePositionInData(pos));
         }
     }
+
+    public void setPosition(float x, float y, float z) {
+        setPosition(new Vec3(x,y,z));
+    }
+
     public Vec3 getPosition() {
         return position;
     }

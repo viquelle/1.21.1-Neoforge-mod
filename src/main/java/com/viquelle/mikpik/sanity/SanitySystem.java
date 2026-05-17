@@ -80,7 +80,7 @@ public class SanitySystem {
 
         validateActivePlushy(player);
 
-        if (player.tickCount % 20 == 0) {
+        if (player.tickCount % 4 == 0) {
             int sky = player.level().getBrightness(LightLayer.SKY, player.blockPosition());
             int block = player.level().getBrightness(LightLayer.BLOCK, player.blockPosition());
 
