@@ -1,5 +1,6 @@
 package com.viquelle.mikpik.light.source;
 
+import com.viquelle.mikpik.light.LightHandle;
 import com.viquelle.mikpik.light.PointLightHandle;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -7,13 +8,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.*;
 
 public class NetherStarLightSource implements LightSource {
-    private final Map<String, PointLightHandle> lights = new ConcurrentHashMap<>();
+    private final Map<String, PointLightHandle> lights = new HashMap<>();
 
     @Override
     public void tick(Level level, float partialTick) {
@@ -31,17 +29,18 @@ public class NetherStarLightSource implements LightSource {
 
             if (hasStar && player.isAlive()) {
                 validKeys.add(key);
+                boolean inHand = player.getMainHandItem().is(Items.NETHER_STAR)
+                        || player.getOffhandItem().is(Items.NETHER_STAR);
                 PointLightHandle light = lights.computeIfAbsent(key, k -> {
-                    PointLightHandle h = new PointLightHandle(4.0f, 1.0f, 0xFFFFFF, false);
+                    PointLightHandle h = new PointLightHandle(
+                            inHand ? 8.0f : 4.0f,
+                            inHand ? 1.5f : 1.0f,
+                            0xFFFFFF,
+                            true);
                     h.register();
                     return h;
                 });
-                light.setPosition(player.getPosition(partialTick).add(0, 1.0, 0));
-
-                boolean inHand = player.getMainHandItem().is(Items.NETHER_STAR)
-                        || player.getOffhandItem().is(Items.NETHER_STAR);
-                light.setRadius(inHand ? 8.0f : 4.0f);
-                light.setBrightness(inHand ? 1.5f : 1.0f);
+                light.setPosition(player.getEyePosition(partialTick));
             }
         }
 
@@ -58,15 +57,12 @@ public class NetherStarLightSource implements LightSource {
                     return h;
                 });
                 light.setPosition(item.getPosition(partialTick).add(0, 0.1, 0));
-                light.setRadius(5.0f);
-                light.setBrightness(2.0f);
             }
         }
 
-        // Удаляем ТОЛЬКО те, которых нет в validKeys
         lights.keySet().removeIf(key -> {
             if (!validKeys.contains(key)) {
-                PointLightHandle removed = lights.remove(key);
+                PointLightHandle removed = lights.get(key);
                 if (removed != null) removed.unregister();
                 return true;
             }
@@ -79,4 +75,11 @@ public class NetherStarLightSource implements LightSource {
         lights.values().forEach(PointLightHandle::unregister);
         lights.clear();
     }
+
+    @Override
+    public Collection<? extends LightHandle> getLights() {
+        return lights.values();
+    }
+
+
 }

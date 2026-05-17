@@ -9,6 +9,7 @@ import com.viquelle.mikpik.entity.shadowgrabber.model.ShadowPortalModel;
 import com.viquelle.mikpik.light.ClientLightManager;
 import com.viquelle.mikpik.light.source.LanternLightSource;
 import com.viquelle.mikpik.light.source.NetherStarLightSource;
+import com.viquelle.mikpik.light.source.PlayerAmbientLightSource;
 import com.viquelle.mikpik.light.source.TorchLightSource;
 import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
@@ -44,6 +45,7 @@ public class MikpikModClient {
         ClientLightManager.register(new NetherStarLightSource());
         ClientLightManager.register(new LanternLightSource());
         ClientLightManager.register(new TorchLightSource());
+        ClientLightManager.register(new PlayerAmbientLightSource());
     }
 
     @SubscribeEvent

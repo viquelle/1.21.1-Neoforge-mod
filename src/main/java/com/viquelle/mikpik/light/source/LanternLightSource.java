@@ -1,5 +1,6 @@
 package com.viquelle.mikpik.light.source;
 
+import com.viquelle.mikpik.light.LightHandle;
 import com.viquelle.mikpik.light.PointLightHandle;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -9,17 +10,17 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 
 public class LanternLightSource implements LightSource {
-    private final Map<String, PointLightHandle> lights = new ConcurrentHashMap<>();
+    private final Map<String, PointLightHandle> lights = new HashMap<>();
 
     private static final int COLOR = 0xFFD59E;
     private static final boolean OCCLUDED = true;
     private static final float RADIUS = 11.0f;
+    private static final float BRIGHTNESS = 1.0f;
 
     @Override
     public void tick(Level level, float partialTick) {
@@ -41,15 +42,16 @@ public class LanternLightSource implements LightSource {
 
             boolean inWater = player.isUnderWater();
             boolean active = !inWater; // Тухнет ТОЛЬКО в воде, дождь не влияет
+            float currentBrightness = active ? BRIGHTNESS : 0f;
 
-            PointLightHandle light = lights.computeIfAbsent(key, k -> {
-                PointLightHandle h = new PointLightHandle(RADIUS, active ? 1.0f : 0.0f, COLOR, OCCLUDED);
-                h.register();
-                return h;
-            });
-            light.setPosition(player.getPosition(partialTick).add(0, 1.2, 0));
-            light.setRadius(RADIUS);
-            light.setBrightness(active ? 1.0f : 0.0f);
+            PointLightHandle light = lights.get(key);
+            if (light == null) {
+                light = new PointLightHandle(RADIUS, currentBrightness, COLOR, OCCLUDED);
+                light.register();
+                lights.put(key,light);
+            }
+            light.setPosition(player.getEyePosition(partialTick));
+            light.setBrightness(currentBrightness);
         }
 
         // Выброшенные фонари вокруг игрока
@@ -62,21 +64,21 @@ public class LanternLightSource implements LightSource {
 
             boolean inWater = item.isUnderWater();
             boolean active = !inWater;
+            float currentBrightness = active ? BRIGHTNESS : 0f;
 
             PointLightHandle light = lights.computeIfAbsent(key, k -> {
-                PointLightHandle h = new PointLightHandle(RADIUS/2, active ? 1.0f : 0.0f, COLOR, false);
+                PointLightHandle h = new PointLightHandle(RADIUS/2, currentBrightness, COLOR, false);
                 h.register();
                 return h;
             });
             light.setPosition(item.getPosition(partialTick).add(0, 0.5, 0));
-            light.setRadius(RADIUS);
-            light.setBrightness(active ? 1.0f : 0.0f);
+            light.setBrightness(currentBrightness);
         }
 
-        //Очистка несуществующих источников
+        //Очистка света от уже несуществующих источников
         lights.keySet().removeIf(key -> {
             if (!validKeys.contains(key)) {
-                PointLightHandle removed = lights.remove(key);
+                PointLightHandle removed = lights.get(key);
                 if (removed != null) removed.unregister();
                 return true;
             }
@@ -89,4 +91,10 @@ public class LanternLightSource implements LightSource {
         lights.values().forEach(PointLightHandle::unregister);
         lights.clear();
     }
+
+    @Override
+    public Collection<? extends LightHandle> getLights() {
+        return lights.values();
+    }
+
 }

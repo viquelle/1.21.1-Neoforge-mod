@@ -2,6 +2,7 @@ package com.viquelle.mikpik.sanity;
 
 import com.viquelle.mikpik.MikpikMod;
 import com.viquelle.mikpik.item.PlushyItem;
+import com.viquelle.mikpik.light.ClientLightManager;
 import com.viquelle.mikpik.network.payload.SanitySyncPayload;
 import com.viquelle.mikpik.sanity.factor.*;
 import net.minecraft.network.chat.Component;
@@ -89,7 +90,8 @@ public class SanitySystem {
                                     " | Δ: " + String.format("%.2f", delta * 20f) +
                                     " | Sky: " + sky +
                                     " | Block: " + block +
-                                    " | RawLight " + player.level().getMaxLocalRawBrightness(player.blockPosition())
+                                    " | RawLight " + player.level().getMaxLocalRawBrightness(player.blockPosition()) +
+                                    " | AnyLightAround " + ClientLightManager.sampleLight(player.getPosition(0))
                     ),
                     true
             );

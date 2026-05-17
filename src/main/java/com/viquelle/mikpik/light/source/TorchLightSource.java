@@ -1,5 +1,6 @@
 package com.viquelle.mikpik.light.source;
 
+import com.viquelle.mikpik.light.LightHandle;
 import com.viquelle.mikpik.light.PointLightHandle;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -8,18 +9,18 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 
 public class TorchLightSource implements LightSource {
-    private final Map<String, PointLightHandle> lights = new ConcurrentHashMap<>();
+    private final Map<String, PointLightHandle> lights = new HashMap<>();
 
     // Тепловато-белый (янтарный) оттенок
     private static final int COLOR = 0xFFD59E;
     private static final boolean OCCLUDED = true;
     private static final float RADIUS = 12.0f;
+    private static final float BRIGHTNESS = 1.0f;
 
     @Override
     public void tick(Level level, float partialTick) {
@@ -42,15 +43,15 @@ public class TorchLightSource implements LightSource {
             boolean inWater = player.isUnderWater();
             boolean inRain = level.isRaining() && level.isRainingAt(pos);
             boolean active = !inWater && !inRain; // Тухнет под дождем И в воде
+            float currentBrightness = active ? BRIGHTNESS : 0f;
 
             PointLightHandle light = lights.computeIfAbsent(key, k -> {
-                PointLightHandle h = new PointLightHandle(RADIUS, active ? 1.0f : 0.0f, COLOR, OCCLUDED);
+                PointLightHandle h = new PointLightHandle(RADIUS, currentBrightness, COLOR, OCCLUDED);
                 h.register();
                 return h;
             });
-            light.setPosition(player.getPosition(partialTick).add(0, 1.0, 0));
-            light.setRadius(RADIUS);
-            light.setBrightness(active ? 1.0f : 0.0f);
+            light.setPosition(player.getEyePosition(partialTick));
+            light.setBrightness(currentBrightness);
         }
 
         var searchBox = localPlayer.getBoundingBox().inflate(32.0);
@@ -64,20 +65,20 @@ public class TorchLightSource implements LightSource {
             boolean inWater = item.isUnderWater();
             boolean inRain = level.isRaining() && level.isRainingAt(pos);
             boolean active = !inWater && !inRain;
+            float currentBrightness = active ? BRIGHTNESS : 0f;
 
             PointLightHandle light = lights.computeIfAbsent(key, k -> {
-                PointLightHandle h = new PointLightHandle(RADIUS/2, active ? 1.0f : 0.0f, COLOR, false);
+                PointLightHandle h = new PointLightHandle(RADIUS/2, currentBrightness, COLOR, false);
                 h.register();
                 return h;
             });
-            light.setPosition(item.getPosition(partialTick).add(0, 0.2, 0));
-            light.setRadius(RADIUS);
-            light.setBrightness(active ? 1.0f : 0.0f);
+            light.setPosition(item.getEyePosition(partialTick).add(0.0f,0.5f,0.0f));
+            light.setBrightness(currentBrightness);
         }
 
         lights.keySet().removeIf(key -> {
             if (!validKeys.contains(key)) {
-                PointLightHandle removed = lights.remove(key);
+                PointLightHandle removed = lights.get(key);
                 if (removed != null) removed.unregister();
                 return true;
             }
@@ -90,4 +91,11 @@ public class TorchLightSource implements LightSource {
         lights.values().forEach(PointLightHandle::unregister);
         lights.clear();
     }
+
+    @Override
+    public Collection<? extends LightHandle> getLights() {
+        return lights.values();
+    }
+
+
 }
