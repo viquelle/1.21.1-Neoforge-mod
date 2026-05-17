@@ -1,31 +1,46 @@
 package com.viquelle.mikpik;
-
+import com.viquelle.mikpik.command.SanityCommands;
+import com.viquelle.mikpik.command.ShadowGrabberDebugCommand;
 import com.viquelle.mikpik.datagen.ModLanguageProvider;
 import com.viquelle.mikpik.datagen.ModRecipeProvider;
-import com.viquelle.mikpik.item.AbstractLightItem;
+import com.viquelle.mikpik.entity.ModEntities;
 import com.viquelle.mikpik.item.ModItems;
+import com.viquelle.mikpik.sanity.ModAttachments;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.packs.PackLocationInfo;
+import net.minecraft.server.packs.repository.Pack;
+import net.minecraft.server.packs.repository.PackRepository;
+import net.minecraft.server.packs.repository.PackSource;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.event.AddPackFindersEvent;
+import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import org.slf4j.Logger;
-
 import com.mojang.logging.LogUtils;
-
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
 // The value here should match an entry in the META-INF/neoforge.mods.toml file
 @Mod(MikpikMod.MODID)
@@ -35,16 +50,22 @@ public class MikpikMod {
     public static boolean IsDebugEnabled = true;
     public MikpikMod(IEventBus modEventBus, ModContainer modContainer) {
         NeoForge.EVENT_BUS.register(this);
-        ModItems.register(modEventBus);
+//        ModItems.register(modEventBus);
         ModCreativeTabs.TAB.register(modEventBus);
         modEventBus.addListener(this::gatherData);
-        modContainer.registerConfig(ModConfig.Type.COMMON, com.viquelle.mikpik.datagen.ModConfig.SPEC);
+//        modContainer.registerConfig(ModConfig.Type.COMMON, com.viquelle.mikpik.datagen.ModConfig.SPEC);
+        ModAttachments.register(modEventBus);
+        ModDataComponents.register(modEventBus);
+        ModItems.ITEMS.register(modEventBus);
+        ModEntities.ENTITY_TYPES.register(modEventBus);
+        NeoForge.EVENT_BUS.register(ShadowGrabberDebugCommand.class);
+        NeoForge.EVENT_BUS.register(SanityCommands.class);
     }
 
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
         if (event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES) {
-            event.accept(ModItems.FLASHLIGHT);
-            event.accept(ModItems.LIGHTER);
+//            event.accept(ModItems.FLASHLIGHT);
+//            event.accept(ModItems.LIGHTER);
         }
     }
 
@@ -54,16 +75,6 @@ public class MikpikMod {
         LOGGER.info("HELLO from server starting");
     }
 
-    @SubscribeEvent
-    public void onItemTick(EntityTickEvent.Post event) {
-        if (event.getEntity() instanceof ItemEntity itemEntity) {
-            ItemStack stack = itemEntity.getItem();
-
-            if (stack.getItem() instanceof AbstractLightItem && AbstractLightItem.isEnabled(stack)) {
-                AbstractLightItem.toggleTo(stack,false);
-            }
-        }
-    }
 
     public void gatherData(GatherDataEvent event) {
         DataGenerator generator = event.getGenerator();
@@ -74,4 +85,5 @@ public class MikpikMod {
         generator.addProvider(event.includeClient(), new ModLanguageProvider(output, MikpikMod.MODID,"ru_ru"));
         generator.addProvider(event.includeClient(), new ModLanguageProvider(output, MikpikMod.MODID,"en_us"));
     }
+
 }

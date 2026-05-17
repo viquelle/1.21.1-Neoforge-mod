@@ -1,6 +1,23 @@
-[[dependencies.examplemod]]
+[[mods]]
+modId = "mikpik"
+
+[[dependencies.mikpik]]
+    modId="neoforge"
+    type="required"
+    versionRange="[21.1,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.mikpik]]
+    modId="minecraft"
+    type="required"
+    versionRange=""
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.mikpik]]
     modId="veil"
-    mandatory=true
-    versionRange="[2.5.1,)"
+    type="required"
+    versionRange="[3.6.0,)"
     ordering="AFTER"
     side="CLIENT"

@@ -26,33 +26,19 @@ public class ModLanguageProvider extends LanguageProvider {
         add("itemGroup." + MikpikMod.MODID, "MIK PIK");
 
         // Предметы
-        addItem(ModItems.LIGHTER, "Lighter");
-        addItem(ModItems.FLASHLIGHT, "Flashlight");
+        addItem(ModItems.FLOWER_CROWN, "Flower crown");
+        addItem(ModItems.PIBBLE, "Pibble");
+        addItem(ModItems.PLUSHY, "Plushy");
 
-        // Тултипы из AbstractLightItem
-        add("tooltip.mikpik.status", "Status: ");
-        add("tooltip.mikpik.status.on", "ON");
-        add("tooltip.mikpik.status.off", "OFF");
-
-        // Тултипы конкретных предметов
-        add("tooltip.mikpik.lighter.desc", "1");
-        add("tooltip.mikpik.flashlight.desc", "2");
     }
 
     private void add_ru() {
         add("itemGroup." + MikpikMod.MODID, "МЫК ПЫК");
 
         // Предметы
-        addItem(ModItems.LIGHTER, "Зажигалка");
-        addItem(ModItems.FLASHLIGHT, "Фонарик");
+        addItem(ModItems.FLOWER_CROWN, "Цветочный венок");
+        addItem(ModItems.PIBBLE, "Пиббл");
+        addItem(ModItems.PLUSHY, "Плюшик");
 
-        // Тултипы из AbstractLightItem
-        add("tooltip.mikpik.status", "Состояние: ");
-        add("tooltip.mikpik.status.on", "ВКЛ");
-        add("tooltip.mikpik.status.off", "ВЫКЛ");
-
-        // Тултипы конкретных предметов
-        add("tooltip.mikpik.lighter.desc", "1");
-        add("tooltip.mikpik.flashlight.desc", "2");
     }
 }
