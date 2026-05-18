@@ -37,7 +37,6 @@ public class ClientLightManager {
 
                 Vec3 lightPos = handle.getPosition();
                 float brightness = handle.getBrightness();
-                MikpikMod.LOGGER.info("{} {}", lightPos, brightness);
                 // =========================
                 // POINT LIGHT
                 // =========================
@@ -82,12 +81,11 @@ public class ClientLightManager {
 
                     Vec3 dir = area.getForward();
 
-                    Vec3 toPos = new Vec3(dx / dist, dy / dist, dz / dist);
-
+                    float invDist = 1.0f / dist;
                     float dot = (float)(
-                            dir.x * toPos.x +
-                                    dir.y * toPos.y +
-                                    dir.z * toPos.z
+                            dir.x * dx * invDist +
+                                    dir.y * dy * invDist +
+                                    dir.z * dz * invDist
                     );
 
                     float halfAngleCos = (float)Math.cos(area.getAngle() * 0.5f);
@@ -103,10 +101,10 @@ public class ClientLightManager {
 
                     result = Math.max(result, influence);
                 }
-                    continue;
             }
         }
 
         return result;
     }
+
 }

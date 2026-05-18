@@ -31,16 +31,20 @@ public class NetherStarLightSource implements LightSource {
                 validKeys.add(key);
                 boolean inHand = player.getMainHandItem().is(Items.NETHER_STAR)
                         || player.getOffhandItem().is(Items.NETHER_STAR);
+                float currBrightness = inHand ? 1.5f : 1.0f;
+                float currRadius = inHand ? 8.0f : 4.0f;
                 PointLightHandle light = lights.computeIfAbsent(key, k -> {
                     PointLightHandle h = new PointLightHandle(
-                            inHand ? 8.0f : 4.0f,
-                            inHand ? 1.5f : 1.0f,
+                            currRadius,
+                            currBrightness,
                             0xFFFFFF,
                             true);
                     h.register();
                     return h;
                 });
                 light.setPosition(player.getEyePosition(partialTick));
+                light.setBrightness(currBrightness);
+                light.setRadius(currRadius);
             }
         }
 

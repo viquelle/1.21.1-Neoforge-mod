@@ -42,9 +42,7 @@ public class CavesAmbientLightSource implements LightSource{
             registered = true;
         }
 
-        if (player.getMainHandItem().is(Items.DIRT)) {
-            tickLights(player, partialTick);
-        }
+        tickLights(player, partialTick);
     }
 
     @Override
@@ -71,7 +69,7 @@ public class CavesAmbientLightSource implements LightSource{
         lowerLight1.setOrientation((float) Math.PI / 2, 0, 0);
         lowerLight2.setOrientation((float) -Math.PI / 2, 0, 0);
 
-        float upperY = (float) Math.clamp(playerPos.y + 32.0f, UPPER_MIN_Y_HEIGHT, UPPER_MAX_Y_HEIGHT);
+        float upperY = (float) Math.clamp(playerPos.y + 32.0f, UPPER_MIN_Y_HEIGHT, UPPER_MAX_Y_HEIGHT) - 0.001f;
         upperLight1.setPosition((float) playerPos.x, upperY, (float) playerPos.z);
         upperLight2.setPosition((float) playerPos.x, upperY, (float) playerPos.z);
         upperLight1.setOrientation((float) Math.PI / 2, 0, 0);

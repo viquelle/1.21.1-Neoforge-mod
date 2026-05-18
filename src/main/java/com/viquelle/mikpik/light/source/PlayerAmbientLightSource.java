@@ -3,6 +3,7 @@ package com.viquelle.mikpik.light.source;
 import com.viquelle.mikpik.light.ClientLightManager;
 import com.viquelle.mikpik.light.LightHandle;
 import com.viquelle.mikpik.light.PointLightHandle;
+import com.viquelle.mikpik.sanity.SanityConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.level.Level;
@@ -13,10 +14,10 @@ import java.util.function.Consumer;
 
 public class PlayerAmbientLightSource implements LightSource{
     private static final int COLOR = 0x5166B6;
-    private static final float BRIGHTNESS = 2.5f;
+    private static final float BRIGHTNESS = 1.5f;
     private static final float MAX_RADIUS = 5f;
     private float CURRENT_RADIUS = 0f;
-    private static final float BRIGHTNESS_THRESHOLD = 2f;
+    private static final float BRIGHTNESS_THRESHOLD = 6f;
 
     private static final float EPSILON = 0.001f;
     private static final float PROGRESS_TIME = 5f; // 5 seconds
@@ -40,8 +41,9 @@ public class PlayerAmbientLightSource implements LightSource{
         lastTime = now;
 
         int localBrightness = player.level().getMaxLocalRawBrightness(player.blockPosition());
+        float brightness_threshold = SanityConstants.BRIGHTNESS_THRESHOLD / SanityConstants.VEIL_NORMALIZATION;
         float targetRadius =
-                (localBrightness <= BRIGHTNESS_THRESHOLD) && ClientLightManager.sampleLight(player.getEyePosition(partialTick)) < 0.5f ? MAX_RADIUS : 0.0f;
+                (localBrightness <= BRIGHTNESS_THRESHOLD) && ClientLightManager.sampleLight(player.getEyePosition(partialTick)) < brightness_threshold ? MAX_RADIUS : 0.0f;
 
         float progress_speed = MAX_RADIUS / PROGRESS_TIME;
         if (Math.abs(CURRENT_RADIUS - targetRadius) > EPSILON) {
