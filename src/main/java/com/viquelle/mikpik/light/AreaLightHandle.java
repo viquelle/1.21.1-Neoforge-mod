@@ -60,7 +60,6 @@ public class AreaLightHandle extends LightHandle<AreaLightData> {
     }
 
     public void setOrientation(float xRot, float yRot, float zRot) {
-        MikpikMod.LOGGER.info("{} {} ",xRot, yRot);
         direction.identity().rotationXYZ(xRot, yRot, zRot);
         if (handle != null) {
             VeilRenderSystem.renderThreadExecutor().execute(() -> data.getOrientation().set(direction));

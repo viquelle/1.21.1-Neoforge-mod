@@ -6,6 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 
@@ -16,11 +17,32 @@ import java.util.function.Consumer;
 public class TorchLightSource implements LightSource {
     private final Map<String, PointLightHandle> lights = new HashMap<>();
 
-    // Тепловато-белый (янтарный) оттенок
-    private static final int COLOR = 0xFFD59E;
-    private static final boolean OCCLUDED = true;
-    private static final float RADIUS = 12.0f;
-    private static final float BRIGHTNESS = 1.0f;
+    private enum TorchType {
+        TORCH(Items.TORCH, 15.0f, 1.5f, 0xFFD59E, true),
+        SOUL_TORCH(Items.SOUL_TORCH, 12.0f, 1.2f, 0x5CACEE, true),
+        REDSTONE_TORCH(Items.REDSTONE_TORCH, 8.0f, 0.8f, 0xFF6666, false);
+
+        Item item;
+        float radius;
+        float brightness;
+        int color;
+        boolean occlusion;
+
+        TorchType(Item torch, float radius, float brightness, int color, boolean occlusion) {
+            this.item = torch;
+            this.radius = radius;
+            this.brightness = brightness;
+            this.color = color;
+            this.occlusion = occlusion;
+        }
+
+        static TorchType fromItem(Item item) {
+            for (TorchType type : values()) {
+                if (type.item == item) return type;
+            }
+            return null;
+        }
+    }
 
     @Override
     public void tick(Level level, float partialTick) {
@@ -32,31 +54,30 @@ public class TorchLightSource implements LightSource {
 
         for (Player player : level.players()) {
             if (!player.isAlive()) continue;
-            boolean inHand = player.getMainHandItem().is(Items.TORCH)
-                    || player.getOffhandItem().is(Items.TORCH);
-            if (!inHand) continue;
 
-            String key = "player_" + player.getUUID();
-            validKeys.add(key);
+            TorchType mainHand = TorchType.fromItem(player.getMainHandItem().getItem());
+            TorchType offHand = TorchType.fromItem(player.getOffhandItem().getItem());
 
-            BlockPos pos = player.blockPosition();
-            boolean inWater = player.isUnderWater();
-            boolean inRain = level.isRaining() && level.isRainingAt(pos);
-            boolean active = !inWater && !inRain; // Тухнет под дождем И в воде
-            float currentBrightness = active ? BRIGHTNESS : 0f;
+            if (mainHand == null && offHand == null) continue;
 
-            PointLightHandle light = lights.computeIfAbsent(key, k -> {
-                PointLightHandle h = new PointLightHandle(RADIUS, currentBrightness, COLOR, OCCLUDED);
-                h.register();
-                return h;
-            });
-            light.setPosition(player.getEyePosition(partialTick));
-            light.setBrightness(currentBrightness);
+            if (mainHand != null) {
+                String key = "player_" + player.getUUID() + "_main";
+                validKeys.add(key);
+                processTorch(player, mainHand, key, partialTick);
+            }
+
+            if (offHand != null) {
+                String key = "player_" + player.getUUID() + "_off";
+                validKeys.add(key);
+                processTorch(player, offHand, key, partialTick);
+            }
+
         }
 
         var searchBox = localPlayer.getBoundingBox().inflate(32.0);
         for (ItemEntity item : level.getEntitiesOfClass(ItemEntity.class, searchBox)) {
-            if (!item.getItem().is(Items.TORCH) || !item.isAlive()) continue;
+            TorchType type = TorchType.fromItem(item.getItem().getItem());
+            if (type == null || !item.isAlive()) continue;
 
             String key = "item_" + item.getId();
             validKeys.add(key);
@@ -65,15 +86,14 @@ public class TorchLightSource implements LightSource {
             boolean inWater = item.isUnderWater();
             boolean inRain = level.isRaining() && level.isRainingAt(pos);
             boolean active = !inWater && !inRain;
-            float currentBrightness = active ? BRIGHTNESS : 0f;
 
             PointLightHandle light = lights.computeIfAbsent(key, k -> {
-                PointLightHandle h = new PointLightHandle(RADIUS/2, currentBrightness, COLOR, false);
+                PointLightHandle h = new PointLightHandle(type.radius, type.brightness, type.color, false);
                 h.register();
                 return h;
             });
-            light.setPosition(item.getEyePosition(partialTick).add(0.0f,0.5f,0.0f));
-            light.setBrightness(currentBrightness);
+            light.setPosition(item.getPosition(partialTick).add(0.0f,0.1f,0.0f));
+            light.setBrightness(active ? type.brightness : 0f);
         }
 
         lights.keySet().removeIf(key -> {
@@ -97,5 +117,21 @@ public class TorchLightSource implements LightSource {
         return lights.values();
     }
 
+    private void processTorch(Player player, TorchType type, String key, float partialTick) {
+        BlockPos pos = player.blockPosition();
+        boolean inWater = player.isUnderWater();
+        boolean inRain = player.level().isRaining() && player.level().isRainingAt(pos);
+        boolean active = !inWater && !inRain; // Тухнет под дождем И в воде
 
+        PointLightHandle light = lights.computeIfAbsent(key, k -> {
+            PointLightHandle h = new PointLightHandle(type.radius, type.brightness, type.color, type.occlusion);
+            h.register();
+            return h;
+        });
+
+        light.setPosition(player.getEyePosition(partialTick));
+        light.setBrightness(active ? type.brightness : 0f);
+        light.setColor(type.color);
+        light.setRadius(type.radius);
+    }
 }
