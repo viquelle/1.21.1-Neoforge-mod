@@ -6,17 +6,19 @@ import com.viquelle.mikpik.light.PointLightHandle;
 import com.viquelle.mikpik.sanity.SanityConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.function.Consumer;
 
 public class PlayerAmbientLightSource implements LightSource{
-    private static final int COLOR = 0x5166B6;
-    private static final float BRIGHTNESS = 1.5f;
-    private static final float MAX_RADIUS = 5f;
+    private static final int COLOR = 0x0B6A99;
+    private static final float BASE_BRIGHTNESS = 1.0f;
+    private static final float DEEP_ADDITION_BRIGHTNESS = 3f;
+    private static final float MAX_RADIUS = 6f;
     private float CURRENT_RADIUS = 0f;
+    private float CURRENT_BRIGHTNESS = 0f;
     private static final float BRIGHTNESS_THRESHOLD = 6f;
 
     private static final float EPSILON = 0.001f;
@@ -24,7 +26,7 @@ public class PlayerAmbientLightSource implements LightSource{
     private long lastTime = System.nanoTime();
 
     private boolean registered = false;
-    private final PointLightHandle light = new PointLightHandle(0, BRIGHTNESS, COLOR, false, false);
+    private final PointLightHandle light = new PointLightHandle(0, BASE_BRIGHTNESS, COLOR, false, false);
 
     @Override
     public void tick(Level level, float partialTick) {
@@ -42,18 +44,27 @@ public class PlayerAmbientLightSource implements LightSource{
 
         int localBrightness = player.level().getMaxLocalRawBrightness(player.blockPosition());
         float brightness_threshold = SanityConstants.BRIGHTNESS_THRESHOLD / SanityConstants.VEIL_NORMALIZATION;
-        float targetRadius =
-                (localBrightness <= BRIGHTNESS_THRESHOLD) && ClientLightManager.sampleLight(player.getEyePosition(partialTick)) < brightness_threshold ? MAX_RADIUS : 0.0f;
+        boolean isDark = (localBrightness <= BRIGHTNESS_THRESHOLD) && ClientLightManager.sampleLight(player.getEyePosition(partialTick)) < brightness_threshold;
 
-        float progress_speed = MAX_RADIUS / PROGRESS_TIME;
+        float targetRadius = isDark ? MAX_RADIUS : 0.0f;
+
         if (Math.abs(CURRENT_RADIUS - targetRadius) > EPSILON) {
             if (CURRENT_RADIUS < targetRadius) {
-                CURRENT_RADIUS = Math.min(CURRENT_RADIUS + progress_speed * deltaSeconds, targetRadius);
+                CURRENT_RADIUS = Math.min(CURRENT_RADIUS + (MAX_RADIUS / PROGRESS_TIME) * deltaSeconds, targetRadius);
             } else {
-                CURRENT_RADIUS = Math.max(CURRENT_RADIUS - progress_speed * deltaSeconds, 0f);
+                CURRENT_RADIUS = Math.max(CURRENT_RADIUS - (MAX_RADIUS / PROGRESS_TIME) * deltaSeconds, 0f);
             }
         }
 
+        CURRENT_BRIGHTNESS = BASE_BRIGHTNESS;
+        CURRENT_BRIGHTNESS += Mth.lerp(
+                Math.clamp(
+                        (float) (player.getEyePosition(partialTick).y - 24) / (-64 - 24), 0.0f, 1.0f),
+                0.0f,
+                DEEP_ADDITION_BRIGHTNESS
+        );
+
+        light.setBrightness(CURRENT_BRIGHTNESS);
         light.setRadius(CURRENT_RADIUS);
         light.setPosition(player.getEyePosition(partialTick));
     }
@@ -70,5 +81,4 @@ public class PlayerAmbientLightSource implements LightSource{
     public Collection<? extends LightHandle> getLights() {
         return List.of(light);
     }
-
 }
