@@ -5,9 +5,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -55,18 +58,25 @@ public class Darkness {
 
         float time = world.getTimeOfDay(partialTick);
         float moon = world.getMoonBrightness();
-        float transition = 0.015f;
+        moon *= moon;
+        final float day = 1.0f;
+        float transition = 0.05f;
         if (time >= 0.25f - transition && time < 0.25f) {
             float t = (time - (0.25f - transition)) / transition;
-            return Mth.lerp(t, 1.0f, moon);
+            return Mth.lerp(t, day, moon);
         } else if (time >= 0.25f && time <= 0.75f - transition) {
             return moon;
         } else if (time > 0.75f - transition && time <= 0.75f) {
             float t = (time - (0.75f - transition)) / transition;
-            return Mth.lerp(t, moon, 1.0f);
+            return Mth.lerp(t, moon, day);
         } else {
-            return 1.0f; // Иначе это день
+            return day; // Иначе это день
         }
+    }
+
+    public static float playerSkyLight(Player player, Level world, float partialTick) {
+        float playerLight = world.getBrightness(LightLayer.SKY, BlockPos.containing(player.getEyePosition(partialTick)));
+        return playerLight * skyFactor(world,partialTick);
     }
 
     public static void updateLuminance(Minecraft client, GameRenderer worldRenderer, float tickDelta, float prevFlicker) {
@@ -75,6 +85,11 @@ public class Darkness {
         if (world == null || client.player == null) return;
         if (client.player.hasEffect(MobEffects.NIGHT_VISION) || client.player.hasEffect(MobEffects.CONDUIT_POWER) || world.getSkyFlashTime() > 0) {
             enabled = false;
+            for (int b=0;b<16;b++){
+                for (int s=0;s<16;s++) {
+                    LUMINANCE[b][s] = 1;
+                }
+            }
             return;
         }
         enabled = true;
@@ -90,7 +105,7 @@ public class Darkness {
                     light = 0.0f;
                 } else {
                     float skyAccess = s / 15.0f;
-                    skyAccess *= Mth.lerp(skyIntensity, 0.02f,0.4f);
+                    skyAccess *= skyIntensity;
                     light = block + skyAccess * (1.0f - block);
                 }
                 light = light; //* light * (2.0f - light);
