@@ -4,6 +4,9 @@
   "package": "com.viquelle.mikpik.mixin",
   "compatibilityLevel": "JAVA_21",
   "client": [
-    "RecipeManagerMixin"
+    "RecipeManagerMixin",
+    "MixinDynamicTexture",
+    "MixinGameRenderer",
+    "MixinLightTexture"
   ]
 }

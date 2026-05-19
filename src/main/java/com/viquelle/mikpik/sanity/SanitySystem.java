@@ -81,22 +81,22 @@ public class SanitySystem {
 
         validateActivePlushy(player);
 
-        if (player.tickCount % 4 == 0) {
-            int sky = player.level().getBrightness(LightLayer.SKY, player.blockPosition());
-            int block = player.level().getBrightness(LightLayer.BLOCK, player.blockPosition());
-
-            player.displayClientMessage(
-                    Component.literal(
-                            "Sanity: " + String.format("%.1f", newValue) +
-                                    " | Δ: " + String.format("%.2f", delta * 20f) +
-                                    " | Sky: " + sky +
-                                    " | Block: " + block +
-                                    " | RawLight " + player.level().getMaxLocalRawBrightness(player.blockPosition()) +
-                                    " | AnyLightAround " + ClientLightManager.sampleLight(player.getPosition(0))
-                    ),
-                    true
-            );
-        }
+//        if (player.tickCount % 4 == 0) {
+//            int sky = player.level().getBrightness(LightLayer.SKY, player.blockPosition());
+//            int block = player.level().getBrightness(LightLayer.BLOCK, player.blockPosition());
+//
+//            player.displayClientMessage(
+//                    Component.literal(
+//                            "Sanity: " + String.format("%.1f", newValue) +
+//                                    " | Δ: " + String.format("%.2f", delta * 20f) +
+//                                    " | Sky: " + sky +
+//                                    " | Block: " + block +
+//                                    " | RawLight " + player.level().getMaxLocalRawBrightness(player.blockPosition()) +
+//                                    " | AnyLightAround " + ClientLightManager.sampleLight(player.getPosition(0))
+//                    ),
+//                    true
+//            );
+//        }
     }
 
     private static void validateActivePlushy(Player player) {

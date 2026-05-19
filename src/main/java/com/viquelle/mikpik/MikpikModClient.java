@@ -9,6 +9,8 @@ import com.viquelle.mikpik.entity.shadowgrabber.model.ShadowPortalModel;
 import com.viquelle.mikpik.light.ClientLightManager;
 import com.viquelle.mikpik.light.source.*;
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
@@ -20,6 +22,7 @@ import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.event.level.LevelEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 @Mod(value = MikpikMod.MODID, dist = Dist.CLIENT)
 // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
@@ -43,7 +46,7 @@ public class MikpikModClient {
         ClientLightManager.register(new LanternLightSource());
         ClientLightManager.register(new TorchLightSource());
         ClientLightManager.register(new PlayerAmbientLightSource());
-        ClientLightManager.register(new CavesAmbientLightSource());
+//        ClientLightManager.register(new CavesAmbientLightSource());
     }
 
     @SubscribeEvent

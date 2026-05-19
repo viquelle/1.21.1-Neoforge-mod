@@ -10,7 +10,7 @@ import net.minecraft.world.level.Level;
 
 import java.util.*;
 
-public class NetherStarLightSource implements LightSource {
+public class NetherStarLightSource implements LightSource { // ЧИСТО ТЕСТОВОЕ, пусть будет, но это тестовый класс
     private final Map<String, PointLightHandle> lights = new HashMap<>();
 
     @Override

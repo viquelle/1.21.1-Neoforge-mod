@@ -14,12 +14,11 @@ import java.util.List;
 
 public class PlayerAmbientLightSource implements LightSource{
     private static final int COLOR = 0x0B6A99;
-    private static final float BASE_BRIGHTNESS = 1.0f;
-    private static final float DEEP_ADDITION_BRIGHTNESS = 3f;
-    private static final float MAX_RADIUS = 6f;
+    private static final float BASE_BRIGHTNESS = 0.67f;
+    private static final float DEEP_ADDITION_BRIGHTNESS = 2f;
+    private static final float MAX_RADIUS = 8f;
     private float CURRENT_RADIUS = 0f;
-    private float CURRENT_BRIGHTNESS = 0f;
-    private static final float BRIGHTNESS_THRESHOLD = 6f;
+    private float CURRENT_BRIGHTNESS = 0f;;
 
     private static final float EPSILON = 0.001f;
     private static final float PROGRESS_TIME = 5f; // 5 seconds
@@ -44,7 +43,7 @@ public class PlayerAmbientLightSource implements LightSource{
 
         int localBrightness = player.level().getMaxLocalRawBrightness(player.blockPosition());
         float brightness_threshold = SanityConstants.BRIGHTNESS_THRESHOLD / SanityConstants.VEIL_NORMALIZATION;
-        boolean isDark = (localBrightness <= BRIGHTNESS_THRESHOLD) && ClientLightManager.sampleLight(player.getEyePosition(partialTick)) < brightness_threshold;
+        boolean isDark = (localBrightness <= SanityConstants.BRIGHTNESS_THRESHOLD) && ClientLightManager.sampleLight(player.getEyePosition(partialTick)) < brightness_threshold;
 
         float targetRadius = isDark ? MAX_RADIUS : 0.0f;
 

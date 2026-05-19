@@ -16,18 +16,18 @@ import java.util.List;
 
 public class CavesAmbientLightSource implements LightSource{
     private final AreaLightHandle lowerLight1 = new AreaLightHandle(
-            (float) ( 1f * Math.PI), 64f, -3.0f, 0xFFFFFF, false, new Vector2f(128f,128f), false); // смотрит вверх
+            (float) ( 1f * Math.PI), 80f, -4.5f, 0xFFFFFF, false, new Vector2f(128f,128f), false); // смотрит вверх
     private final AreaLightHandle lowerLight2 = new AreaLightHandle(
-            (float) ( 1f * Math.PI), 128f, -3.0f, 0xFFFFFF, false, new Vector2f(128f,128f), false); // смотрит вниз
+            (float) ( 1f * Math.PI), 160f, -4.5f, 0xFFFFFF, false, new Vector2f(128f,128f), false); // смотрит вниз
     private final AreaLightHandle upperLight1 = new AreaLightHandle(
-            (float) ( 1f * Math.PI), 128f, -3.0f, 0xFFFFFF, false, new Vector2f(128f,128f), false); // смотрит вверх
+            (float) ( 1f * Math.PI), 160f, -4.5f, 0xFFFFFF, false, new Vector2f(128f,128f), false); // смотрит вверх
     private final AreaLightHandle upperLight2 = new AreaLightHandle(
-            (float) ( 1f * Math.PI), 64f, -3.0f, 0xFFFFFF, false, new Vector2f(128f,128f), false); // смотрит вниз
+            (float) ( 1f * Math.PI), 80f, -4.5f, 0xFFFFFF, false, new Vector2f(128f,128f), false); // смотрит вниз
     private boolean registered = false;
     private final float LOWER_MAX_Y_HEIGHT = -16.0f;
-    private final float LOWER_MIN_Y_HEIGHT = -256.0f;
-    private final float UPPER_MAX_Y_HEIGHT = 16.0f;
-    private final float UPPER_MIN_Y_HEIGHT = -256.0f;
+    private final float LOWER_MIN_Y_HEIGHT = -512.0f;
+    private final float UPPER_MAX_Y_HEIGHT = 32.0f;
+    private final float UPPER_MIN_Y_HEIGHT = -512.0f;
 
     @Override
     public void tick(Level level, float partialTick) {
@@ -63,13 +63,13 @@ public class CavesAmbientLightSource implements LightSource{
 
     private void tickLights(Player player, float partialTick) {
         Vec3 playerPos = player.getPosition(partialTick);
-        float lowerY = (float) Math.clamp(playerPos.y - 32.0f, LOWER_MIN_Y_HEIGHT, LOWER_MAX_Y_HEIGHT);
+        float lowerY = (float) Math.clamp(playerPos.y - 48.0f, LOWER_MIN_Y_HEIGHT, LOWER_MAX_Y_HEIGHT);
         lowerLight1.setPosition((float) playerPos.x,lowerY, (float) playerPos.z);
         lowerLight2.setPosition((float) playerPos.x,lowerY, (float) playerPos.z);
         lowerLight1.setOrientation((float) Math.PI / 2, 0, 0);
         lowerLight2.setOrientation((float) -Math.PI / 2, 0, 0);
 
-        float upperY = (float) Math.clamp(playerPos.y + 32.0f, UPPER_MIN_Y_HEIGHT, UPPER_MAX_Y_HEIGHT) - 0.001f;
+        float upperY = (float) Math.clamp(playerPos.y + 48.0f, UPPER_MIN_Y_HEIGHT, UPPER_MAX_Y_HEIGHT) - 0.001f; // от Z-Fighting
         upperLight1.setPosition((float) playerPos.x, upperY, (float) playerPos.z);
         upperLight2.setPosition((float) playerPos.x, upperY, (float) playerPos.z);
         upperLight1.setOrientation((float) Math.PI / 2, 0, 0);
@@ -78,8 +78,8 @@ public class CavesAmbientLightSource implements LightSource{
     }
 
     private void updateUpperLightBrightness(float y) {
-        float brightness = Math.clamp((16.0f - y) / 16.0f, 0.0f, 1.0f);
-        brightness = Mth.lerp(brightness, 0.0f, -3.0f);
+        float brightness = Math.clamp((32.0f - y) / 32.0f, 0.0f, 1.0f);
+        brightness = Mth.lerp(brightness, 0.0f, -4.5f);
         upperLight1.setBrightness(brightness * 2);
         upperLight2.setBrightness(brightness);
     }
