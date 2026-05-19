@@ -19,8 +19,8 @@ public class LanternLightSource implements LightSource {
     private final Map<String, PointLightHandle> lights = new HashMap<>();
 
     private enum LanternType {
-        LANTERN(Items.LANTERN, 15.0f, 1.5f, 0xFFD59E, true),
-        SOUL_LANTERN(Items.SOUL_LANTERN, 12.0f, 1.2f, 0x5CACEE, true);
+        LANTERN(Items.LANTERN, 20.0f, 1.0f, 0xFFD59E, true),
+        SOUL_LANTERN(Items.SOUL_LANTERN, 16.0f, 0.8f, 0x5CACEE, true);
 
         Item item;
         float radius;
@@ -95,7 +95,7 @@ public class LanternLightSource implements LightSource {
                 h.register();
                 return h;
             });
-            light.setPosition(item.getPosition(partialTick).add(0, 0.5, 0));
+            light.setPosition(item.getPosition(partialTick).add(0, 0.1f, 0));
             light.setBrightness(!inWater? type.brightness : 0f);
         }
 

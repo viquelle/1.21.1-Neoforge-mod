@@ -6,7 +6,7 @@ import foundry.veil.api.client.render.light.renderer.LightRenderHandle;
 import net.minecraft.world.phys.Vec3;
 
 public abstract class LightHandle<T extends LightData> {
-    protected LightRenderHandle<T> handle;
+    protected volatile LightRenderHandle<T> handle;
     protected final T data;
     protected float brightness;
     protected int color;

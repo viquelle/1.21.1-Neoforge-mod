@@ -1,7 +1,10 @@
 package com.viquelle.mikpik.grue;
 
 import com.viquelle.mikpik.MikpikMod;
+import com.viquelle.mikpik.light.ClientLightManager;
+import com.viquelle.mikpik.sanity.SanityConstants;
 import com.viquelle.mikpik.sanity.SanitySystem;
+import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -19,7 +22,6 @@ import java.util.concurrent.ThreadLocalRandom;
 @EventBusSubscriber(modid = MikpikMod.MODID)
 public final class GrueSystem {
     private static final float SANITY_THRESHOLD = 20.0f;
-    private static final int LIGHT_THRESHOLD = 2;
 
     private static final int DARK_TICKS_REQUIRED = 3 * 20;
 
@@ -125,17 +127,13 @@ public final class GrueSystem {
 
     private static boolean isGrueDark(ServerPlayer player) {
         var level = player.level();
-        var pos = player.blockPosition();
+        BlockPos pos = player.blockPosition();
 
-        int block = level.getBrightness(LightLayer.BLOCK, pos);
-
-        if (block > LIGHT_THRESHOLD) {
-            return false;
-        }
-
+        float veil = ClientLightManager.sampleLight(pos.getBottomCenter());
         int raw = level.getMaxLocalRawBrightness(pos);
 
-        return raw <= LIGHT_THRESHOLD;
+        return raw <= SanityConstants.BRIGHTNESS_THRESHOLD &&
+                veil <= SanityConstants.BRIGHTNESS_THRESHOLD / SanityConstants.VEIL_NORMALIZATION;
     }
 
     private static float calculatePitch(int attackSoundTicks) {

@@ -1,6 +1,7 @@
 package com.viquelle.mikpik.mixin;
 
 import com.mojang.blaze3d.platform.NativeImage;
+import com.viquelle.mikpik.MikpikMod;
 import com.viquelle.mikpik.TextureAccess;
 import com.viquelle.mikpik.darknesscomputer.Darkness;
 import net.minecraft.client.renderer.texture.DynamicTexture;
@@ -21,7 +22,6 @@ public class MixinDynamicTexture implements TextureAccess {
     private void onUpload(CallbackInfo ci) {
         if (enableHook && pixels != null) {
             final NativeImage img = pixels;
-
             for (int b = 0; b < 16; b++) {
                 for (int s = 0; s < 16; s++) {
                     final int color = Darkness.darken(img.getPixelRGBA(b,s),b,s);

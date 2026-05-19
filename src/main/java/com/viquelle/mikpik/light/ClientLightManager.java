@@ -2,6 +2,7 @@ package com.viquelle.mikpik.light;
 
 import com.viquelle.mikpik.MikpikMod;
 import com.viquelle.mikpik.light.source.LightSource;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -76,12 +77,14 @@ public class ClientLightManager {
                     double range = area.getRange();
 
                     if (distSq > range * range) continue;
-
-                    float dist = (float)Math.sqrt(distSq);
+                    if (distSq < 0.01) {
+                        result = brightness;
+                        continue;
+                    }
 
                     Vec3 dir = area.getForward();
-
-                    float invDist = 1.0f / dist;
+                    float invDist = (float) Mth.fastInvSqrt(distSq);
+                    float dist = (float)(distSq * invDist);
                     float dot = (float)(
                             dir.x * dx * invDist +
                                     dir.y * dy * invDist +
