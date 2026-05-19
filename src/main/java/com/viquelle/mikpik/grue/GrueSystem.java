@@ -1,6 +1,7 @@
 package com.viquelle.mikpik.grue;
 
 import com.viquelle.mikpik.MikpikMod;
+import com.viquelle.mikpik.darknesscomputer.Darkness;
 import com.viquelle.mikpik.light.ClientLightManager;
 import com.viquelle.mikpik.sanity.SanityConstants;
 import com.viquelle.mikpik.sanity.SanitySystem;
@@ -130,9 +131,12 @@ public final class GrueSystem {
         BlockPos pos = player.blockPosition();
 
         float veil = ClientLightManager.sampleLight(pos.getBottomCenter());
-        int raw = level.getMaxLocalRawBrightness(pos);
+        float brightness = Math.max(
+                level.getBrightness(LightLayer.BLOCK,pos),
+                Darkness.playerSkyLight(player,level,0f)
+                );
 
-        return raw <= SanityConstants.BRIGHTNESS_THRESHOLD &&
+        return brightness <= SanityConstants.BRIGHTNESS_THRESHOLD &&
                 veil <= SanityConstants.BRIGHTNESS_THRESHOLD / SanityConstants.VEIL_NORMALIZATION;
     }
 

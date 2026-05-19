@@ -1,13 +1,16 @@
 package com.viquelle.mikpik.light.source;
 
+import com.viquelle.mikpik.darknesscomputer.Darkness;
 import com.viquelle.mikpik.light.ClientLightManager;
 import com.viquelle.mikpik.light.LightHandle;
 import com.viquelle.mikpik.light.PointLightHandle;
 import com.viquelle.mikpik.sanity.SanityConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LightLayer;
 
 import java.util.Collection;
 import java.util.List;
@@ -25,7 +28,7 @@ public class PlayerAmbientLightSource implements LightSource{
     private long lastTime = System.nanoTime();
 
     private boolean registered = false;
-    private final PointLightHandle light = new PointLightHandle(0, BASE_BRIGHTNESS, COLOR, false, false);
+    private final PointLightHandle light = new PointLightHandle(0, BASE_BRIGHTNESS, COLOR, true, false);
 
     @Override
     public void tick(Level level, float partialTick) {
@@ -41,9 +44,10 @@ public class PlayerAmbientLightSource implements LightSource{
         float deltaSeconds = (now - lastTime) / 1_000_000_000f;
         lastTime = now;
 
-        int localBrightness = player.level().getMaxLocalRawBrightness(player.blockPosition());
+        float brightness = player.level().getBrightness(LightLayer.BLOCK, BlockPos.containing(player.getEyePosition(partialTick)));
+        brightness = Math.max(brightness, Darkness.playerSkyLight(player,level, partialTick));
         float brightness_threshold = SanityConstants.BRIGHTNESS_THRESHOLD / SanityConstants.VEIL_NORMALIZATION;
-        boolean isDark = (localBrightness <= SanityConstants.BRIGHTNESS_THRESHOLD) && ClientLightManager.sampleLight(player.getEyePosition(partialTick)) < brightness_threshold;
+        boolean isDark = (brightness <= SanityConstants.BRIGHTNESS_THRESHOLD) && ClientLightManager.sampleLight(player.getEyePosition(partialTick)) <= brightness_threshold;
 
         float targetRadius = isDark ? MAX_RADIUS : 0.0f;
 

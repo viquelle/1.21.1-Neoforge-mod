@@ -7,7 +7,7 @@ public class SanityConstants {
 
     // значения ЗА ТИК
     public static final float DARK_DRAIN_PER_TICK = -0.02f;          // -0.4 / 20
-    public static final float BRIGHTNESS_THRESHOLD = 2f;
+    public static final float BRIGHTNESS_THRESHOLD = 1f;
     public static final float SKY_DAY_REGEN_PER_TICK = 0.02f;       //  0.4 / 20
     public static final float SHELTER_REGEN_PER_TICK = 0.03f;       //  0.6 / 20
     public static final float NEAR_PLAYER_REGEN_PER_TICK = 0.015f;  //  0.3 / 20

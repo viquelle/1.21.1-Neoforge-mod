@@ -1,5 +1,6 @@
 package com.viquelle.mikpik.sanity.factor;
 
+import com.viquelle.mikpik.darknesscomputer.Darkness;
 import com.viquelle.mikpik.light.ClientLightManager;
 import com.viquelle.mikpik.sanity.SanityConstants;
 import net.minecraft.core.BlockPos;
@@ -13,21 +14,17 @@ public class LightFactor implements SanityFactor {
         Level level = player.level();
         BlockPos pos = player.blockPosition();
 
-        int skyLight = level.getBrightness(LightLayer.SKY, pos);
+        float skyLight = Darkness.playerSkyLight(player, level, 0f);
 
-        int veilLight = Math.round(ClientLightManager.sampleLight(pos.getCenter()) * SanityConstants.VEIL_NORMALIZATION);
+        float veilLight = Math.round(ClientLightManager.sampleLight(pos.getCenter()) * SanityConstants.VEIL_NORMALIZATION);
 
         // Дневной свет неба регенит рассудок.
-        if (level.isDay() && skyLight > 8) {
+        if (level.isDay() && skyLight > 8f) {
             return SanityConstants.SKY_DAY_REGEN_PER_TICK;
         }
 
-        // Темнота отнимает рассудок.
-        // Тут используем maxLocalRawBrightness,
-        // потому что он лучше отражает фактическую локальную яркость.
-
-        int localLight = level.getMaxLocalRawBrightness(pos);
-        int effectiveDarknessLight = Math.max(localLight, veilLight);
+        float localLight = Math.max(skyLight, level.getBrightness(LightLayer.BLOCK, pos));
+        float effectiveDarknessLight = Math.max(localLight, veilLight);
 
         if (effectiveDarknessLight <= SanityConstants.BRIGHTNESS_THRESHOLD) {
             return SanityConstants.DARK_DRAIN_PER_TICK;
