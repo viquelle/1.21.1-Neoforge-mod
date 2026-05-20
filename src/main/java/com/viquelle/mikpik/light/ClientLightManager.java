@@ -1,10 +1,14 @@
 package com.viquelle.mikpik.light;
 
 import com.viquelle.mikpik.MikpikMod;
+import com.viquelle.mikpik.darknesscomputer.Darkness;
 import com.viquelle.mikpik.light.source.LightSource;
+import com.viquelle.mikpik.sanity.SanityConstants;
+import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 
@@ -38,49 +42,31 @@ public class ClientLightManager {
 
                 Vec3 lightPos = handle.getPosition();
                 float brightness = handle.getBrightness();
-                // =========================
-                // POINT LIGHT
-                // =========================
+
+                double dx = pos.x - lightPos.x;
+                double dy = pos.y - lightPos.y;
+                double dz = pos.z - lightPos.z;
+                double distSq = dx * dx + dy * dy + dz * dz;
+                if (distSq < 0.01) {
+                    result = Math.max(brightness,result);
+                    continue;
+                }
+
                 if (handle instanceof PointLightHandle point) {
-
-                    double dx = pos.x - lightPos.x;
-                    double dy = pos.y - lightPos.y;
-                    double dz = pos.z - lightPos.z;
-
-                    double distSq = dx * dx + dy * dy + dz * dz;
                     double radius = point.getRadius();
-                    double radiusSq = radius * radius;
-
-                    if (distSq > radiusSq) continue;
+                    if (distSq > radius * radius) continue;
 
                     float dist = (float)Math.sqrt(distSq);
                     float t = 1.0f - (dist / (float)radius);
 
-                    float influence = brightness * t;
-                    if (influence > result) {
-                        result = influence;
-                    }
-
+                    float influence = brightness * (float) Math.pow(t,2.0f);
+                    result = Math.max(influence,result);
                     continue;
                 }
 
-                // =========================
-                // AREA / SPOT LIGHT
-                // =========================
                 if (handle instanceof AreaLightHandle area) {
-
-                    double dx = pos.x - lightPos.x;
-                    double dy = pos.y - lightPos.y;
-                    double dz = pos.z - lightPos.z;
-
-                    double distSq = dx * dx + dy * dy + dz * dz;
                     double range = area.getRange();
-
                     if (distSq > range * range) continue;
-                    if (distSq < 0.01) {
-                        result = brightness;
-                        continue;
-                    }
 
                     Vec3 dir = area.getForward();
                     float invDist = (float) Mth.fastInvSqrt(distSq);
@@ -100,8 +86,7 @@ public class ClientLightManager {
 
                     float distanceFactor = 1.0f - (dist / (float)range);
 
-                    float influence = brightness * distanceFactor * angleFactor;
-
+                    float influence = brightness * (float) Math.pow(distanceFactor, 2.0f) * angleFactor;
                     result = Math.max(result, influence);
                 }
             }
@@ -110,5 +95,11 @@ public class ClientLightManager {
         return result;
     }
 
-
+    public static boolean isDarkOnPos(Vec3 pos, Level level, float partialTick) {
+        float veilLight = sampleLight(pos) * SanityConstants.VEIL_NORMALIZATION;
+        float blockLight = level.getBrightness(LightLayer.BLOCK, BlockPos.containing(pos));
+        float skyLight = Darkness.posSkyLight(pos, level, partialTick);
+        float localBrightness = Math.max(Math.max(blockLight,skyLight), veilLight);
+        return localBrightness <= SanityConstants.BRIGHTNESS_THRESHOLD;
+    }
 }

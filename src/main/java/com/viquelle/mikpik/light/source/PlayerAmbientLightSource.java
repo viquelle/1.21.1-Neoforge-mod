@@ -44,10 +44,10 @@ public class PlayerAmbientLightSource implements LightSource{
         float deltaSeconds = (now - lastTime) / 1_000_000_000f;
         lastTime = now;
 
-        float brightness = player.level().getBrightness(LightLayer.BLOCK, BlockPos.containing(player.getEyePosition(partialTick)));
-        brightness = Math.max(brightness, Darkness.playerSkyLight(player,level, partialTick));
-        float brightness_threshold = SanityConstants.BRIGHTNESS_THRESHOLD / SanityConstants.VEIL_NORMALIZATION;
-        boolean isDark = (brightness <= SanityConstants.BRIGHTNESS_THRESHOLD) && ClientLightManager.sampleLight(player.getEyePosition(partialTick)) <= brightness_threshold;
+        boolean isDark = ClientLightManager.isDarkOnPos(
+                player.getEyePosition(partialTick),
+                level,
+                partialTick);
 
         float targetRadius = isDark ? MAX_RADIUS : 0.0f;
 
@@ -60,12 +60,12 @@ public class PlayerAmbientLightSource implements LightSource{
         }
 
         CURRENT_BRIGHTNESS = BASE_BRIGHTNESS;
-        CURRENT_BRIGHTNESS += Mth.lerp(
-                Math.clamp(
-                        (float) (player.getEyePosition(partialTick).y - 24) / (-64 - 24), 0.0f, 1.0f),
-                0.0f,
-                DEEP_ADDITION_BRIGHTNESS
-        );
+//        CURRENT_BRIGHTNESS += Mth.lerp(
+//                Math.clamp(
+//                        (float) (player.getEyePosition(partialTick).y - 24) / (-64 - 24), 0.0f, 1.0f),
+//                0.0f,
+//                DEEP_ADDITION_BRIGHTNESS
+//        );
 
         light.setBrightness(CURRENT_BRIGHTNESS);
         light.setRadius(CURRENT_RADIUS);
