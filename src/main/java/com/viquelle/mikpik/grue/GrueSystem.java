@@ -11,6 +11,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.level.LightLayer;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
@@ -128,16 +129,9 @@ public final class GrueSystem {
 
     private static boolean isGrueDark(ServerPlayer player) {
         var level = player.level();
-        BlockPos pos = player.blockPosition();
+        Vec3 pos = player.getEyePosition(0f);
 
-        float veil = ClientLightManager.sampleLight(pos.getBottomCenter());
-        float brightness = Math.max(
-                level.getBrightness(LightLayer.BLOCK,pos),
-                Darkness.playerSkyLight(player,level,0f)
-                );
-
-        return brightness <= SanityConstants.BRIGHTNESS_THRESHOLD &&
-                veil <= SanityConstants.BRIGHTNESS_THRESHOLD / SanityConstants.VEIL_NORMALIZATION;
+        return ClientLightManager.isDarkOnPos(pos, level, 0f);
     }
 
     private static float calculatePitch(int attackSoundTicks) {

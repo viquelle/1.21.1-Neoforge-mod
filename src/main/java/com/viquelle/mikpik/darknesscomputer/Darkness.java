@@ -12,6 +12,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.dimension.DimensionType;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -74,9 +75,9 @@ public class Darkness {
         }
     }
 
-    public static float playerSkyLight(Player player, Level world, float partialTick) {
-        float playerLight = world.getBrightness(LightLayer.SKY, BlockPos.containing(player.getEyePosition(partialTick)));
-        return playerLight * skyFactor(world,partialTick);
+    public static float posSkyLight(Vec3 pos, Level world, float partialTick) {
+        float posLight = world.getBrightness(LightLayer.SKY, BlockPos.containing(pos));
+        return posLight * skyFactor(world,partialTick);
     }
 
     public static void updateLuminance(Minecraft client, GameRenderer worldRenderer, float tickDelta, float prevFlicker) {
