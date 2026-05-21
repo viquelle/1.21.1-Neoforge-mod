@@ -36,6 +36,7 @@ public class PointLightHandle extends LightHandle<PointLightData> {
                     .setBrightness(brightness)
                     .setColor(color)
                     .setOcclusionEnabled(occlusion);
+
     }
 
     public void setRadius(float radius) {
