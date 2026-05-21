@@ -1,0 +1,11 @@
+{
+  "stages": [
+    {
+      "type": "veil:blit",
+      "shader": "mikpik:sanity_effect",
+      "in": "minecraft:main",
+      "clear": false
+    }
+  ],
+  "priority": 1000
+}

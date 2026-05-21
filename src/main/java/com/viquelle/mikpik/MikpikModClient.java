@@ -1,5 +1,6 @@
 package com.viquelle.mikpik;
 
+import com.mojang.blaze3d.shaders.Shader;
 import com.viquelle.mikpik.entity.ModEntities;
 import com.viquelle.mikpik.entity.eye.EyeRenderer;
 import com.viquelle.mikpik.entity.shadowgrabber.model.ShadowForearmModel;
@@ -8,7 +9,11 @@ import com.viquelle.mikpik.entity.shadowgrabber.model.ShadowHandModel;
 import com.viquelle.mikpik.entity.shadowgrabber.model.ShadowPortalModel;
 import com.viquelle.mikpik.light.ClientLightManager;
 import com.viquelle.mikpik.light.source.*;
+import com.viquelle.mikpik.sanity.ClientSanityData;
+import com.viquelle.mikpik.sanity.SanitySystem;
+import foundry.veil.api.client.render.VeilRenderSystem;
 import net.minecraft.client.Minecraft;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
@@ -17,6 +22,7 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
@@ -46,7 +52,24 @@ public class MikpikModClient {
         ClientLightManager.register(new LanternLightSource());
         ClientLightManager.register(new TorchLightSource());
         ClientLightManager.register(new PlayerAmbientLightSource());
-//        ClientLightManager.register(new CavesAmbientLightSource());
+        ShaderHandler.init();
+    }
+
+    private static boolean enabled = false;
+
+    @SubscribeEvent
+    public static void onClientTick(ClientTickEvent.Post event) {
+
+        Minecraft mc = Minecraft.getInstance();
+
+        if (mc.player == null || mc.level == null) {
+            return;
+        }
+
+        if (!enabled) {
+            enabled = true;
+            ShaderHandler.enable();
+        }
     }
 
     @SubscribeEvent

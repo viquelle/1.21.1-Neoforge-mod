@@ -22,8 +22,11 @@ public class LightFactor implements SanityFactor {
             return SanityConstants.SKY_DAY_REGEN_PER_TICK;
         }
 
+        float blocklight = level.getBrightness(LightLayer.BLOCK, BlockPos.containing(pos));
         if (ClientLightManager.isDarkOnPos(pos, level, 1f)) {
             return SanityConstants.DARK_DRAIN_PER_TICK;
+        } else if (skyLight <= SanityConstants.BRIGHTNESS_THRESHOLD || blocklight <= SanityConstants.BRIGHTNESS_THRESHOLD) {
+            return SanityConstants.DARK_DRAIN_PER_TICK / 3.f;
         }
 
         return 0.0f;
