@@ -55,23 +55,6 @@ public class MikpikModClient {
         ShaderHandler.init();
     }
 
-    private static boolean enabled = false;
-
-    @SubscribeEvent
-    public static void onClientTick(ClientTickEvent.Post event) {
-
-        Minecraft mc = Minecraft.getInstance();
-
-        if (mc.player == null || mc.level == null) {
-            return;
-        }
-
-        if (!enabled) {
-            enabled = true;
-            ShaderHandler.enable();
-        }
-    }
-
     @SubscribeEvent
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(ModEntities.EYE.get(), EyeRenderer::new);
@@ -84,12 +67,19 @@ public class MikpikModClient {
             ClientLightManager.clear();
         }
     }
+
+    private static boolean enabled = false;
     @SubscribeEvent
     public static void onRenderLevelStage(RenderLevelStageEvent event) {
         if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_ENTITIES) return;
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || mc.level == null) return;
         ClientLightManager.tick(mc.level, mc.player, event.getPartialTick().getGameTimeDeltaPartialTick(true));
+
+        if (!enabled) {
+            enabled = true;
+            ShaderHandler.enable();
+        }
     }
 
     @SubscribeEvent

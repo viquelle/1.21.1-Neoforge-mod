@@ -46,8 +46,10 @@ public class ShaderHandler {
                 Minecraft mc = Minecraft.getInstance();
 
                 if (mc.level != null) {
-                    float time = mc.level.getGameTime();
-                    timeUniform.setFloat(time);
+                    long time = System.currentTimeMillis();
+                    long dayMillis = 24 * 60 * 60 * 1000L;
+                    float timeOfDay = (time % dayMillis) / 1000.0f;
+                    timeUniform.setFloat(timeOfDay);
                 }
             }
         });
