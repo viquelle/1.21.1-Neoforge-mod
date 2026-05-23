@@ -6,9 +6,9 @@ public class SanityConstants {
     public static final float VEIL_NORMALIZATION = 10f; // 15radius / 1.5light = default torch
 
     // значения ЗА ТИК
-    public static final float DARK_DRAIN_PER_TICK = -0.02f;          // -0.4 / 20
+    public static final float DARK_DRAIN_PER_TICK = -0.1f;          // -0.2 / 20
     public static final float BRIGHTNESS_THRESHOLD = 1f;
-    public static final float SKY_DAY_REGEN_PER_TICK = 0.015f;       //  0.3 / 20
+    public static final float SKY_DAY_REGEN_PER_TICK = 0.010f;       //  0.2 / 20
     public static final float SHELTER_REGEN_PER_TICK = 0.015f;       //  0.3 / 20
     public static final float NEAR_PLAYER_REGEN_PER_TICK = 0.01f;  //  0.2 / 20
 

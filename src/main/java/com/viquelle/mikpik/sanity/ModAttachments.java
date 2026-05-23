@@ -2,11 +2,13 @@ package com.viquelle.mikpik.sanity;
 
 import com.mojang.serialization.Codec;
 import com.viquelle.mikpik.MikpikMod;
+import com.viquelle.mikpik.event.shadow.ShadowedBlocksConsumer;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
+import java.util.HashMap;
 import java.util.function.Supplier;
 
 public class ModAttachments {
@@ -22,6 +24,12 @@ public class ModAttachments {
             "active_plushy_id",
             () -> AttachmentType.builder(() -> "")
                     .serialize(Codec.STRING)
+                    .build()
+    );
+
+    public static final Supplier<AttachmentType<ShadowedBlocksConsumer>> SHADOWED_BLOCKS = ATTACHMENT_TYPES.register(
+            "shadowed_blocks",
+            () -> AttachmentType.builder(ShadowedBlocksConsumer::new)
                     .build()
     );
 
