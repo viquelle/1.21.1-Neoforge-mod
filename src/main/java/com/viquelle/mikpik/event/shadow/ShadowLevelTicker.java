@@ -11,7 +11,9 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.LightLayer;
+import net.minecraft.world.level.block.BaseTorchBlock;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.RedstoneTorchBlock;
 import net.minecraft.world.level.block.TorchBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -29,8 +31,10 @@ public class ShadowLevelTicker {
     private static final int ANT_SPAWN_INTERVAL = 20; // Спавн раз в 1 секунду
     private static int tickCounter = 0;
     private static final int GLOBAL_ANT_CAP = 10;     // Лимит на измерение
-    private static final float MIN_SURFACE_CHANCE = 0.000370f;
+    private static final float MIN_SURFACE_CHANCE = 0.00003f;
     private static final float MAX_SURFACE_CHANCE = 0.003333f;
+    private static final float MIN_CAVE_CHANCE = 0.036f;
+    private static final float MAX_CAVE_CHANCE = 0.2f;
     @SubscribeEvent
     public static void onLevelTick(LevelTickEvent.Post event) {
         if (!(event.getLevel() instanceof ServerLevel level)) return;
@@ -59,11 +63,15 @@ public class ShadowLevelTicker {
 
             float sanity = SanitySystem.get(player);
             // Чем ниже рассудок, тем выше шанс спавна в этот тик
-            float spawnChance = 1f - (sanity / MAX_SANITY);
-            spawnChance *= spawnChance * spawnChance / 3f;
+            float spawnChance = 1f - sanity / MAX_SANITY;
+            spawnChance *= spawnChance * spawnChance;
             boolean isCave = level.getBrightness(LightLayer.SKY, player.blockPosition()) <= 0;
-            isCave &= player.blockPosition().getY() < 32f;
-            spawnChance = isCave ? spawnChance : (float) Mth.lerp(spawnChance, MIN_SURFACE_CHANCE, MAX_SURFACE_CHANCE);
+            isCave &= player.blockPosition().getY() < 64f;
+            if (isCave) {
+                spawnChance = Mth.lerp(spawnChance, MIN_CAVE_CHANCE, MAX_CAVE_CHANCE);
+            } else {
+                spawnChance = Mth.lerp(spawnChance, MIN_SURFACE_CHANCE, MAX_SURFACE_CHANCE);
+            }
             if (random.nextFloat() < spawnChance) {
                 data.activeAnts.add(new ShadowAnt(level, player, random));
             }
@@ -119,8 +127,8 @@ public class ShadowLevelTicker {
     private static void finish(ServerLevel level, BlockPos pos) {
 
         BlockState state = level.getBlockState(pos);
-
-        if (!(state.getBlock() instanceof TorchBlock)) return;
+        Block block = state.getBlock();
+        if (!(block instanceof BaseTorchBlock)) return;
 
         level.destroyBlock(pos, false);
 
@@ -156,4 +164,5 @@ public class ShadowLevelTicker {
                 abrupt ? 0.2 : 0.05
         );
     }
+
 }

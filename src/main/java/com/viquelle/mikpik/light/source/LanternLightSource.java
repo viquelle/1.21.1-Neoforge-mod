@@ -87,7 +87,7 @@ public class LanternLightSource implements LightSource {
 
             String key = "item_" + item.getId();
             validKeys.add(key);
-
+            Vec3 pos = item.getPosition(partialTick);
             boolean inWater = item.isUnderWater();
 
             PointLightHandle light = lights.computeIfAbsent(key, k -> {
@@ -95,8 +95,14 @@ public class LanternLightSource implements LightSource {
                 h.register();
                 return h;
             });
-            light.setPosition(item.getPosition(partialTick).add(0, 0.1f, 0));
-            light.setBrightness(!inWater? type.brightness : 0f);
+            float depthCoeff = (float) Math.clamp((64f - pos.y)/64f, 0.0f, 1.0f);
+            float r = type.radius;
+            float b = type.brightness;
+            r = (float) (r - r * depthCoeff * 0.5);
+            b = b - depthCoeff * b;
+            light.setPosition(pos.add(0, 0.1f, 0));
+            light.setBrightness(!inWater? b : 0f);
+            light.setRadius(r);
         }
 
         //Очистка света от уже несуществующих источников
@@ -123,16 +129,20 @@ public class LanternLightSource implements LightSource {
 
     private void processLantern(Player player, LanternType type, String key, float partialTick) {
         boolean inWater = player.isUnderWater();
-
+        Vec3 pos = player.getEyePosition(partialTick);
         PointLightHandle light = lights.computeIfAbsent(key, k -> {
             PointLightHandle h = new PointLightHandle(type.radius, type.brightness, type.color, type.occlusion);
             h.register();
             return h;
         });
-
-        light.setPosition(player.getEyePosition(partialTick));
-        light.setBrightness(!inWater ? type.brightness : 0f);
+        float depthCoeff = (float) Math.clamp((64f - pos.y)/64f, 0.0f, 1.0f);
+        float r = type.radius;
+        float b = type.brightness;
+        r = (float) (r - r * depthCoeff * 0.5);
+        b = b - depthCoeff * b;
+        light.setPosition(pos);
+        light.setBrightness(!inWater ? b : 0f);
         light.setColor(type.color);
-        light.setRadius(type.radius);
+        light.setRadius(r);
     }
 }
