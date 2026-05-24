@@ -4,11 +4,13 @@ import com.viquelle.mikpik.light.LightHandle;
 import com.viquelle.mikpik.light.PointLightHandle;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -82,9 +84,9 @@ public class TorchLightSource implements LightSource {
             String key = "item_" + item.getId();
             validKeys.add(key);
 
-            BlockPos pos = item.blockPosition();
+            Vec3 pos = item.getPosition(partialTick);
             boolean inWater = item.isUnderWater();
-            boolean inRain = level.isRaining() && level.isRainingAt(pos);
+            boolean inRain = level.isRaining() && level.isRainingAt(BlockPos.containing(pos));
             boolean active = !inWater && !inRain;
 
             PointLightHandle light = lights.computeIfAbsent(key, k -> {
@@ -92,8 +94,14 @@ public class TorchLightSource implements LightSource {
                 h.register();
                 return h;
             });
+            float depthCoeff = (float) Math.clamp((64f - pos.y)/64f, 0.0f, 1.0f);
+            float r = type.radius;
+            float b = type.brightness;
+            r = (float) (r - r * depthCoeff * 0.5);
+            b = b - depthCoeff * b;
             light.setPosition(item.getPosition(partialTick).add(0.0f,0.1f,0.0f));
-            light.setBrightness(active ? type.brightness : 0f);
+            light.setBrightness(active ? b : 0f);
+            light.setRadius(r);
         }
 
         lights.keySet().removeIf(key -> {
@@ -118,9 +126,9 @@ public class TorchLightSource implements LightSource {
     }
 
     private void processTorch(Player player, TorchType type, String key, float partialTick) {
-        BlockPos pos = player.blockPosition();
+        Vec3 pos = player.getEyePosition(partialTick);
         boolean inWater = player.isUnderWater();
-        boolean inRain = player.level().isRaining() && player.level().isRainingAt(pos);
+        boolean inRain = player.level().isRaining() && player.level().isRainingAt(BlockPos.containing(pos));
         boolean active = !inWater && !inRain; // Тухнет под дождем И в воде
 
         PointLightHandle light = lights.computeIfAbsent(key, k -> {
@@ -129,9 +137,14 @@ public class TorchLightSource implements LightSource {
             return h;
         });
 
-        light.setPosition(player.getEyePosition(partialTick));
-        light.setBrightness(active ? type.brightness : 0f);
+        float depthCoeff = (float) Math.clamp((64f - pos.y)/64f, 0.0f, 1.0f);
+        float r = type.radius;
+        float b = type.brightness;
+        r = (float) (r - r * depthCoeff * 0.5);
+        b = b - depthCoeff * b;
+        light.setPosition(pos);
+        light.setBrightness(active ? b : 0f);
         light.setColor(type.color);
-        light.setRadius(type.radius);
+        light.setRadius(r);
     }
 }

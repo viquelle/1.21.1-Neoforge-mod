@@ -9,9 +9,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.LightLayer;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.LanternBlock;
-import net.minecraft.world.level.block.TorchBlock;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class ShadowAnt {
@@ -22,11 +20,11 @@ public class ShadowAnt {
     private static final int LIFESPAN = 40;
     private static final int SPAWN_RADIUS_XZ = 32;
     private static final int SPAWN_RADIUS_Y = 16;
-    private static final int MAX_LIGHT = 15;
+    private static final int MAX_LIGHT = 14;
 
     public ShadowAnt(ServerLevel level, ServerPlayer owner, RandomSource random) {
         this.owner = owner;
-        if (random.nextFloat() < 0.1f) {
+        if (random.nextFloat() < 0.05f) {
             this.pos = owner.blockPosition();
         } else {
             int dx = random.nextInt(SPAWN_RADIUS_XZ * 2 + 1) - SPAWN_RADIUS_XZ;
@@ -76,7 +74,7 @@ public class ShadowAnt {
         // Если встал на макс. свет мгновенная атака
         BlockState state = level.getBlockState(pos);
         Block block = state.getBlock();
-        if (currentLight >= MAX_LIGHT - 2 && (block instanceof TorchBlock || block instanceof LanternBlock)) {
+        if (currentLight >= MAX_LIGHT - 8 && (block instanceof BaseTorchBlock || block instanceof LanternBlock)) {
             dieAndTrigger(level, true);
             return true;
         }
@@ -145,23 +143,23 @@ public class ShadowAnt {
         BlockState state = level.getBlockState(checkPos);
         Block block = state.getBlock();
 
-        if (!(block instanceof TorchBlock || block instanceof LanternBlock)) return false;
+        if (!(block instanceof BaseTorchBlock || block instanceof LanternBlock)) return false;
         if (data.shadowed.containsKey(checkPos)) return false;
 
-        float chance = foundTarget ? 0.5f : (0.3f + sanityFactor * 0.45f);
-
-        float y = checkPos.getY();
-        if (y <= -32f) {
-            chance = 1.0f;
-        } else if (y < 32f) {
-            float depthFactor = (32f - y) / 64f;
-            chance = chance + (1f - chance) * depthFactor;
-        }
-
-        if (level.random.nextFloat() < chance) {
-            data.shadowed.put(checkPos, new ShadowedBlocksConsumer.ShadowedBlock(block));
-            return true;
-        }
-        return false;
+//        float chance = foundTarget ? 0.5f : (0.3f + sanityFactor * 0.45f);
+//
+//        float y = checkPos.getY();
+//        if (y <= -32f) {
+//            chance = 1.0f;
+//        } else if (y < 32f) {
+//            float depthFactor = (32f - y) / 64f;
+//            chance = chance + (1f - chance) * depthFactor;
+//        }
+//
+//        if (level.random.nextFloat() < chance) {
+        data.shadowed.put(checkPos, new ShadowedBlocksConsumer.ShadowedBlock(block));
+        return true;
+//        }
+//        return false;
     }
 }
