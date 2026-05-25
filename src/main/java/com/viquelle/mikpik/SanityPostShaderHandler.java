@@ -1,5 +1,6 @@
 package com.viquelle.mikpik;
 
+import com.viquelle.mikpik.coloredlights.ColoredLightBuffer;
 import com.viquelle.mikpik.sanity.ClientSanityData;
 import foundry.veil.api.client.render.VeilRenderSystem;
 import foundry.veil.api.client.render.post.PostProcessingManager;
@@ -7,7 +8,7 @@ import foundry.veil.platform.VeilEventPlatform;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 
-public class ShaderHandler {
+public class SanityPostShaderHandler {
     private static final ResourceLocation PIPELINE =
             ResourceLocation.fromNamespaceAndPath("mikpik", "sanity_pipeline");
 
@@ -54,5 +55,4 @@ public class ShaderHandler {
             }
         });
     }
-
 }

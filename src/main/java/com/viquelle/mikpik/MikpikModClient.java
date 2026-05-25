@@ -1,21 +1,16 @@
 package com.viquelle.mikpik;
 
-import com.mojang.blaze3d.shaders.Shader;
-import com.viquelle.mikpik.entity.ModEntities;
-import com.viquelle.mikpik.entity.eye.EyeRenderer;
+import com.viquelle.mikpik.coloredlights.ActiveLight;
+import com.viquelle.mikpik.coloredlights.ColoredLightBuffer;
+import com.viquelle.mikpik.coloredlights.ColoredLightScanner;
 import com.viquelle.mikpik.entity.shadowgrabber.model.ShadowForearmModel;
-import com.viquelle.mikpik.entity.shadowgrabber.ShadowGrabberRenderer;
 import com.viquelle.mikpik.entity.shadowgrabber.model.ShadowHandModel;
 import com.viquelle.mikpik.entity.shadowgrabber.model.ShadowPortalModel;
 import com.viquelle.mikpik.light.ClientLightManager;
 import com.viquelle.mikpik.light.source.*;
-import com.viquelle.mikpik.sanity.ClientSanityData;
-import com.viquelle.mikpik.sanity.SanitySystem;
 import foundry.veil.api.client.render.VeilRenderSystem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
+import net.minecraft.client.renderer.RenderType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
@@ -28,7 +23,8 @@ import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.event.level.LevelEvent;
-import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+
+import java.util.List;
 
 @Mod(value = MikpikMod.MODID, dist = Dist.CLIENT)
 // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
@@ -52,13 +48,6 @@ public class MikpikModClient {
         ClientLightManager.register(new LanternLightSource());
         ClientLightManager.register(new TorchLightSource());
         ClientLightManager.register(new PlayerAmbientLightSource());
-        ShaderHandler.init();
-    }
-
-    @SubscribeEvent
-    public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
-        event.registerEntityRenderer(ModEntities.EYE.get(), EyeRenderer::new);
-        event.registerEntityRenderer(ModEntities.SHADOW_GRABBER.get()  ,ShadowGrabberRenderer::new);
     }
 
     @SubscribeEvent
@@ -66,6 +55,14 @@ public class MikpikModClient {
         if (event.getLevel().isClientSide()) {
             ClientLightManager.clear();
         }
+    }
+
+    @SubscribeEvent
+    public static void onClientTick(ClientTickEvent.Post event) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player == null || mc.level == null ) return;
+        ColoredLightScanner.scan(mc.level, mc.player);
+//        System.out.println(ColoredLightBuffer.size());
     }
 
     private static boolean enabled = false;
@@ -78,8 +75,42 @@ public class MikpikModClient {
 
         if (!enabled) {
             enabled = true;
-            ShaderHandler.enable();
+
+            var renderer = VeilRenderSystem.renderer();
+            if (renderer != null) {
+                SanityPostShaderHandler.init();
+            }
         }
+        SanityPostShaderHandler.enable();
+    }
+
+    @SubscribeEvent
+    public static void onRenderLevelStage2(RenderLevelStageEvent event) {
+        if (event.getStage() != RenderLevelStageEvent.Stage.fromRenderType(RenderType.SOLID)) { return; }
+        List<ActiveLight> list = ColoredLightBuffer.get();
+        int maxLights = Math.min(list.size(),64);
+        float[] posArray = new float[maxLights * 4];
+        float[] colArray = new float[maxLights * 4];
+
+        for (int i = 0; i < maxLights; i++) {
+            ActiveLight light = list.get(i);
+            int offset = i * 4;
+            // Для u_lights_pos_radius: (x, y, z, radius)
+            posArray[offset]     = (float) light.x();
+            posArray[offset + 1] = (float) light.y();
+            posArray[offset + 2] = (float) light.z();
+            posArray[offset + 3] = light.radius();
+
+            // Для u_lights_color_intensity: (r, g, b, intensity)
+            colArray[offset]     = light.r();
+            colArray[offset + 1] = light.g();
+            colArray[offset + 2] = light.b();
+            colArray[offset + 3] = light.intensity();
+        }
+        if (event.getRenderTick() % 60 == 0) {
+            MikpikMod.LOGGER.info("{} {}", ColoredLightBuffer.size(), posArray);
+        }
+        ColoredLightsShader.updateUniforms(maxLights, posArray, colArray);
     }
 
     @SubscribeEvent
