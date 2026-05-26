@@ -86,30 +86,49 @@ public class MikpikModClient {
 
     @SubscribeEvent
     public static void onRenderLevelStage2(RenderLevelStageEvent event) {
-        if (event.getStage() != RenderLevelStageEvent.Stage.fromRenderType(RenderType.SOLID)) { return; }
+        // Инициализируем SSBO ПЕРВЫМ ДЕЛОМ, вне зависимости от стадии
+        ColoredLightsShader.init();
+
+        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_SKY) {
+            return;
+        }
+
         List<ActiveLight> list = ColoredLightBuffer.get();
-        int maxLights = Math.min(list.size(),64);
+        if (list.isEmpty()) {
+            // Если нет источников, всё равно обновляем с 0
+            ColoredLightsShader.updateUniforms(0, new float[0], new float[0]);
+            return;
+        }
+
+        int maxLights = Math.min(list.size(), 64);
         float[] posArray = new float[maxLights * 4];
         float[] colArray = new float[maxLights * 4];
 
         for (int i = 0; i < maxLights; i++) {
             ActiveLight light = list.get(i);
             int offset = i * 4;
-            // Для u_lights_pos_radius: (x, y, z, radius)
             posArray[offset]     = (float) light.x();
             posArray[offset + 1] = (float) light.y();
             posArray[offset + 2] = (float) light.z();
             posArray[offset + 3] = light.radius();
 
-            // Для u_lights_color_intensity: (r, g, b, intensity)
             colArray[offset]     = light.r();
             colArray[offset + 1] = light.g();
             colArray[offset + 2] = light.b();
             colArray[offset + 3] = light.intensity();
         }
-        if (event.getRenderTick() % 60 == 0) {
-            MikpikMod.LOGGER.info("{} {}", ColoredLightBuffer.size(), posArray);
+
+        // Отладочный лог (редко)
+        if (Minecraft.getInstance().level != null &&
+                Minecraft.getInstance().level.getGameTime() % 100 == 0) {
+            MikpikMod.LOGGER.info("Updating {} lights", maxLights);
+            if (maxLights > 0) {
+                MikpikMod.LOGGER.info("First light: pos=({},{},{}), rad={}, col=({},{},{})",
+                        posArray[0], posArray[1], posArray[2], posArray[3],
+                        colArray[0], colArray[1], colArray[2]);
+            }
         }
+
         ColoredLightsShader.updateUniforms(maxLights, posArray, colArray);
     }
 
