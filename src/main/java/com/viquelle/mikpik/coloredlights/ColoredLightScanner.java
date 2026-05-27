@@ -1,5 +1,6 @@
 package com.viquelle.mikpik.coloredlights;
 
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
@@ -9,116 +10,230 @@ import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.level.chunk.status.ChunkStatus;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 public final class ColoredLightScanner {
+
     private static final int SCAN_RADIUS = 32;
 
-    public static void scan(ClientLevel level, LocalPlayer player) {
+    // 0.25ms
+    private static final long TIME_BUDGET_NS = 250_000L;
 
-        ColoredLightBuffer.clear();
+    // persistent chunk cache
+    private static final Map<Long, List<ActiveLight>>
+            CHUNK_LIGHT_CACHE = new Long2ObjectOpenHashMap<>();
+
+    // incremental traversal state
+    private static int currentDX;
+    private static int currentDZ;
+
+    private static int currentSection;
+    private static int currentX;
+    private static int currentY;
+    private static int currentZ;
+
+    private static boolean initialized = false;
+
+    public static void tick(ClientLevel level, LocalPlayer player) {
+
+        long startTime = System.nanoTime();
+
+        if (!initialized) {
+            resetScan();
+            initialized = true;
+        }
 
         BlockPos playerPos = player.blockPosition();
 
-        int radiusSqr = SCAN_RADIUS * SCAN_RADIUS;
-
         int chunkRadius = (SCAN_RADIUS >> 4) + 1;
+
+        int radiusSqr = SCAN_RADIUS * SCAN_RADIUS;
 
         int baseCX = playerPos.getX() >> 4;
         int baseCZ = playerPos.getZ() >> 4;
 
-        for (int dx = -chunkRadius; dx <= chunkRadius; dx++) {
-            for (int dz = -chunkRadius; dz <= chunkRadius; dz++) {
+        while (System.nanoTime() - startTime < TIME_BUDGET_NS) {
 
-                int cx = baseCX + dx;
-                int cz = baseCZ + dz;
-
-                LevelChunk chunk = level.getChunkSource()
-                        .getChunk(cx, cz, ChunkStatus.FULL, false);
-
-                if (chunk == null) continue;
-
-                scanChunk(chunk, playerPos, radiusSqr);
+            if (currentDX > chunkRadius) {
+                resetScan();
+                break;
             }
+
+            int cx = baseCX + currentDX;
+            int cz = baseCZ + currentDZ;
+
+            LevelChunk chunk = level.getChunkSource()
+                    .getChunk(cx, cz, ChunkStatus.FULL, false);
+
+            if (chunk != null) {
+                scanChunkIncremental(
+                        chunk,
+                        playerPos,
+                        radiusSqr
+                );
+            }
+
+            advanceChunk(chunkRadius);
         }
+
+        buildVisibleLightBuffer(playerPos, radiusSqr);
     }
 
-    private static void scanChunk(
+    private static void scanChunkIncremental(
             LevelChunk chunk,
             BlockPos playerPos,
             int radiusSqr
     ) {
+
+        long chunkKey = chunk.getPos().toLong();
+
+        List<ActiveLight> lights =
+                CHUNK_LIGHT_CACHE.computeIfAbsent(
+                        chunkKey,
+                        k -> new ArrayList<>()
+                );
 
         LevelChunkSection[] sections = chunk.getSections();
 
-        for (int i = 0; i < sections.length; i++) {
+        while (currentSection < sections.length) {
 
-            LevelChunkSection section = sections[i];
+            LevelChunkSection section =
+                    sections[currentSection];
 
-            if (section == null || section.hasOnlyAir()) continue;
+            if (section == null || section.hasOnlyAir()) {
+                currentSection++;
+                continue;
+            }
 
-            scanSection(section, chunk, i, playerPos, radiusSqr);
+            ChunkPos cp = chunk.getPos();
+
+            int baseX = cp.getMinBlockX();
+            int baseZ = cp.getMinBlockZ();
+
+            int baseY =
+                    chunk.getSectionYFromSectionIndex(currentSection) << 4;
+
+            while (currentX < 16) {
+
+                while (currentY < 16) {
+
+                    while (currentZ < 16) {
+
+                        BlockState state =
+                                section.getBlockState(
+                                        currentX,
+                                        currentY,
+                                        currentZ
+                                );
+
+                        HardcodedLights.LightData data =
+                                HardcodedLights.get(state.getBlock());
+
+                        if (data != null) {
+
+                            int wx = baseX + currentX;
+                            int wy = baseY + currentY;
+                            int wz = baseZ + currentZ;
+
+                            double dx =
+                                    wx + 0.5 - playerPos.getX();
+
+                            double dy =
+                                    wy + 0.5 - playerPos.getY();
+
+                            double dz =
+                                    wz + 0.5 - playerPos.getZ();
+
+                            double dist2 =
+                                    dx * dx + dy * dy + dz * dz;
+
+                            if (dist2 <= radiusSqr) {
+
+                                lights.add(new ActiveLight(
+                                        wx + 0.5,
+                                        wy + 0.5,
+                                        wz + 0.5,
+                                        data.radius,
+                                        ((data.color >> 16) & 255) * (1f / 255f),
+                                        ((data.color >> 8) & 255) * (1f / 255f),
+                                        (data.color & 255) * (1f / 255f),
+                                        data.intensity
+                                ));
+                            }
+                        }
+
+                        currentZ++;
+                    }
+
+                    currentZ = 0;
+                    currentY++;
+                }
+
+                currentY = 0;
+                currentX++;
+            }
+
+            currentX = 0;
+            currentSection++;
         }
+
+        currentSection = 0;
     }
 
-    private static void scanSection(
-            LevelChunkSection section,
-            LevelChunk chunk,
-            int sectionIndex,
+    private static void buildVisibleLightBuffer(
             BlockPos playerPos,
             int radiusSqr
     ) {
 
-        ChunkPos cp = chunk.getPos();
+        ColoredLightBuffer.clear();
 
-        int baseX = cp.getMinBlockX();
-        int baseZ = cp.getMinBlockZ();
-        int baseY = chunk.getSectionYFromSectionIndex(sectionIndex) << 4;
+        for (List<ActiveLight> lights : CHUNK_LIGHT_CACHE.values()) {
 
-        for (int x = 0; x < 16; x++) {
-            for (int y = 0; y < 16; y++) {
-                for (int z = 0; z < 16; z++) {
+            for (ActiveLight light : lights) {
 
-                    BlockState state = section.getBlockState(x, y, z);
+                double dx = light.x() - playerPos.getX();
+                double dy = light.y() - playerPos.getY();
+                double dz = light.z() - playerPos.getZ();
 
-                    HardcodedLights.LightData data =
-                            HardcodedLights.get(state.getBlock());
+                double dist2 =
+                        dx * dx + dy * dy + dz * dz;
 
-                    if (data == null) continue;
+                if (dist2 <= radiusSqr) {
 
-                    int wx = baseX + x;
-                    int wy = baseY + y;
-                    int wz = baseZ + z;
+                    ColoredLightBuffer.add(light);
 
-                    double dx = wx + 0.5 - playerPos.getX();
-                    double dy = wy + 0.5 - playerPos.getY();
-                    double dz = wz + 0.5 - playerPos.getZ();
-
-                    double dist2 = dx * dx + dy * dy + dz * dz;
-
-                    if (dist2 > radiusSqr) continue;
-
-                    float[] rgb = unpack(data.color);
-
-                    ColoredLightBuffer.add(new ActiveLight(
-                            wx + 0.5,
-                            wy + 0.5,
-                            wz + 0.5,
-                            data.radius,
-                            rgb[0],
-                            rgb[1],
-                            rgb[2],
-                            data.intensity
-                    ));
+                    if (ColoredLightBuffer.size()
+                            >= ColoredLightBuffer.MAX_LIGHTS) {
+                        return;
+                    }
                 }
             }
         }
     }
 
-    private static float[] unpack(int hex) {
+    private static void advanceChunk(int chunkRadius) {
 
-        float r = ((hex >> 16) & 255) / 255f;
-        float g = ((hex >> 8) & 255) / 255f;
-        float b = (hex & 255) / 255f;
+        currentDZ++;
 
-        return new float[] { r, g, b };
+        if (currentDZ > chunkRadius) {
+            currentDZ = -chunkRadius;
+            currentDX++;
+        }
+    }
+
+    private static void resetScan() {
+
+        int radius = (SCAN_RADIUS >> 4) + 1;
+
+        currentDX = -radius;
+        currentDZ = -radius;
+
+        currentSection = 0;
+
+        currentX = 0;
+        currentY = 0;
+        currentZ = 0;
     }
 }

@@ -1,6 +1,5 @@
 package com.viquelle.mikpik;
 
-import com.viquelle.mikpik.coloredlights.ColoredLightBuffer;
 import com.viquelle.mikpik.sanity.ClientSanityData;
 import foundry.veil.api.client.render.VeilRenderSystem;
 import foundry.veil.api.client.render.post.PostProcessingManager;
@@ -12,10 +11,9 @@ public class SanityPostShaderHandler {
     private static final ResourceLocation PIPELINE =
             ResourceLocation.fromNamespaceAndPath("mikpik", "sanity_pipeline");
 
-    public static void enable() {
+    public static void init() {
 
         var renderer = VeilRenderSystem.renderer();
-
         if (renderer == null) {
             return;
         }
@@ -24,12 +22,11 @@ public class SanityPostShaderHandler {
 
         if (manager != null && !manager.isActive(PIPELINE)) {
             manager.add(PIPELINE);
-            System.out.println("Pipeline enabled");
+            MikpikMod.LOGGER.info("Pipeline enabled");
         }
     }
 
-    public static void init() {
-
+    public static void tick() {
         VeilEventPlatform.INSTANCE.preVeilPostProcessing((pipelineName, pipeline, context) -> {
 
             if (!PIPELINE.equals(pipelineName)) {

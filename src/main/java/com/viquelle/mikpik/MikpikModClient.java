@@ -3,6 +3,7 @@ package com.viquelle.mikpik;
 import com.viquelle.mikpik.coloredlights.ActiveLight;
 import com.viquelle.mikpik.coloredlights.ColoredLightBuffer;
 import com.viquelle.mikpik.coloredlights.ColoredLightScanner;
+import com.viquelle.mikpik.coloredlights.ColoredLightsUploader;
 import com.viquelle.mikpik.entity.shadowgrabber.model.ShadowForearmModel;
 import com.viquelle.mikpik.entity.shadowgrabber.model.ShadowHandModel;
 import com.viquelle.mikpik.entity.shadowgrabber.model.ShadowPortalModel;
@@ -10,9 +11,6 @@ import com.viquelle.mikpik.light.ClientLightManager;
 import com.viquelle.mikpik.light.source.*;
 import foundry.veil.api.client.render.VeilRenderSystem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.ShaderInstance;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -64,77 +62,30 @@ public class MikpikModClient {
     public static void onClientTick(ClientTickEvent.Post event) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || mc.level == null ) return;
-        ColoredLightScanner.scan(mc.level, mc.player);
+        ColoredLightScanner.tick(mc.level, mc.player);
 //        System.out.println(ColoredLightBuffer.size());
     }
 
     private static boolean enabled = false;
     @SubscribeEvent
     public static void onRenderLevelStage(RenderLevelStageEvent event) {
-        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_ENTITIES) return;
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.player == null || mc.level == null) return;
-        ClientLightManager.tick(mc.level, mc.player, event.getPartialTick().getGameTimeDeltaPartialTick(true));
-
-        if (!enabled) {
-            enabled = true;
-
-            var renderer = VeilRenderSystem.renderer();
-            if (renderer != null) {
-                SanityPostShaderHandler.init();
+        ColoredLightsUploader.init();
+        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_ENTITIES) {
+            Minecraft mc = Minecraft.getInstance();
+            if (mc.player == null || mc.level == null) return;
+            ClientLightManager.tick(mc.level, mc.player, event.getPartialTick().getGameTimeDeltaPartialTick(true));
+            SanityPostShaderHandler.init();
+            if (!enabled) {
+                enabled = true;
+                var renderer = VeilRenderSystem.renderer();
+                if (renderer != null) {
+                    SanityPostShaderHandler.tick();
+                }
             }
         }
-        SanityPostShaderHandler.enable();
-    }
-
-    @SubscribeEvent
-    public static void onRenderLevelStage2(RenderLevelStageEvent event) {
-        // Инициализируем SSBO ПЕРВЫМ ДЕЛОМ, вне зависимости от стадии
-        ColoredLightsShader.init();
-
-        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_SKY) {
-            return;
+        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_SKY) {
+            ColoredLightsUploader.updateUniforms(event.getCamera().getPosition());
         }
-
-        List<ActiveLight> list = ColoredLightBuffer.get();
-
-        if (list.isEmpty()) {
-            // Если нет источников, всё равно обновляем с 0
-            ColoredLightsShader.updateUniforms(0, new float[0], new float[0]);
-            return;
-        }
-
-        int maxLights = Math.min(list.size(), 64);
-        float[] posArray = new float[maxLights * 4];
-        float[] colArray = new float[maxLights * 4];
-
-        Vec3 cameraPos = event.getCamera().getPosition();
-        for (int i = 0; i < maxLights; i++) {
-            ActiveLight light = list.get(i);
-            int offset = i * 4;
-            posArray[offset]     = (float) (light.x() - cameraPos.x);
-            posArray[offset + 1] = (float) (light.y() - cameraPos.y);
-            posArray[offset + 2] = (float) (light.z() - cameraPos.z);
-            posArray[offset + 3] = light.radius();
-
-            colArray[offset]     = light.r();
-            colArray[offset + 1] = light.g();
-            colArray[offset + 2] = light.b();
-            colArray[offset + 3] = light.intensity();
-        }
-
-        // Отладочный лог (редко)
-        if (Minecraft.getInstance().level != null &&
-                Minecraft.getInstance().level.getGameTime() % 100 == 0) {
-            MikpikMod.LOGGER.info("Updating {} lights", maxLights);
-            if (maxLights > 0) {
-                MikpikMod.LOGGER.info("First light: pos=({},{},{}), rad={}, col=({},{},{})",
-                        posArray[0], posArray[1], posArray[2], posArray[3],
-                        colArray[0], colArray[1], colArray[2]);
-            }
-        }
-
-        ColoredLightsShader.updateUniforms(maxLights, posArray, colArray);
     }
 
     @SubscribeEvent
