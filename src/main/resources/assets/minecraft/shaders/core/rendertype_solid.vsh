@@ -2,7 +2,6 @@
 
 #moj_import <light.glsl>
 #moj_import <fog.glsl>
-#moj_import <colored.glsl>
 
 in vec3 Position;
 in vec4 Color;
