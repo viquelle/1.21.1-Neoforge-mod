@@ -26,26 +26,26 @@ public final class HardcodedLights {
 
         LIGHTS.put(Blocks.TORCH, new LightData(
                 0xFFAA33,
-                15f,
-                1.0f
+                14f,
+                0.45f
         ));
 
         LIGHTS.put(Blocks.SOUL_TORCH, new LightData(
-                0x33BBFF,
-                12f,
+                0x224FFF,
+                10f,
                 1.0f
         ));
 
         LIGHTS.put(Blocks.REDSTONE_TORCH, new LightData(
                 0xFF2222,
-                8f,
-                1.0f
+                7f,
+                1.35f
         ));
 
         LIGHTS.put(Blocks.MAGMA_BLOCK, new LightData(
                 0xFF6600,
                 6f,
-                0.6f
+                1.2f
         ));
     }
 

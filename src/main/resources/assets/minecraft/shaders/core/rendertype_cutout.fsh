@@ -18,6 +18,9 @@ out vec4 fragColor;
 
 void main() {
     vec4 baseColor = texture(Sampler0, texCoord0) * vertexColor * ColorModulator;
+    if (baseColor.a < 0.5) {
+        discard;
+    }
 
     if (blockLightColor != vec4(0)) {
         baseColor.rgb = baseColor.rgb * (1.75 * blockLightColor.rgb + vec3(1));

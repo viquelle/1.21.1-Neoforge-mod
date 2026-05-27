@@ -11,6 +11,9 @@ import com.viquelle.mikpik.light.source.*;
 import foundry.veil.api.client.render.VeilRenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.ShaderInstance;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
@@ -94,6 +97,7 @@ public class MikpikModClient {
         }
 
         List<ActiveLight> list = ColoredLightBuffer.get();
+
         if (list.isEmpty()) {
             // Если нет источников, всё равно обновляем с 0
             ColoredLightsShader.updateUniforms(0, new float[0], new float[0]);
@@ -104,12 +108,13 @@ public class MikpikModClient {
         float[] posArray = new float[maxLights * 4];
         float[] colArray = new float[maxLights * 4];
 
+        Vec3 cameraPos = event.getCamera().getPosition();
         for (int i = 0; i < maxLights; i++) {
             ActiveLight light = list.get(i);
             int offset = i * 4;
-            posArray[offset]     = (float) light.x();
-            posArray[offset + 1] = (float) light.y();
-            posArray[offset + 2] = (float) light.z();
+            posArray[offset]     = (float) (light.x() - cameraPos.x);
+            posArray[offset + 1] = (float) (light.y() - cameraPos.y);
+            posArray[offset + 2] = (float) (light.z() - cameraPos.z);
             posArray[offset + 3] = light.radius();
 
             colArray[offset]     = light.r();

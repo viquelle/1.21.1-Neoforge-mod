@@ -67,7 +67,6 @@ void main() {
         blockLightColor.rgb = coloredLight.rgb;
     }
 
-
     vertexDistance = fog_distance(worldPos, FogShape);
     texCoord0 = UV0;
 }
