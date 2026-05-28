@@ -1,21 +1,17 @@
 package com.viquelle.mikpik;
 
-import com.mojang.blaze3d.shaders.Shader;
-import com.viquelle.mikpik.entity.ModEntities;
-import com.viquelle.mikpik.entity.eye.EyeRenderer;
+import com.viquelle.mikpik.coloredlights.ActiveLight;
+import com.viquelle.mikpik.coloredlights.ColoredLightBuffer;
+import com.viquelle.mikpik.coloredlights.ColoredLightScanner;
+import com.viquelle.mikpik.coloredlights.ColoredLightsUploader;
 import com.viquelle.mikpik.entity.shadowgrabber.model.ShadowForearmModel;
-import com.viquelle.mikpik.entity.shadowgrabber.ShadowGrabberRenderer;
 import com.viquelle.mikpik.entity.shadowgrabber.model.ShadowHandModel;
 import com.viquelle.mikpik.entity.shadowgrabber.model.ShadowPortalModel;
 import com.viquelle.mikpik.light.ClientLightManager;
 import com.viquelle.mikpik.light.source.*;
-import com.viquelle.mikpik.sanity.ClientSanityData;
-import com.viquelle.mikpik.sanity.SanitySystem;
 import foundry.veil.api.client.render.VeilRenderSystem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
@@ -27,8 +23,10 @@ import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
+import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
-import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+
+import java.util.List;
 
 @Mod(value = MikpikMod.MODID, dist = Dist.CLIENT)
 // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
@@ -52,13 +50,6 @@ public class MikpikModClient {
         ClientLightManager.register(new LanternLightSource());
         ClientLightManager.register(new TorchLightSource());
         ClientLightManager.register(new PlayerAmbientLightSource());
-        ShaderHandler.init();
-    }
-
-    @SubscribeEvent
-    public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
-        event.registerEntityRenderer(ModEntities.EYE.get(), EyeRenderer::new);
-        event.registerEntityRenderer(ModEntities.SHADOW_GRABBER.get()  ,ShadowGrabberRenderer::new);
     }
 
     @SubscribeEvent
@@ -71,14 +62,25 @@ public class MikpikModClient {
     private static boolean enabled = false;
     @SubscribeEvent
     public static void onRenderLevelStage(RenderLevelStageEvent event) {
-        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_ENTITIES) return;
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.player == null || mc.level == null) return;
-        ClientLightManager.tick(mc.level, mc.player, event.getPartialTick().getGameTimeDeltaPartialTick(true));
-
-        if (!enabled) {
-            enabled = true;
-            ShaderHandler.enable();
+        ColoredLightsUploader.init();
+        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_ENTITIES) {
+            Minecraft mc = Minecraft.getInstance();
+            if (mc.player == null || mc.level == null) return;
+            ClientLightManager.tick(mc.level, mc.player, event.getPartialTick().getGameTimeDeltaPartialTick(true));
+            SanityPostShaderHandler.init();
+            if (!enabled) {
+                enabled = true;
+                var renderer = VeilRenderSystem.renderer();
+                if (renderer != null) {
+                    SanityPostShaderHandler.tick();
+                }
+            }
+        }
+        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_SKY) {
+            Minecraft mc = Minecraft.getInstance();
+            if (mc.player == null || mc.level == null) return;
+            ColoredLightScanner.buildVisibleLightBuffer(mc.player);
+            ColoredLightsUploader.updateUniforms(event.getCamera().getPosition());
         }
     }
 

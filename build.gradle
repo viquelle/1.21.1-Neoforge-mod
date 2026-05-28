@@ -17,10 +17,6 @@ tasks.named('wrapper', Wrapper).configure {
 version = mod_version
 group = mod_group_id
 
-repositories {
-    // Add here additional repositories if required by some of the dependencies below.
-}
-
 base {
     archivesName = mod_id
 }
@@ -45,7 +41,6 @@ neoForge {
     runs {
         client {
             client()
-
             // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
         }
@@ -111,8 +106,22 @@ configurations {
     runtimeClasspath.extendsFrom localRuntime
 }
 
+repositories {
+    maven {
+        name = 'BlameJared Maven (CrT / Bookshelf)'
+        url = 'https://maven.blamejared.com'
+    }
+}
+
 dependencies {
     compileOnly files("libs/veil-neoforge-1.21.1-4.1.2.jar")
+
+    implementation("foundry.veil:veil-neoforge-${project.minecraft_version}:4.1.2") {
+        exclude group: "maven.modrinth"
+        exclude group: "me.fallenbreath"
+    }
+
+    implementation("io.github.ocelot:glsl-processor:0.2.3")
     // Example optional mod dependency with JEI
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime
     // compileOnly "mezz.jei:jei-${mc_version}-common-api:${jei_version}"
@@ -167,11 +176,6 @@ publishing {
     publications {
         register('mavenJava', MavenPublication) {
             from components.java
-        }
-    }
-    repositories {
-        maven {
-            url "file://${project.projectDir}/repo"
         }
     }
 }

@@ -7,14 +7,13 @@ import foundry.veil.platform.VeilEventPlatform;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 
-public class ShaderHandler {
+public class SanityPostShaderHandler {
     private static final ResourceLocation PIPELINE =
             ResourceLocation.fromNamespaceAndPath("mikpik", "sanity_pipeline");
 
-    public static void enable() {
+    public static void init() {
 
         var renderer = VeilRenderSystem.renderer();
-
         if (renderer == null) {
             return;
         }
@@ -23,12 +22,11 @@ public class ShaderHandler {
 
         if (manager != null && !manager.isActive(PIPELINE)) {
             manager.add(PIPELINE);
-            System.out.println("Pipeline enabled");
+            MikpikMod.LOGGER.info("Pipeline enabled");
         }
     }
 
-    public static void init() {
-
+    public static void tick() {
         VeilEventPlatform.INSTANCE.preVeilPostProcessing((pipelineName, pipeline, context) -> {
 
             if (!PIPELINE.equals(pipelineName)) {
@@ -54,5 +52,4 @@ public class ShaderHandler {
             }
         });
     }
-
 }
