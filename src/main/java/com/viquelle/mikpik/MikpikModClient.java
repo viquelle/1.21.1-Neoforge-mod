@@ -23,6 +23,7 @@ import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
+import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
 
 import java.util.List;
@@ -58,14 +59,6 @@ public class MikpikModClient {
         }
     }
 
-    @SubscribeEvent
-    public static void onClientTick(ClientTickEvent.Post event) {
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.player == null || mc.level == null ) return;
-        ColoredLightScanner.tick(mc.level, mc.player);
-//        System.out.println(ColoredLightBuffer.size());
-    }
-
     private static boolean enabled = false;
     @SubscribeEvent
     public static void onRenderLevelStage(RenderLevelStageEvent event) {
@@ -84,6 +77,9 @@ public class MikpikModClient {
             }
         }
         if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_SKY) {
+            Minecraft mc = Minecraft.getInstance();
+            if (mc.player == null || mc.level == null) return;
+            ColoredLightScanner.buildVisibleLightBuffer(mc.player);
             ColoredLightsUploader.updateUniforms(event.getCamera().getPosition());
         }
     }

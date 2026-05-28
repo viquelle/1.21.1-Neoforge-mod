@@ -7,8 +7,9 @@
     "MixinDynamicTexture",
     "MixinGameRenderer",
     "MixinLightTexture",
-    "RecipeManagerMixin"
+    "LevelChunkMixin"
   ],
   "mixins": [
+    "RecipeManagerMixin"
   ]
 }
