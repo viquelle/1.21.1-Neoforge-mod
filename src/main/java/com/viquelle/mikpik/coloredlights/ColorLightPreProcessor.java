@@ -29,9 +29,15 @@ public class ColorLightPreProcessor implements ShaderPreProcessor {
 
     private static final ResourceLocation[] TARGET_SHADERS = {
             ResourceLocation.parse("minecraft:shaders/core/rendertype_solid.vsh"),
-            ResourceLocation.parse("minecraft:shaders/core/rendertype_solid.fsh")
-//            "rendertype_cutout", "rendertype_cutout_mipped",
-//            "rendertype_translucent", "rendertype_tripwire"
+            ResourceLocation.parse("minecraft:shaders/core/rendertype_solid.fsh"),
+            ResourceLocation.parse("minecraft:shaders/core/rendertype_cutout.vsh"),
+            ResourceLocation.parse("minecraft:shaders/core/rendertype_cutout.fsh"),
+            ResourceLocation.parse("minecraft:shaders/core/rendertype_cutout_mipped.vsh"),
+            ResourceLocation.parse("minecraft:shaders/core/rendertype_cutout_mipped.fsh"),
+            ResourceLocation.parse("minecraft:shaders/core/rendertype_translucent.vsh"),
+            ResourceLocation.parse("minecraft:shaders/core/rendertype_translucent.fsh"),
+            ResourceLocation.parse("minecraft:shaders/core/rendertype_tripwire.vsh"),
+            ResourceLocation.parse("minecraft:shaders/core/rendertype_tripwire.fsh"),
     };
 
     private ColorLightPreProcessor() {}
@@ -49,7 +55,7 @@ public class ColorLightPreProcessor implements ShaderPreProcessor {
 
         if (!isTarget) return;
 
-        MikpikMod.LOGGER.info("Processing shader: {} ({})", shaderName, ctx.type());
+        MikpikMod.LOGGER.debug("Processing shader: {} ({})", shaderName, ctx.type());
 
         if (ctx.isVertex()) {
             modifyVertexShader(ctx, tree);
@@ -64,14 +70,14 @@ public class ColorLightPreProcessor implements ShaderPreProcessor {
         addOutputVariables(tree);
         addLightingFunction(ctx, tree);
         modifyVertexMain(tree);
-        MikpikMod.LOGGER.info("5 vertex RESULT BOBINA to source string: {}", tree.toSourceString());
+        MikpikMod.LOGGER.debug("5 vertex RESULT BOBINA to source string: {}", tree.toSourceString());
     }
 
     private void modifyFragmentShader(GlslTree tree) throws GlslSyntaxException {
         updateVersion(tree);
         addFragmentInputVariables(tree);
         modifyFragmentMain(tree);
-        MikpikMod.LOGGER.info("fragment RESULT BOBINA to source string: {}", tree.toSourceString());
+        MikpikMod.LOGGER.debug("fragment RESULT BOBINA to source string: {}", tree.toSourceString());
     }
 
     private void updateVersion(GlslTree tree) {
@@ -83,9 +89,9 @@ public class ColorLightPreProcessor implements ShaderPreProcessor {
         tree.getBody().add(GlslInjectionPoint.BEFORE_MAIN,
                 GlslParser.parseExpression("uniform int u_light_count;"));
         tree.getBody().add(GlslInjectionPoint.BEFORE_MAIN,
-                GlslParser.parseExpression("uniform vec4 u_LightData[64];"));
+                GlslParser.parseExpression("uniform vec4 u_LightData[256];"));
         tree.getBody().add(GlslInjectionPoint.BEFORE_MAIN,
-                GlslParser.parseExpression("uniform vec4 u_LightColor[64];"));
+                GlslParser.parseExpression("uniform vec4 u_LightColor[256];"));
     }
 
     private void addOutputVariables(GlslTree tree) throws GlslSyntaxException {
@@ -123,11 +129,7 @@ public class ColorLightPreProcessor implements ShaderPreProcessor {
         GlslFunctionNode main = mainOpt.get();
         GlslNodeList body = main.getBody();
 
-        String colorModCode = """
-            if (blockLightColor.a > 0.0) {
-                color.rgb *= (1.75 * blockLightColor.rgb + vec3(1.0));
-            }
-            """;
+        String colorModCode = "color.rgb *= (1.25 * blockLightColor.rgb + vec3(1.0));";
 
         for (int i = 0; i < body.size(); i++) {
             GlslNode node = body.get(i);

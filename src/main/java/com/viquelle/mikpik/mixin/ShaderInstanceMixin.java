@@ -1,5 +1,6 @@
 package com.viquelle.mikpik.mixin;
 
+import com.viquelle.mikpik.MikpikMod;
 import com.viquelle.mikpik.coloredlights.ColorLightRenderer;
 import net.minecraft.client.renderer.ShaderInstance;
 import org.lwjgl.opengl.GL11;
@@ -25,6 +26,7 @@ public abstract class ShaderInstanceMixin {
             at = {@At("TAIL")}
     )
     private void shine$uploadColoredLights(CallbackInfo ci) {
+        MikpikMod.LOGGER.info("{}", this.getName());
         if (isTerrainShader(this.getName())) {
             ColorLightRenderer.uploadVanillaTerrainUniforms(this.getId());
         }
