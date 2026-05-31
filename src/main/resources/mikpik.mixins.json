@@ -4,10 +4,11 @@
   "package": "com.viquelle.mikpik.mixin",
   "compatibilityLevel": "JAVA_21",
   "client": [
+    "LevelChunkMixin",
     "MixinDynamicTexture",
     "MixinGameRenderer",
     "MixinLightTexture",
-    "LevelChunkMixin"
+    "ShaderInstanceMixin"
   ],
   "mixins": [
     "RecipeManagerMixin"

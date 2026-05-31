@@ -1,32 +1,38 @@
 package com.viquelle.mikpik;
 
-import com.viquelle.mikpik.coloredlights.ActiveLight;
-import com.viquelle.mikpik.coloredlights.ColoredLightBuffer;
+import com.viquelle.mikpik.coloredlights.ColorLightPreProcessor;
+import com.viquelle.mikpik.coloredlights.ColorLightRenderer;
 import com.viquelle.mikpik.coloredlights.ColoredLightScanner;
-import com.viquelle.mikpik.coloredlights.ColoredLightsUploader;
 import com.viquelle.mikpik.entity.shadowgrabber.model.ShadowForearmModel;
 import com.viquelle.mikpik.entity.shadowgrabber.model.ShadowHandModel;
 import com.viquelle.mikpik.entity.shadowgrabber.model.ShadowPortalModel;
 import com.viquelle.mikpik.light.ClientLightManager;
-import com.viquelle.mikpik.light.source.*;
+import com.viquelle.mikpik.light.source.LanternLightSource;
+import com.viquelle.mikpik.light.source.NetherStarLightSource;
+import com.viquelle.mikpik.light.source.PlayerAmbientLightSource;
+import com.viquelle.mikpik.light.source.TorchLightSource;
+import foundry.veil.Veil;
 import foundry.veil.api.client.render.VeilRenderSystem;
+import foundry.veil.api.client.render.VeilRenderer;
+import foundry.veil.api.client.render.shader.compiler.VeilShaderSource;
+import foundry.veil.api.client.render.shader.uniform.ShaderUniformAccess;
+import foundry.veil.api.event.VeilAddShaderPreProcessorsEvent;
+import foundry.veil.platform.VeilClientPlatform;
+import foundry.veil.platform.VeilEventPlatform;
 import net.minecraft.client.Minecraft;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.client.renderer.ShaderInstance;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
-import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
-
-import java.util.List;
+import org.joml.Vector4d;
 
 @Mod(value = MikpikMod.MODID, dist = Dist.CLIENT)
 // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
@@ -50,6 +56,9 @@ public class MikpikModClient {
         ClientLightManager.register(new LanternLightSource());
         ClientLightManager.register(new TorchLightSource());
         ClientLightManager.register(new PlayerAmbientLightSource());
+        VeilEventPlatform.INSTANCE.onVeilAddShaderProcessors(((resourceProvider, registry) -> {
+            registry.addPreprocessorFirst(ColorLightPreProcessor.INSTANCE);
+        }));
     }
 
     @SubscribeEvent
@@ -62,7 +71,6 @@ public class MikpikModClient {
     private static boolean enabled = false;
     @SubscribeEvent
     public static void onRenderLevelStage(RenderLevelStageEvent event) {
-        ColoredLightsUploader.init();
         if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_ENTITIES) {
             Minecraft mc = Minecraft.getInstance();
             if (mc.player == null || mc.level == null) return;
@@ -77,10 +85,7 @@ public class MikpikModClient {
             }
         }
         if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_SKY) {
-            Minecraft mc = Minecraft.getInstance();
-            if (mc.player == null || mc.level == null) return;
-            ColoredLightScanner.buildVisibleLightBuffer(mc.player);
-            ColoredLightsUploader.updateUniforms(event.getCamera().getPosition());
+            ColorLightRenderer.INSTANCE.tick(event.getPartialTick().getGameTimeDeltaPartialTick(false));
         }
     }
 
