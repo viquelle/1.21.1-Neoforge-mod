@@ -8,7 +8,7 @@
     "MixinDynamicTexture",
     "MixinGameRenderer",
     "MixinLightTexture",
-    "ShaderInstanceMixin"
+    "ShaderChunkRendererMixin"
   ],
   "mixins": [
     "RecipeManagerMixin"
