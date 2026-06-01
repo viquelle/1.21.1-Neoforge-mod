@@ -11,7 +11,7 @@ import java.nio.FloatBuffer;
 public class ColorLightRenderer {
     public static final ColorLightRenderer INSTANCE = new ColorLightRenderer();
 
-    private static final int MAX_LIGHTS = 64;
+    private static final int MAX_LIGHTS = 256;
     private static final FloatBuffer posRadiusBuffer = BufferUtils.createFloatBuffer(MAX_LIGHTS * 4);
     private static final FloatBuffer colorBuffer = BufferUtils.createFloatBuffer(MAX_LIGHTS * 4);
 
@@ -69,6 +69,6 @@ public class ColorLightRenderer {
         GL20.glUniform4fv(u_LightDataLocation, posRadiusBuffer);
         GL20.glUniform4fv(u_LightColorLocation, colorBuffer);
 
-        MikpikMod.LOGGER.info("<- {} {}", u_LightDataLocation, u_LightColorLocation);
+//        MikpikMod.LOGGER.info("<- {} {}", u_LightDataLocation, u_LightColorLocation);
     }
 }

@@ -2,6 +2,7 @@ package com.viquelle.mikpik.coloredlights;
 
 import com.viquelle.mikpik.MikpikMod;
 import foundry.veil.api.client.render.shader.processor.ShaderPreProcessor;
+import foundry.veil.impl.compat.sodium.SodiumShaderPreProcessor;
 import io.github.ocelot.glslprocessor.api.GlslInjectionPoint;
 import io.github.ocelot.glslprocessor.api.GlslParser;
 import io.github.ocelot.glslprocessor.api.GlslSyntaxException;
@@ -28,10 +29,8 @@ public class ColorLightPreProcessor implements ShaderPreProcessor {
     public static final ColorLightPreProcessor INSTANCE = new ColorLightPreProcessor();
 
     private static final ResourceLocation[] TARGET_SHADERS = {
-            ResourceLocation.parse("minecraft:shaders/core/rendertype_solid.vsh"),
-            ResourceLocation.parse("minecraft:shaders/core/rendertype_solid.fsh")
-//            "rendertype_cutout", "rendertype_cutout_mipped",
-//            "rendertype_translucent", "rendertype_tripwire"
+            ResourceLocation.parse("sodium:shaders/blocks/block_layer_opaque.fsh"),
+            ResourceLocation.parse("sodium:shaders/blocks/block_layer_opaque.vsh"),
     };
 
     private ColorLightPreProcessor() {}
@@ -39,6 +38,7 @@ public class ColorLightPreProcessor implements ShaderPreProcessor {
     @Override
     public void modify(Context ctx, GlslTree tree) throws IOException, GlslSyntaxException, LexerException {
         ResourceLocation shaderName = ctx.name();
+        MikpikMod.LOGGER.info("{}", shaderName);
         boolean isTarget = false;
         for (ResourceLocation target : TARGET_SHADERS) {
             if (shaderName.equals(target)) {
@@ -49,7 +49,7 @@ public class ColorLightPreProcessor implements ShaderPreProcessor {
 
         if (!isTarget) return;
 
-        MikpikMod.LOGGER.info("Processing shader: {} ({})", shaderName, ctx.type());
+        MikpikMod.LOGGER.debug("Processing shader: {} ({})", shaderName, ctx.type());
 
         if (ctx.isVertex()) {
             modifyVertexShader(ctx, tree);
@@ -59,33 +59,30 @@ public class ColorLightPreProcessor implements ShaderPreProcessor {
     }
 
     private void modifyVertexShader(Context ctx, GlslTree tree) throws GlslSyntaxException, IOException, LexerException {
-        updateVersion(tree);
+        MikpikMod.LOGGER.debug("1 vertex RESULT BOBINA to source string: {}", tree.toSourceString());
         addNewUniforms(tree);
+        MikpikMod.LOGGER.debug("2 vertex RESULT BOBINA to source string: {}", tree.toSourceString());
         addOutputVariables(tree);
+        MikpikMod.LOGGER.debug("3 vertex RESULT BOBINA to source string: {}", tree.toSourceString());
         addLightingFunction(ctx, tree);
+        MikpikMod.LOGGER.debug("4 vertex RESULT BOBINA to source string: {}", tree.toSourceString());
         modifyVertexMain(tree);
-        MikpikMod.LOGGER.info("5 vertex RESULT BOBINA to source string: {}", tree.toSourceString());
+        MikpikMod.LOGGER.debug("5 vertex RESULT BOBINA to source string: {}", tree.toSourceString());
     }
 
     private void modifyFragmentShader(GlslTree tree) throws GlslSyntaxException {
-        updateVersion(tree);
         addFragmentInputVariables(tree);
         modifyFragmentMain(tree);
-        MikpikMod.LOGGER.info("fragment RESULT BOBINA to source string: {}", tree.toSourceString());
-    }
-
-    private void updateVersion(GlslTree tree) {
-        tree.getVersionStatement().setVersion(330);
-        tree.getVersionStatement().setCore(true);
+        MikpikMod.LOGGER.debug("fragment RESULT BOBINA to source string: {}", tree.toSourceString());
     }
 
     private void addNewUniforms(GlslTree tree) throws GlslSyntaxException {
         tree.getBody().add(GlslInjectionPoint.BEFORE_MAIN,
                 GlslParser.parseExpression("uniform int u_light_count;"));
         tree.getBody().add(GlslInjectionPoint.BEFORE_MAIN,
-                GlslParser.parseExpression("uniform vec4 u_LightData[64];"));
+                GlslParser.parseExpression("uniform vec4 u_LightData[256];"));
         tree.getBody().add(GlslInjectionPoint.BEFORE_MAIN,
-                GlslParser.parseExpression("uniform vec4 u_LightColor[64];"));
+                GlslParser.parseExpression("uniform vec4 u_LightColor[256];"));
     }
 
     private void addOutputVariables(GlslTree tree) throws GlslSyntaxException {
@@ -94,10 +91,42 @@ public class ColorLightPreProcessor implements ShaderPreProcessor {
     }
 
     private void addLightingFunction(Context ctx, GlslTree tree) throws GlslSyntaxException, IOException, LexerException {
-        boolean exists = tree.functions().anyMatch(func -> "getBlockLightColor".equals(func.getName()));
+        String source = """
+                vec4 getBlockLightColor(vec3 position, int count, vec4 LightData[256], vec4 LightColor[256]) {
+                    vec3 coloredLight = vec3(0.0);
+                
+                    for (int i = 0; i < count; i++) {
+                        vec4 lightPosRad = LightData[i];
+                        vec4 lightColorIntensity = LightColor[i];
+                
+                        vec3 delta = lightPosRad.xyz - position;
+                
+                        float radius = lightPosRad.w;
+                        float radiusSq = radius * radius;
+                        float distSq = dot(delta,delta);
+                
+                        if (distSq > radiusSq) {
+                            continue;
+                        }
+                
+                        float falloff = 1.0 - (distSq / radiusSq);
+                        falloff *= falloff;
+                
+                        float intensity = falloff * lightColorIntensity.a;
+                
+                        coloredLight += lightColorIntensity.rgb * intensity;
+                    }
+                
+                    float maxChannel = max(coloredLight.r, max(coloredLight.g, coloredLight.b));
+                    if (maxChannel > 1.0) {
+                        coloredLight /= maxChannel;
+                    }
+                    return vec4(coloredLight,1.0);
+                }
+                """;
 
-        if (exists) return;
-        ctx.include(tree, ResourceLocation.fromNamespaceAndPath("mikpik", "colored_light"), IncludeOverloadStrategy.SOURCE);
+        GlslTree includeTree = GlslParser.parse(source);
+        ctx.include(tree, "mikpik:colored_light", includeTree, IncludeOverloadStrategy.SOURCE);
     }
 
 
@@ -108,7 +137,7 @@ public class ColorLightPreProcessor implements ShaderPreProcessor {
         GlslFunctionNode main = mainOpt.get();
         GlslNodeList body = main.getBody();
 
-        body.add(GlslParser.parseExpression("blockLightColor = getBlockLightColor(pos, u_light_count, u_LightData, u_LightColor);"));
+        body.add(GlslParser.parseExpression("blockLightColor = getBlockLightColor(position, u_light_count, u_LightData, u_LightColor);"));
     }
 
     private void addFragmentInputVariables(GlslTree tree) throws GlslSyntaxException {
@@ -123,11 +152,7 @@ public class ColorLightPreProcessor implements ShaderPreProcessor {
         GlslFunctionNode main = mainOpt.get();
         GlslNodeList body = main.getBody();
 
-        String colorModCode = """
-            if (blockLightColor.a > 0.0) {
-                color.rgb *= (1.75 * blockLightColor.rgb + vec3(1.0));
-            }
-            """;
+        String colorModCode = "color.rgb *= (1.25 * blockLightColor.rgb + vec3(1.0));";
 
         for (int i = 0; i < body.size(); i++) {
             GlslNode node = body.get(i);

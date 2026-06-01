@@ -1,36 +1,52 @@
 package com.viquelle.mikpik.coloredlights;
 
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
 public final class ColoredLightBuffer {
-    public static final int MAX_LIGHTS = 64;
+    public static final int MAX_LIGHTS = 256;
 
     private static final List<ActiveLight> LIGHTS = new ArrayList<>(MAX_LIGHTS);
     private static final List<LightDistancePair> SORTING_LIST = new ArrayList<>();
+
+    private static final LongOpenHashSet PREVIOUS_LIGHTS = new LongOpenHashSet();
+    private static final LongOpenHashSet CURRENT_LIGHTS = new LongOpenHashSet();
+
+    private ColoredLightBuffer() {}
 
     public static void clear() {
         LIGHTS.clear();
         SORTING_LIST.clear();
     }
 
+    public static boolean wasVisibleLastFrame(long id) {
+        return PREVIOUS_LIGHTS.contains(id);
+    }
+
     public static void addWithDistance(ActiveLight light, double distanceSq) {
-        if (SORTING_LIST.size() < MAX_LIGHTS * 2) { // Буфер для сортировки
-            SORTING_LIST.add(new LightDistancePair(light, distanceSq));
-        }
+        SORTING_LIST.add(new LightDistancePair(light, distanceSq));
     }
 
     public static void sortAndTrim() {
-        // Сортируем по расстоянию (ближайшие первые)
         SORTING_LIST.sort(Comparator.comparingDouble(LightDistancePair::distanceSq));
 
-        // Берем только MAX_LIGHTS ближайших
         int count = Math.min(SORTING_LIST.size(), MAX_LIGHTS);
+
         LIGHTS.clear();
+        CURRENT_LIGHTS.clear();
+
         for (int i = 0; i < count; i++) {
-            LIGHTS.add(SORTING_LIST.get(i).light());
+            ActiveLight light = SORTING_LIST.get(i).light();
+
+            LIGHTS.add(light);
+            CURRENT_LIGHTS.add(light.id());
         }
+
+        PREVIOUS_LIGHTS.clear();
+        PREVIOUS_LIGHTS.addAll(CURRENT_LIGHTS);
     }
 
     public static List<ActiveLight> get() {
@@ -41,5 +57,8 @@ public final class ColoredLightBuffer {
         return LIGHTS.size();
     }
 
-    private record LightDistancePair(ActiveLight light, double distanceSq) {}
+    private record LightDistancePair(
+            ActiveLight light,
+            double distanceSq
+    ) {}
 }

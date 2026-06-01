@@ -1,6 +1,7 @@
 package com.viquelle.mikpik.coloredlights;
 
 public record ActiveLight(
+        long id,
         float x,
         float y,
         float z,
@@ -14,6 +15,7 @@ public record ActiveLight(
         double dx = x - px;
         double dy = y - py;
         double dz = z - pz;
+
         return dx * dx + dy * dy + dz * dz;
     }
 }
