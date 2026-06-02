@@ -10,7 +10,7 @@ import net.minecraft.world.level.chunk.LevelChunk;
 
 public final class ColoredLightScanner {
 
-    private static final int SCAN_RADIUS = 96;
+    private static final int SCAN_RADIUS = 160;
     private static final double RADIUS_SQR = SCAN_RADIUS * SCAN_RADIUS;
 
     // бонус старым источникам

@@ -10,6 +10,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.*;
@@ -20,9 +21,9 @@ public class TorchLightSource implements LightSource {
     private final Map<String, PointLightHandle> lights = new HashMap<>();
 
     private enum TorchType {
-        TORCH(Items.TORCH, 15.0f, 1.0f, 0xFFD59E, true),
-        SOUL_TORCH(Items.SOUL_TORCH, 12f, 0.8f, 0x5CACEE, true),
-        REDSTONE_TORCH(Items.REDSTONE_TORCH, 8f, 0.67f, 0xFF6666, false);
+        TORCH(Items.TORCH, 14.0f, 1.0f, 0xFFDCC7, true),
+        SOUL_TORCH(Items.SOUL_TORCH, 12f, 0.8f, 0x80A2FF, true),
+        REDSTONE_TORCH(Items.REDSTONE_TORCH, 7f, 1.35f, 0xFF8282, false);
 
         Item item;
         float radius;
