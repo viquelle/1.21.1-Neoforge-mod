@@ -1,8 +1,12 @@
 package com.viquelle.mikpik.coloredlights;
 
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.LanternBlock;
+
 import java.util.HashMap;
 import java.util.Map;
+
 
 public final class HardcodedLights {
 
@@ -21,10 +25,19 @@ public final class HardcodedLights {
     private static final Map<Object, LightData> LIGHTS = new HashMap<>();
 
     static {
-        LIGHTS.put(Blocks.TORCH, new LightData(0xFFAA33, 14f, 0.45f));
+
+        LIGHTS.put(Blocks.TORCH, new LightData(0xFFAA33, 14f, 0.35f));
+        LIGHTS.put(Blocks.WALL_TORCH, new LightData(0xFFAA33, 14f, 0.35f));
+        LIGHTS.put(Blocks.LANTERN, new LightData(0xFFAA33, 14f, 0.35f));
+
         LIGHTS.put(Blocks.SOUL_TORCH, new LightData(0x224FFF, 10f, 1.0f));
-        LIGHTS.put(Blocks.REDSTONE_TORCH, new LightData(0xFF2222, 7f, 1.35f));
-        LIGHTS.put(Blocks.MAGMA_BLOCK, new LightData(0xFF6600, 6f, 1.2f));
+        LIGHTS.put(Blocks.SOUL_WALL_TORCH, new LightData(0x224FFF, 10f, 1.0f));
+        LIGHTS.put(Blocks.SOUL_LANTERN, new LightData(0x224FFF, 10f, 1.0f));
+
+        LIGHTS.put(Blocks.REDSTONE_TORCH, new LightData(0xFF8282, 7f, 5f));
+        LIGHTS.put(Blocks.REDSTONE_WALL_TORCH, new LightData(0xFF8282, 7f, 1.35f));
+
+        LIGHTS.put(Blocks.MAGMA_BLOCK, new LightData(0xFF6600, 2f, 1.2f));
     }
 
     public static LightData get(Object block) {

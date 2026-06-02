@@ -98,7 +98,7 @@ public class Darkness {
         float skyIntensity = skyFactor(world, tickDelta);
         DimensionType dim = world.dimensionType();
         for (int b = 0; b < 16; b++) {
-            float block = LightTexture.getBrightness(dim,b);
+            float block = b / 15.0f;
             block = block * (prevFlicker * 0.1f + 1.0f);
             for (int s = 0; s < 16; s++ ) {
                 float light;
@@ -107,7 +107,9 @@ public class Darkness {
                 } else {
                     float skyAccess = s / 15.0f;
                     skyAccess *= skyIntensity;
-                    light = block + skyAccess * (1.0f - block);
+                    //light = block + skyAccess * (1.0f - block);
+                    light = block + skyAccess;
+                    light = (float) Math.min(light, 1.0);
                 }
                 light = light; //* light * (2.0f - light);
                 LUMINANCE[b][s] = Mth.clamp(light, 0.0f, 1f);
