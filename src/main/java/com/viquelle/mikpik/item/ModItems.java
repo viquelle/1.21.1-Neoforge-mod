@@ -3,6 +3,7 @@ package com.viquelle.mikpik.item;
 import com.viquelle.mikpik.MikpikMod;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
+import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.registries.DeferredRegister;
 

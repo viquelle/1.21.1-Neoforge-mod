@@ -1,5 +1,5 @@
 vec4 getBlockLightColor(vec3 position, int count, vec4 LightData[256], vec4 LightColor[256]) {
-    vec3 coloredLight = vec3(0.0);
+    vec4 coloredLight = vec4(0.0);
 
     for (int i = 0; i < count; i++) {
         vec4 lightPosRad = LightData[i];
@@ -20,12 +20,9 @@ vec4 getBlockLightColor(vec3 position, int count, vec4 LightData[256], vec4 Ligh
 
         float intensity = falloff * lightColorIntensity.a;
 
-        coloredLight += lightColorIntensity.rgb * intensity;
+        coloredLight.rgb += lightColorIntensity.rgb * intensity;
+        coloredLight.a += intensity;
     }
 
-    float maxChannel = max(coloredLight.r, max(coloredLight.g, coloredLight.b));
-    if (maxChannel > 1.0) {
-        coloredLight /= maxChannel;
-    }
-    return vec4(coloredLight,1.0);
+    return vec4(coloredLight.rgb, coloredLight.a);
 }

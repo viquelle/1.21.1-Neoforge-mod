@@ -26,18 +26,18 @@ public final class HardcodedLights {
 
     static {
 
-        LIGHTS.put(Blocks.TORCH, new LightData(0xFFAA33, 14f, 0.35f));
-        LIGHTS.put(Blocks.WALL_TORCH, new LightData(0xFFAA33, 14f, 0.35f));
-        LIGHTS.put(Blocks.LANTERN, new LightData(0xFFAA33, 14f, 0.35f));
+        LIGHTS.put(Blocks.TORCH, new LightData(0xFFD294, 15f, 1.f));
+        LIGHTS.put(Blocks.WALL_TORCH, new LightData(0xFFD294, 15f, 1f));
+        LIGHTS.put(Blocks.LANTERN, new LightData(0xFFD294, 15f, 1.f));
 
-        LIGHTS.put(Blocks.SOUL_TORCH, new LightData(0x224FFF, 10f, 1.0f));
-        LIGHTS.put(Blocks.SOUL_WALL_TORCH, new LightData(0x224FFF, 10f, 1.0f));
-        LIGHTS.put(Blocks.SOUL_LANTERN, new LightData(0x224FFF, 10f, 1.0f));
+        LIGHTS.put(Blocks.SOUL_TORCH, new LightData(0x3d64FF, 11f, 0.8f));
+        LIGHTS.put(Blocks.SOUL_WALL_TORCH, new LightData(0x3d64FF, 11f, 0.8f));
+        LIGHTS.put(Blocks.SOUL_LANTERN, new LightData(0x3d64FF, 11f, 0.8f));
 
-        LIGHTS.put(Blocks.REDSTONE_TORCH, new LightData(0xFF8282, 7f, 5f));
-        LIGHTS.put(Blocks.REDSTONE_WALL_TORCH, new LightData(0xFF8282, 7f, 1.35f));
+        LIGHTS.put(Blocks.REDSTONE_TORCH, new LightData(0xFF4040, 8f, 1.2f));
+        LIGHTS.put(Blocks.REDSTONE_WALL_TORCH, new LightData(0xFF4040, 8f, 1.2f));
 
-        LIGHTS.put(Blocks.MAGMA_BLOCK, new LightData(0xFF6600, 2f, 1.2f));
+        LIGHTS.put(Blocks.MAGMA_BLOCK, new LightData(0xffa55c, 3f, 0.6f));
     }
 
     public static LightData get(Object block) {

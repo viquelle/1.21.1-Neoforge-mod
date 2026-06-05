@@ -19,8 +19,8 @@ public class LanternLightSource implements LightSource {
     private final Map<String, PointLightHandle> lights = new HashMap<>();
 
     private enum LanternType {
-        LANTERN(Items.LANTERN, 20.0f, 1.0f, 0xFFDCC7, true),
-        SOUL_LANTERN(Items.SOUL_LANTERN, 16.0f, 0.8f, 0x80A2FF, true);
+        LANTERN(Items.LANTERN, 20.0f, 1.0f, 0xFFD294, true),
+        SOUL_LANTERN(Items.SOUL_LANTERN, 16.0f, 0.8f, 0x3d64FF, true);
 
         Item item;
         float radius;
