@@ -59,13 +59,13 @@ public class ColorLightPreProcessor implements ShaderPreProcessor {
     }
 
     private void modifyVertexShader(Context ctx, GlslTree tree) throws GlslSyntaxException, IOException, LexerException {
-        MikpikMod.LOGGER.debug("1 vertex RESULT BOBINA to source string: {}", tree.toSourceString());
+//        MikpikMod.LOGGER.debug("1 vertex RESULT BOBINA to source string: {}", tree.toSourceString());
         addNewUniforms(tree);
-        MikpikMod.LOGGER.debug("2 vertex RESULT BOBINA to source string: {}", tree.toSourceString());
+//        MikpikMod.LOGGER.debug("2 vertex RESULT BOBINA to source string: {}", tree.toSourceString());
         addOutputVariables(tree);
-        MikpikMod.LOGGER.debug("3 vertex RESULT BOBINA to source string: {}", tree.toSourceString());
+//        MikpikMod.LOGGER.debug("3 vertex RESULT BOBINA to source string: {}", tree.toSourceString());
         addLightingFunction(ctx, tree);
-        MikpikMod.LOGGER.debug("4 vertex RESULT BOBINA to source string: {}", tree.toSourceString());
+//        MikpikMod.LOGGER.debug("4 vertex RESULT BOBINA to source string: {}", tree.toSourceString());
         modifyVertexMain(tree);
         MikpikMod.LOGGER.debug("5 vertex RESULT BOBINA to source string: {}", tree.toSourceString());
     }
@@ -92,15 +92,13 @@ public class ColorLightPreProcessor implements ShaderPreProcessor {
 
     private void addLightingFunction(Context ctx, GlslTree tree) throws GlslSyntaxException, IOException, LexerException {
         String source = """
-                vec4 getBlockLightColor(vec3 position, int count, vec4 LightData[256], vec4 LightColor[256]) {
-                    vec3 coloredLight = vec3(0.0);
-                
+                vec4 getBlockLightColor(vec3 position, int count, vec4 LightData[256], vec4 LightColor[256], float factor) {
+                    vec4 coloredLight = vec4(0.0);
                     for (int i = 0; i < count; i++) {
                         vec4 lightPosRad = LightData[i];
                         vec4 lightColorIntensity = LightColor[i];
-                
+
                         vec3 delta = lightPosRad.xyz - position;
-                
                         float radius = lightPosRad.w;
                         float radiusSq = radius * radius;
                         float distSq = dot(delta,delta);
@@ -110,21 +108,19 @@ public class ColorLightPreProcessor implements ShaderPreProcessor {
                         }
                 
                         float falloff = 1.0 - (distSq / radiusSq);
-                        falloff *= falloff;
                 
-                        float intensity = falloff * lightColorIntensity.a;
+                        float intensity = falloff * lightColorIntensity.a * factor;
                 
-                        coloredLight += lightColorIntensity.rgb * intensity;
+                        coloredLight.rgb += lightColorIntensity.rgb * intensity;
+                        coloredLight.a += intensity;
                     }
-                
-                    float maxChannel = max(coloredLight.r, max(coloredLight.g, coloredLight.b));
-                    if (maxChannel > 1.0) {
-                        coloredLight /= maxChannel;
+                    if (coloredLight.a > 0.001) {
+                        return vec4(coloredLight.rgb/coloredLight.a, min(coloredLight.a, 1.0));
+                    } else {
+                        return coloredLight;
                     }
-                    return vec4(coloredLight,1.0);
                 }
                 """;
-
         GlslTree includeTree = GlslParser.parse(source);
         ctx.include(tree, "mikpik:colored_light", includeTree, IncludeOverloadStrategy.SOURCE);
     }
@@ -137,7 +133,9 @@ public class ColorLightPreProcessor implements ShaderPreProcessor {
         GlslFunctionNode main = mainOpt.get();
         GlslNodeList body = main.getBody();
 
-        body.add(GlslParser.parseExpression("blockLightColor = getBlockLightColor(position, u_light_count, u_LightData, u_LightColor);"));
+        body.add(GlslParser.parseExpression("float block = float((a_LightAndData.r >> 4u) & 15u) / 15.0;"));
+        body.add(GlslParser.parseExpression("float factor = block / (1+block) + block*0.5;"));
+        body.add(GlslParser.parseExpression("blockLightColor = getBlockLightColor(position, u_light_count, u_LightData, u_LightColor, factor);"));
     }
 
     private void addFragmentInputVariables(GlslTree tree) throws GlslSyntaxException {
@@ -152,7 +150,14 @@ public class ColorLightPreProcessor implements ShaderPreProcessor {
         GlslFunctionNode main = mainOpt.get();
         GlslNodeList body = main.getBody();
 
-        String colorModCode = "color.rgb *= (1.25 * blockLightColor.rgb + vec3(1.0));";
+        String colorModCode = """
+    if (blockLightColor.a > 0.0) {
+        float origLuma = dot(color.rgb, vec3(0.2126, 0.7152, 0.0722));
+        vec3 tinted = color.rgb * blockLightColor.rgb;
+        float tintedLuma = dot(tinted, vec3(0.2126, 0.7152, 0.0722));
+        color.rgb = mix(color.rgb, tinted * (origLuma / max(tintedLuma, 0.001)), blockLightColor.a);
+    }
+    """;
 
         for (int i = 0; i < body.size(); i++) {
             GlslNode node = body.get(i);
