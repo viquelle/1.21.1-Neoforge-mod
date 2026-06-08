@@ -34,6 +34,7 @@ public class ColorLightRenderer {
 
     public void updateLights(Vec3 cameraPos) {
         var activeLights = ColoredLightBuffer.get();
+        ColoredLightBuffer.frame();
         currentLightCount = Math.min(activeLights.size(), MAX_LIGHTS);
 
         posRadiusBuffer.clear();
