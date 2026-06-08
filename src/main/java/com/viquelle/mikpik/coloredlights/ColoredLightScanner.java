@@ -1,7 +1,7 @@
 package com.viquelle.mikpik.coloredlights;
 
-import com.viquelle.mikpik.MikpikMod;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.ChunkPos;
@@ -12,89 +12,107 @@ public final class ColoredLightScanner {
 
     private static final int SCAN_RADIUS = 160;
     private static final double RADIUS_SQR = SCAN_RADIUS * SCAN_RADIUS;
-
-    // бонус старым источникам
     private static final double STABILITY_FACTOR = 0.8;
 
-    private ColoredLightScanner() {}
+    private static LevelChunk getWorldChunk(long chunkKey) {
+        var mc = Minecraft.getInstance();
+        if (mc.level == null) return null;
 
-    // ==================== CACHE ====================
+        return mc.level.getChunkSource().getChunkNow(
+                ChunkPos.getX(chunkKey),
+                ChunkPos.getZ(chunkKey)
+        );
+    }
 
     public static void onChunkLoaded(LevelChunk chunk) {
-        long chunkKey = chunk.getPos().toLong();
+        long key = chunk.getPos().toLong();
 
-        var chunkLights = new Long2ObjectOpenHashMap<ActiveLight>();
+        var map = new Long2ObjectOpenHashMap<ActiveLight>();
+        scanChunk(chunk, map);
 
-        scanChunk(chunk, chunkLights);
-
-        if (!chunkLights.isEmpty()) {
-            ColoredLightCache.CHUNK_LIGHTS.put(chunkKey, chunkLights);
-
-            MikpikMod.LOGGER.debug(
-                    "Chunk loaded: {} lights added",
-                    chunkLights.size()
-            );
-        }
+        ColoredLightCache.CHUNK_LIGHTS.put(key, map);
     }
 
     public static void onChunkUnloaded(ChunkPos pos) {
-        var removed = ColoredLightCache.CHUNK_LIGHTS.remove(pos.toLong());
+        ColoredLightCache.CHUNK_LIGHTS.remove(pos.toLong());
+    }
 
-        if (removed != null) {
-            MikpikMod.LOGGER.debug(
-                    "Chunk unloaded: {} lights removed",
-                    removed.size()
-            );
+    public static void onBlockChanged(BlockPos pos, BlockState oldState, BlockState newState) {
+
+        long chunkKey = ChunkPos.asLong(pos.getX() >> 4, pos.getZ() >> 4);
+
+        LevelChunk worldChunk = getWorldChunk(chunkKey);
+        if (worldChunk == null) return;
+
+        var lightChunk = ColoredLightCache.getLightChunk(chunkKey);
+        if (lightChunk == null) return;
+
+        update(pos, worldChunk, lightChunk, oldState);
+        update(pos, worldChunk, lightChunk, newState);
+
+        for (BlockPos n : getNeighbors(pos)) {
+
+            long nKey = ChunkPos.asLong(n.getX() >> 4, n.getZ() >> 4);
+
+            LevelChunk wc = getWorldChunk(nKey);
+            var lc = ColoredLightCache.getLightChunk(nKey);
+
+            if (wc == null || lc == null) continue;
+
+            BlockState ns = wc.getBlockState(n);
+            update(n, wc, lc, ns);
         }
     }
 
-    public static void onBlockChanged(
-            BlockPos pos,
-            BlockState oldState,
-            BlockState newState
-    ) {
-        var oldLight = HardcodedLights.get(oldState.getBlock());
-        var newLight = HardcodedLights.get(newState.getBlock());
+    private static void update(BlockPos pos,
+                               LevelChunk world,
+                               Long2ObjectOpenHashMap<ActiveLight> lights,
+                               BlockState state) {
 
-        if (oldLight == null && newLight == null) {
-            return;
-        }
+        long key = pos.asLong();
+        lights.remove(key);
 
-        long chunkKey = ChunkPos.asLong(
-                pos.getX() >> 4,
-                pos.getZ() >> 4
-        );
+        var data = HardcodedLights.get(state.getBlock());
+        if (data == null) return;
 
-        var chunkLights = ColoredLightCache.CHUNK_LIGHTS.get(chunkKey);
-
-        if (chunkLights == null && newLight != null) {
-            chunkLights = new Long2ObjectOpenHashMap<>();
-            ColoredLightCache.CHUNK_LIGHTS.put(chunkKey, chunkLights);
-        }
-
-        if (chunkLights != null) {
-            long blockKey = pos.asLong();
-
-            if (oldLight != null) {
-                chunkLights.remove(blockKey);
-            }
-
-            if (newLight != null) {
-                chunkLights.put(
-                        blockKey,
-                        createLight(pos, newLight)
-                );
-            }
-
-            if (chunkLights.isEmpty()) {
-                ColoredLightCache.CHUNK_LIGHTS.remove(chunkKey);
-            }
+        if (isSurface(pos, world, state)) {
+            lights.put(key, createLight(pos, data));
         }
     }
 
-    // ==================== VISIBLE BUFFER ====================
+    private static boolean isSurface(BlockPos pos,
+                                     LevelChunk world,
+                                     BlockState state) {
+
+        var data = HardcodedLights.get(state.getBlock());
+        if (data == null) return false;
+
+        if (!data.isRepresentative) {
+            return true;
+        }
+
+        boolean hasAir = false;
+        int same = 0;
+
+        for (BlockPos n : getNeighbors(pos)) {
+
+            BlockState ns = world.getBlockState(n);
+
+            if (ns.isAir()) {
+                hasAir = true;
+                continue;
+            }
+
+            if (ns.getBlock() == state.getBlock()) {
+                same++;
+            }
+        }
+
+        return hasAir || same < 6;
+    }
 
     public static void buildVisibleLightBuffer(LocalPlayer player) {
+
         ColoredLightBuffer.clear();
 
         double px = player.getX();
@@ -109,26 +127,17 @@ public final class ColoredLightScanner {
         for (int dx = -chunkRadius; dx <= chunkRadius; dx++) {
             for (int dz = -chunkRadius; dz <= chunkRadius; dz++) {
 
-                long chunkKey = ChunkPos.asLong(
-                        baseCX + dx,
-                        baseCZ + dz
-                );
+                long chunkKey = ChunkPos.asLong(baseCX + dx, baseCZ + dz);
 
-                var chunkLights = ColoredLightCache.CHUNK_LIGHTS.get(chunkKey);
+                var chunk = ColoredLightCache.getLightChunk(chunkKey);
+                if (chunk == null) continue;
 
-                if (chunkLights == null) {
-                    continue;
-                }
-
-                for (var light : chunkLights.values()) {
+                for (var light : chunk.values()) {
 
                     double distSq = light.distanceSq(px, py, pz);
 
-                    if (distSq > RADIUS_SQR) {
-                        continue;
-                    }
+                    if (distSq > RADIUS_SQR) continue;
 
-                    // hysteresis
                     if (ColoredLightBuffer.wasVisibleLastFrame(light.id())) {
                         distSq *= STABILITY_FACTOR;
                     }
@@ -141,14 +150,10 @@ public final class ColoredLightScanner {
         ColoredLightBuffer.sortAndTrim();
     }
 
-    // ==================== HELPERS ====================
+    private static void scanChunk(LevelChunk chunk,
+                                  Long2ObjectOpenHashMap<ActiveLight> out) {
 
-    private static void scanChunk(
-            LevelChunk chunk,
-            Long2ObjectOpenHashMap<ActiveLight> out
-    ) {
         var sections = chunk.getSections();
-
         var cp = chunk.getPos();
 
         int baseX = cp.getMinBlockX();
@@ -157,10 +162,7 @@ public final class ColoredLightScanner {
         for (int i = 0; i < sections.length; i++) {
 
             var section = sections[i];
-
-            if (section == null || section.hasOnlyAir()) {
-                continue;
-            }
+            if (section == null || section.hasOnlyAir()) continue;
 
             int baseY = chunk.getSectionYFromSectionIndex(i) << 4;
 
@@ -169,21 +171,14 @@ public final class ColoredLightScanner {
                     for (int z = 0; z < 16; z++) {
 
                         var state = section.getBlockState(x, y, z);
-
                         var data = HardcodedLights.get(state.getBlock());
 
-                        if (data != null) {
+                        if (data == null) continue;
 
-                            var pos = new BlockPos(
-                                    baseX + x,
-                                    baseY + y,
-                                    baseZ + z
-                            );
+                        var pos = new BlockPos(baseX + x, baseY + y, baseZ + z);
 
-                            out.put(
-                                    pos.asLong(),
-                                    createLight(pos, data)
-                            );
+                        if (isSurface(pos, chunk, state)) {
+                            out.put(pos.asLong(), createLight(pos, data));
                         }
                     }
                 }
@@ -191,23 +186,29 @@ public final class ColoredLightScanner {
         }
     }
 
-    private static ActiveLight createLight(
-            BlockPos pos,
-            HardcodedLights.LightData data
-    ) {
+    private static BlockPos[] getNeighbors(BlockPos p) {
+        return new BlockPos[] {
+                p.offset(1, 0, 0),
+                p.offset(-1, 0, 0),
+                p.offset(0, 1, 0),
+                p.offset(0, -1, 0),
+                p.offset(0, 0, 1),
+                p.offset(0, 0, -1)
+        };
+    }
+
+    private static ActiveLight createLight(BlockPos pos,
+                                           HardcodedLights.LightData data) {
+
         return new ActiveLight(
                 pos.asLong(),
-
                 pos.getX() + 0.5f,
                 pos.getY() + 0.5f,
                 pos.getZ() + 0.5f,
-
                 data.radius,
-
-                ((data.color >> 16) & 255) / 255.0f,
-                ((data.color >> 8) & 255) / 255.0f,
-                (data.color & 255) / 255.0f,
-
+                ((data.color >> 16) & 255) / 255f,
+                ((data.color >> 8) & 255) / 255f,
+                (data.color & 255) / 255f,
                 data.intensity
         );
     }

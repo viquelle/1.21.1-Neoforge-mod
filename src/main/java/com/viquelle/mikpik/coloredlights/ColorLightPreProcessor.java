@@ -92,34 +92,44 @@ public class ColorLightPreProcessor implements ShaderPreProcessor {
 
     private void addLightingFunction(Context ctx, GlslTree tree) throws GlslSyntaxException, IOException, LexerException {
         String source = """
-                vec4 getBlockLightColor(vec3 position, int count, vec4 LightData[256], vec4 LightColor[256], float factor) {
-                    vec4 coloredLight = vec4(0.0);
-                    for (int i = 0; i < count; i++) {
-                        vec4 lightPosRad = LightData[i];
-                        vec4 lightColorIntensity = LightColor[i];
+vec4 getBlockLightColor(vec3 position, int count, vec4 LightData[256], vec4 LightColor[256], float factor)
+{
+    vec3 colorSum = vec3(0.0);
+    float weightSum = 0.0;
+    float maxIntensity = 0.0;
 
-                        vec3 delta = lightPosRad.xyz - position;
-                        float radius = lightPosRad.w;
-                        float radiusSq = radius * radius;
-                        float distSq = dot(delta,delta);
-                
-                        if (distSq > radiusSq) {
-                            continue;
-                        }
-                
-                        float falloff = 1.0 - (distSq / radiusSq);
-                
-                        float intensity = falloff * lightColorIntensity.a * factor;
-                
-                        coloredLight.rgb += lightColorIntensity.rgb * intensity;
-                        coloredLight.a += intensity;
-                    }
-                    if (coloredLight.a > 0.001) {
-                        return vec4(coloredLight.rgb/coloredLight.a, min(coloredLight.a, 1.0));
-                    } else {
-                        return coloredLight;
-                    }
-                }
+    for(int i = 0; i < count; i++)
+    {
+        vec4 lightPosRad = LightData[i];
+        vec4 lightColorIntensity = LightColor[i];
+
+        vec3 delta = lightPosRad.xyz - position;
+
+        float radius = lightPosRad.w;
+        float radiusSq = radius * radius;
+
+        float distSq = dot(delta, delta);
+
+        if(distSq > radiusSq)
+            continue;
+
+        float falloff = 1.0 - distSq / radiusSq;
+
+        float weight = falloff * falloff * falloff * lightColorIntensity.a;
+
+        colorSum += lightColorIntensity.rgb * weight;
+        weightSum += weight;
+
+        maxIntensity = max(maxIntensity, weight);
+    }
+
+    if(weightSum <= 0.001)
+        return vec4(0.0);
+
+    vec3 mixedColor = colorSum / weightSum;
+
+    return vec4(mixedColor, maxIntensity);
+}
                 """;
         GlslTree includeTree = GlslParser.parse(source);
         ctx.include(tree, "mikpik:colored_light", includeTree, IncludeOverloadStrategy.SOURCE);
@@ -134,8 +144,8 @@ public class ColorLightPreProcessor implements ShaderPreProcessor {
         GlslNodeList body = main.getBody();
 
         body.add(GlslParser.parseExpression("float block = float((a_LightAndData.r >> 4u) & 15u) / 15.0;"));
-        body.add(GlslParser.parseExpression("float factor = block / (1+block) + block*0.5;"));
-        body.add(GlslParser.parseExpression("blockLightColor = getBlockLightColor(position, u_light_count, u_LightData, u_LightColor, factor);"));
+        body.add(GlslParser.parseExpression("float factor = block > (1.0 / 15.0) ? 1.0 : 0.0;"));
+        body.add(GlslParser.parseExpression("blockLightColor = getBlockLightColor(position, u_light_count, u_LightData, u_LightColor, factor) * factor;"));
     }
 
     private void addFragmentInputVariables(GlslTree tree) throws GlslSyntaxException {
@@ -151,12 +161,14 @@ public class ColorLightPreProcessor implements ShaderPreProcessor {
         GlslNodeList body = main.getBody();
 
         String colorModCode = """
-    if (blockLightColor.a > 0.0) {
-        float origLuma = dot(color.rgb, vec3(0.2126, 0.7152, 0.0722));
-        vec3 tinted = color.rgb * blockLightColor.rgb;
-        float tintedLuma = dot(tinted, vec3(0.2126, 0.7152, 0.0722));
-        color.rgb = mix(color.rgb, tinted * (origLuma / max(tintedLuma, 0.001)), blockLightColor.a);
-    }
+if(blockLightColor.a > 0.0) {
+    float lightAmount = clamp(blockLightColor.a, 0.0, 1.0);
+    float vanillaLum = max(dot(color.rgb, vec3(0.2126, 0.7152, 0.0722)),0.001) * (1.0 + blockLightColor.a * 0.10);
+    vec3 tint = color.rgb * blockLightColor.rgb;
+    float tintLum = max(dot(tint, vec3(0.2126, 0.7152, 0.0722)),0.001);
+    
+    color.rgb = mix(color.rgb, tint * vanillaLum / tintLum, lightAmount);
+}
     """;
 
         for (int i = 0; i < body.size(); i++) {
