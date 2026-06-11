@@ -72,22 +72,22 @@ public final class ColoredLightScanner {
         long key = pos.asLong();
         lights.remove(key);
 
-        var data = HardcodedLights.get(state.getBlock());
+        HardcodedLights.LightDefinition data = HardcodedLights.get(state.getBlock());
         if (data == null) return;
 
-        if (isSurface(pos, world, state)) {
-            lights.put(key, createLight(pos, data));
+        if (data.predicate().test(state)) {
+            if (isSurface(pos, world, state, data)) {
+                lights.put(key, createLight(pos, data.data()));
+            }
         }
     }
 
     private static boolean isSurface(BlockPos pos,
                                      LevelChunk world,
-                                     BlockState state) {
+                                     BlockState state,
+                                     HardcodedLights.LightDefinition data) {
 
-        var data = HardcodedLights.get(state.getBlock());
-        if (data == null) return false;
-
-        if (!data.isRepresentative) {
+        if (!data.data().isRepresentative) {
             return true;
         }
 
@@ -147,7 +147,7 @@ public final class ColoredLightScanner {
             }
         }
 
-        ColoredLightBuffer.sortAndTrim();
+        ColoredLightBuffer.upload();
     }
 
     private static void scanChunk(LevelChunk chunk,
@@ -174,11 +174,11 @@ public final class ColoredLightScanner {
                         var data = HardcodedLights.get(state.getBlock());
 
                         if (data == null) continue;
-
+                        if (!data.predicate().test(state)) continue;
                         var pos = new BlockPos(baseX + x, baseY + y, baseZ + z);
 
-                        if (isSurface(pos, chunk, state)) {
-                            out.put(pos.asLong(), createLight(pos, data));
+                        if (isSurface(pos, chunk, state, data)) {
+                            out.put(pos.asLong(), createLight(pos, data.data()));
                         }
                     }
                 }
