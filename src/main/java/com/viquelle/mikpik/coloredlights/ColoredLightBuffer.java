@@ -9,6 +9,7 @@ public final class ColoredLightBuffer {
 
     public static final int MAX_LIGHTS = 256;
 
+    private static boolean isDirty = false;
     private static final List<ActiveLight> LIGHTS = new ArrayList<>(MAX_LIGHTS);
 
     private static final ActiveLight[] LIGHTS_BUF = new ActiveLight[MAX_LIGHTS];
@@ -37,7 +38,6 @@ public final class ColoredLightBuffer {
     }
 
     public static void addWithDistance(ActiveLight light, double distSq) {
-
         if (size < MAX_LIGHTS) {
             LIGHTS_BUF[size] = light;
             DIST_BUF[size] = distSq;
@@ -68,7 +68,7 @@ public final class ColoredLightBuffer {
         CURRENT_LIGHTS.add(light.id());
     }
 
-    public static void sortAndTrim() {
+    public static void upload() {
         LIGHTS.clear();
 
         for (int i = 0; i < size; i++) {
@@ -83,4 +83,5 @@ public final class ColoredLightBuffer {
     public static int size() {
         return size;
     }
+
 }
