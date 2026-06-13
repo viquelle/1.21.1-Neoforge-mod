@@ -15,7 +15,7 @@ public class ModAttachments {
     private static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, MikpikMod.MODID);
 
     public static final Supplier<AttachmentType<Float>> SANITY = ATTACHMENT_TYPES.register(
-            "sanity", () -> AttachmentType.builder(() -> 50.0f)
+            "sanity", () -> AttachmentType.builder(() -> 100.0f)
                     .serialize(Codec.FLOAT)
                     .build()
     );

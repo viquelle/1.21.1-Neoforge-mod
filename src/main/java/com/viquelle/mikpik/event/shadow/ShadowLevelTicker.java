@@ -6,19 +6,19 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.LightLayer;
-import net.minecraft.world.level.block.BaseTorchBlock;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.RedstoneTorchBlock;
-import net.minecraft.world.level.block.TorchBlock;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
+import org.spongepowered.asm.mixin.injection.Redirect;
 
 import java.util.Iterator;
 import java.util.List;
@@ -125,31 +125,57 @@ public class ShadowLevelTicker {
     }
 
     private static void finish(ServerLevel level, BlockPos pos) {
-
         BlockState state = level.getBlockState(pos);
         Block block = state.getBlock();
-        if (!(block instanceof BaseTorchBlock)) return;
-
-        level.destroyBlock(pos, false);
-
         RandomSource random = level.random;
-        if (level.random.nextFloat() >= 0.5f) {
-            if (level.random.nextBoolean()) {
+
+        if (block instanceof CampfireBlock) {
+            if (state.getValue(CampfireBlock.LIT)) {
+                level.setBlock(pos, state.setValue(CampfireBlock.LIT, false), 2);
+                level.playSound(
+                        null,
+                        pos,
+                        SoundEvents.FIRE_EXTINGUISH,
+                        SoundSource.BLOCKS,
+                        1f,1f
+                        );
+
+                level.sendParticles(
+                        ParticleTypes.LARGE_SMOKE,
+                        pos.getX() + 0.5,
+                        pos.getY() + 0.5,
+                        pos.getZ() + 0.5,
+                        40,
+                        0.2, 0.2, 0.2,
+                        0.05
+                        );
+            }
+            return;
+        }
+
+        if (block instanceof RedstoneTorchBlock) {
+            if (random.nextBoolean()) {
+                Block.popResource(level, pos, new ItemStack(Items.STICK));
+            }
+        } else if (block instanceof BaseTorchBlock || block instanceof WallTorchBlock) {
+            if (random.nextBoolean()) {
                 Block.popResource(level, pos, new ItemStack(Items.STICK));
             } else {
                 Block.popResource(level, pos, new ItemStack(Items.COAL));
             }
+        } else if (block instanceof LanternBlock) {
+            if (random.nextBoolean()) {
+                Block.popResource(level, pos, new ItemStack(Items.COAL));
+            } else {
+                Block.popResource(level, pos, new ItemStack(Items.GOLD_NUGGET));
+            }
+        } else if (block instanceof BaseFireBlock) {
+            ;;;
         }
 
-        level.sendParticles(
-                ParticleTypes.LARGE_SMOKE,
-                pos.getX() + 0.5,
-                pos.getY() + 0.5,
-                pos.getZ() + 0.5,
-                80,
-                0.2, 0.2, 0.2,
-                0.05
-        );
+        level.destroyBlock(pos, false);
+
+        explode(level,pos,false);
     }
 
     private static void explode(ServerLevel level, BlockPos pos, boolean abrupt) {

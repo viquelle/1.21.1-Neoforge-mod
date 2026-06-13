@@ -120,7 +120,7 @@ public class ShadowAnt {
         ShadowedBlocksConsumer data = ShadowWorld.get(level);
 
         // Сначала проверяем текущую позицию
-        if (tryBreakBlock(level, pos, sanityFactor, foundTarget, data)) {
+        if (tryBreakBlock(level, pos, foundTarget, data)) {
             return;
         }
 
@@ -130,7 +130,7 @@ public class ShadowAnt {
                 for (int dz = -2; dz <= 2; dz++) {
                     if (dx == 0 && dy == 0 && dz == 0) continue;
                     BlockPos checkPos = pos.offset(dx, dy, dz);
-                    if (tryBreakBlock(level, checkPos, sanityFactor, foundTarget, data)) {
+                    if (tryBreakBlock(level, checkPos, foundTarget, data)) {
                         return;
                     }
                 }
@@ -138,28 +138,24 @@ public class ShadowAnt {
         }
     }
 
-    private boolean tryBreakBlock(ServerLevel level, BlockPos checkPos, float sanityFactor,
-                                  boolean foundTarget, ShadowedBlocksConsumer data) {
+    private boolean tryBreakBlock(ServerLevel level, BlockPos checkPos, boolean foundTarget, ShadowedBlocksConsumer data) {
         BlockState state = level.getBlockState(checkPos);
         Block block = state.getBlock();
 
-        if (!(block instanceof BaseTorchBlock || block instanceof LanternBlock)) return false;
+        // Если блок уже в списке, пропускаем
         if (data.shadowed.containsKey(checkPos)) return false;
 
-//        float chance = foundTarget ? 0.5f : (0.3f + sanityFactor * 0.45f);
-//
-//        float y = checkPos.getY();
-//        if (y <= -32f) {
-//            chance = 1.0f;
-//        } else if (y < 32f) {
-//            float depthFactor = (32f - y) / 64f;
-//            chance = chance + (1f - chance) * depthFactor;
-//        }
-//
-//        if (level.random.nextFloat() < chance) {
-        data.shadowed.put(checkPos, new ShadowedBlocksConsumer.ShadowedBlock(block));
-        return true;
-//        }
-//        return false;
+        // Разрешаем нацеливаться на факелы, фонари и костры
+        if (block instanceof BaseTorchBlock ||
+                block instanceof WallTorchBlock ||
+                block instanceof LanternBlock ||
+                block instanceof BaseFireBlock ||
+                (block instanceof CampfireBlock && state.getValue(CampfireBlock.LIT))) {
+
+            data.shadowed.put(checkPos, new ShadowedBlocksConsumer.ShadowedBlock(block));
+            return true;
+        }
+
+        return false;
     }
 }

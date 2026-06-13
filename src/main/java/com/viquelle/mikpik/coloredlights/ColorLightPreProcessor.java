@@ -92,7 +92,7 @@ public class ColorLightPreProcessor implements ShaderPreProcessor {
 
     private void addLightingFunction(Context ctx, GlslTree tree) throws GlslSyntaxException, IOException, LexerException {
         String source = """
-vec4 getBlockLightColor(vec3 position, int count, vec4 LightData[256], vec4 LightColor[256], float factor)
+vec4 getBlockLightColor(vec3 position, int count, vec4 LightData[256], vec4 LightColor[256])
 {
     vec3 colorSum = vec3(0.0);
     float weightSum = 0.0;
@@ -106,17 +106,15 @@ vec4 getBlockLightColor(vec3 position, int count, vec4 LightData[256], vec4 Ligh
         vec3 delta = lightPosRad.xyz - position;
 
         float radius = lightPosRad.w;
-        float radiusSq = radius * radius;
+        float dist = abs(delta.x) + abs(delta.y) + abs(delta.z);
 
-        float distSq = dot(delta, delta);
-
-        if(distSq > radiusSq)
+        if(dist > radius)
             continue;
 
-        float falloff = 1.0 - distSq / radiusSq;
+        float falloff = 1.0 - dist / radius;
 
-        float weight = falloff * falloff * falloff * lightColorIntensity.a;
-
+        float weight = falloff * lightColorIntensity.a;
+        
         colorSum += lightColorIntensity.rgb * weight;
         weightSum += weight;
 
@@ -144,8 +142,15 @@ vec4 getBlockLightColor(vec3 position, int count, vec4 LightData[256], vec4 Ligh
         GlslNodeList body = main.getBody();
 
         body.add(GlslParser.parseExpression("float block = float((a_LightAndData.r >> 4u) & 15u) / 15.0;"));
-        body.add(GlslParser.parseExpression("float factor = block > (1.0 / 15.0) ? 1.0 : 0.0;"));
-        body.add(GlslParser.parseExpression("blockLightColor = getBlockLightColor(position, u_light_count, u_LightData, u_LightColor, factor) * factor;"));
+        body.add(GlslParser.parseExpression("float factor = block > 0.05 ? 1.0 : 0.0;"));
+        String func = """
+                if (factor != 0.0) {
+                    blockLightColor = getBlockLightColor(position, u_light_count, u_LightData, u_LightColor);
+                } else {
+                    blockLightColor = vec4(0.0);
+                }
+                """;
+        body.add(GlslParser.parseExpression(func));
     }
 
     private void addFragmentInputVariables(GlslTree tree) throws GlslSyntaxException {
