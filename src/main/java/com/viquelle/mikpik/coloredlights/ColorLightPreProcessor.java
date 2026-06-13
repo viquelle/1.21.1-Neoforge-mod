@@ -106,14 +106,12 @@ vec4 getBlockLightColor(vec3 position, int count, vec4 LightData[256], vec4 Ligh
         vec3 delta = lightPosRad.xyz - position;
 
         float radius = lightPosRad.w;
-        float radiusSq = radius * radius;
+        float dist = abs(delta.x) + abs(delta.y) + abs(delta.z);
 
-        float distSq = dot(delta, delta);
-
-        if(distSq > radiusSq)
+        if(dist > radius)
             continue;
 
-        float falloff = 1.0 - distSq / radiusSq;
+        float falloff = 1.0 - dist / radius;
 
         float weight = falloff * lightColorIntensity.a;
         
