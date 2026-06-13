@@ -4,7 +4,9 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 
@@ -77,7 +79,7 @@ public final class ColoredLightScanner {
 
         if (data.predicate().test(state)) {
             if (isSurface(pos, world, state, data)) {
-                lights.put(key, createLight(pos, data.data()));
+                lights.put(key, createLight(pos, state, world, data.data()));
             }
         }
     }
@@ -178,7 +180,7 @@ public final class ColoredLightScanner {
                         var pos = new BlockPos(baseX + x, baseY + y, baseZ + z);
 
                         if (isSurface(pos, chunk, state, data)) {
-                            out.put(pos.asLong(), createLight(pos, data.data()));
+                            out.put(pos.asLong(), createLight(pos, state, chunk, data.data()));
                         }
                     }
                 }
@@ -198,6 +200,8 @@ public final class ColoredLightScanner {
     }
 
     private static ActiveLight createLight(BlockPos pos,
+                                           BlockState state,
+                                           BlockGetter level,
                                            HardcodedLights.LightData data) {
 
         return new ActiveLight(
@@ -205,7 +209,7 @@ public final class ColoredLightScanner {
                 pos.getX() + 0.5f,
                 pos.getY() + 0.5f,
                 pos.getZ() + 0.5f,
-                data.radius,
+                state.getLightEmission(level, pos),
                 ((data.color >> 16) & 255) / 255f,
                 ((data.color >> 8) & 255) / 255f,
                 (data.color & 255) / 255f,

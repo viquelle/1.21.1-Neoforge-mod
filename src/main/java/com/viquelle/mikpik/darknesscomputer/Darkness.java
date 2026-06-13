@@ -9,8 +9,10 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
@@ -139,5 +141,21 @@ public class Darkness {
         return r * 0.2126f + g * 0.7152f + b * 0.0722f;
     }
 
+    public static int calculateLightByHeight(BlockState state, int y) {
+        double multiplier = Math.clamp(y / 64.0, 0.0, 1.0);
 
+        return (int) Math.max(0, Math.min(15, state.getLightEmission() * multiplier));
+    }
+
+    public static int calculateLightByHeight(BlockState state, int y, double minCoef) {
+        double multiplier = Math.clamp(y / 64.0, minCoef, 1.0);
+
+        return (int) Math.max(0, Math.min(15, state.getLightEmission() * multiplier));
+    }
+
+    public static int calculateLightByHeight(BlockState state, int y, int minLight) {
+        double multiplier = Math.clamp(y / 64.0, 0.0, 1.0);
+
+        return (int) Math.max(minLight, Math.min(15, state.getLightEmission() * multiplier));
+    }
 }

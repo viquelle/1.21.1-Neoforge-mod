@@ -11,6 +11,9 @@
     "ShaderChunkRendererMixin"
   ],
   "mixins": [
+    "CampfireLightMixin",
+    "LanternLightMixin",
+    "LightsMixin",
     "RecipeManagerMixin"
   ]
 }

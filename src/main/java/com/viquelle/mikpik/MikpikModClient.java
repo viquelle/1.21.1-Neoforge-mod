@@ -21,6 +21,7 @@ import foundry.veil.platform.VeilClientPlatform;
 import foundry.veil.platform.VeilEventPlatform;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ShaderInstance;
+import net.minecraft.world.level.lighting.BlockLightEngine;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
@@ -59,6 +60,7 @@ public class MikpikModClient {
         VeilEventPlatform.INSTANCE.onVeilAddShaderProcessors(((resourceProvider, registry) -> {
             registry.addPreprocessor(ColorLightPreProcessor.INSTANCE, true);
         }));
+
     }
 
     @SubscribeEvent
