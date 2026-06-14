@@ -8,9 +8,11 @@
     "MixinDynamicTexture",
     "MixinGameRenderer",
     "MixinLightTexture",
-    "ShaderChunkRendererMixin"
+    "ShaderChunkRendererMixin",
+    "client.PlayerRendererMixin"
   ],
   "mixins": [
+    "BaseFireMixin",
     "CampfireLightMixin",
     "LanternLightMixin",
     "LightsMixin",

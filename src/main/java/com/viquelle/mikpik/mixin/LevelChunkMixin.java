@@ -31,7 +31,6 @@ public class LevelChunkMixin {
 
         if (!level.isClientSide) return;
         BlockState oldState = cir.getReturnValue();
-        MikpikMod.LOGGER.info("{} {}", oldState, newState);
         if (oldState == null) {
             return;
         }

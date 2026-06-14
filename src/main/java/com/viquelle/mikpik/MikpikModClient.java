@@ -6,11 +6,10 @@ import com.viquelle.mikpik.coloredlights.ColoredLightScanner;
 import com.viquelle.mikpik.entity.shadowgrabber.model.ShadowForearmModel;
 import com.viquelle.mikpik.entity.shadowgrabber.model.ShadowHandModel;
 import com.viquelle.mikpik.entity.shadowgrabber.model.ShadowPortalModel;
+import com.viquelle.mikpik.item.Magnetlampe;
+import com.viquelle.mikpik.item.ModItems;
 import com.viquelle.mikpik.light.ClientLightManager;
-import com.viquelle.mikpik.light.source.LanternLightSource;
-import com.viquelle.mikpik.light.source.NetherStarLightSource;
-import com.viquelle.mikpik.light.source.PlayerAmbientLightSource;
-import com.viquelle.mikpik.light.source.TorchLightSource;
+import com.viquelle.mikpik.light.source.*;
 import foundry.veil.Veil;
 import foundry.veil.api.client.render.VeilRenderSystem;
 import foundry.veil.api.client.render.VeilRenderer;
@@ -21,6 +20,9 @@ import foundry.veil.platform.VeilClientPlatform;
 import foundry.veil.platform.VeilEventPlatform;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ShaderInstance;
+import net.minecraft.client.renderer.item.ItemProperties;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.lighting.BlockLightEngine;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -57,10 +59,18 @@ public class MikpikModClient {
         ClientLightManager.register(new LanternLightSource());
         ClientLightManager.register(new TorchLightSource());
         ClientLightManager.register(new PlayerAmbientLightSource());
+        ClientLightManager.register(new MagnetlampeLightSource());
         VeilEventPlatform.INSTANCE.onVeilAddShaderProcessors(((resourceProvider, registry) -> {
             registry.addPreprocessor(ColorLightPreProcessor.INSTANCE, true);
         }));
 
+        ItemProperties.register(
+                ModItems.MAGNETLAMPE.get(),
+                ResourceLocation.fromNamespaceAndPath(MikpikMod.MODID, "charged"),
+                (stack, level, entity, seed) -> {
+                    return Magnetlampe.getPercent(stack, level) > 0.0f ? 1.0f : 0.0f;
+                }
+        );
     }
 
     @SubscribeEvent
