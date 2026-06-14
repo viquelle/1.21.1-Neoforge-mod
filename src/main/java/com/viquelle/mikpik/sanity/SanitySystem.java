@@ -13,6 +13,7 @@ import net.minecraft.world.level.LightLayer;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 
@@ -58,6 +59,13 @@ public class SanitySystem {
         }
 
         return delta;
+    }
+
+    @SubscribeEvent
+    public static void onLoadPlayer(PlayerEvent.PlayerLoggedInEvent event) {
+        if (event.getEntity() instanceof ServerPlayer serverPlayer) {
+            PacketDistributor.sendToPlayer(serverPlayer, new SanitySyncPayload(SanitySystem.get(serverPlayer)));
+        }
     }
 
     @SubscribeEvent

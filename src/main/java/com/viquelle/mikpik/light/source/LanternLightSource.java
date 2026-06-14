@@ -44,11 +44,6 @@ public class LanternLightSource implements LightSource {
         }
     }
 
-    private static final int COLOR = 0xFFD59E;
-    private static final boolean OCCLUDED = true;
-    private static final float RADIUS = 15.0f;
-    private static final float BRIGHTNESS = 1.5f;
-
     @Override
     public void tick(Level level, float partialTick) {
         if (level == null) return;

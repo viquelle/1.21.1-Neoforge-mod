@@ -1,0 +1,11 @@
+{
+  "parent": "mikpik:item/magnetlampe_base",
+  "overrides": [
+    {
+      "predicate": {
+        "mikpik:charged": 1
+      },
+      "model": "mikpik:item/magnetlampe_charged"
+    }
+  ]
+}

@@ -2,8 +2,6 @@ package com.viquelle.mikpik.item;
 
 import com.viquelle.mikpik.MikpikMod;
 import net.minecraft.world.item.ArmorItem;
-import net.minecraft.world.item.ArmorMaterial;
-import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -27,5 +25,10 @@ public class ModItems {
                     new Item.Properties()
                             .stacksTo(1)
                             .durability(20*60*16)
+            ));
+
+    public static final Supplier<Item> MAGNETLAMPE =
+            ITEMS.register("magnetlampe", () -> new Magnetlampe(
+                    new Item.Properties()
             ));
 }

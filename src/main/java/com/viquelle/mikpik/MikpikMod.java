@@ -30,6 +30,7 @@ import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import org.slf4j.Logger;
 import com.mojang.logging.LogUtils;
@@ -88,5 +89,4 @@ public class MikpikMod {
         generator.addProvider(event.includeClient(), new ModLanguageProvider(output, MikpikMod.MODID,"ru_ru"));
         generator.addProvider(event.includeClient(), new ModLanguageProvider(output, MikpikMod.MODID,"en_us"));
     }
-
 }
