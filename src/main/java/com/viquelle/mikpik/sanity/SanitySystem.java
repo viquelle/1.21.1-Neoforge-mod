@@ -34,6 +34,9 @@ public class SanitySystem {
 
     public static void set(Player player, float value) {
         player.setData(ModAttachments.SANITY, clamp(value));
+        if (player instanceof ServerPlayer serverPlayer) {
+            PacketDistributor.sendToPlayer(serverPlayer, new SanitySyncPayload(SanitySystem.get(serverPlayer)));
+        }
     }
 
     public static void add(Player player, float value) {
@@ -76,17 +79,8 @@ public class SanitySystem {
             return;
         }
 
-        float oldValue = get(player);
         float delta = calculateDelta(player);
-
         add(player, delta);
-
-        float newValue = get(player);
-
-        if (player instanceof ServerPlayer serverPlayer && Math.abs(newValue - oldValue) > 0.01f) {
-            PacketDistributor.sendToPlayer(serverPlayer, new SanitySyncPayload(newValue));
-        }
-
         validateActivePlushy(player);
 
 //        if (player.tickCount % 4 == 0) {
