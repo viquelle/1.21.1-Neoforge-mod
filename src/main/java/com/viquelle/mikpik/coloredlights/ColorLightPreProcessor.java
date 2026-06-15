@@ -95,9 +95,8 @@ public class ColorLightPreProcessor implements ShaderPreProcessor {
 vec4 getBlockLightColor(vec3 position, int count, vec4 LightData[256], vec4 LightColor[256])
 {
     vec3 colorSum = vec3(0.0);
-    float weightSum = 0.0;
+    float totalWeight = 0.0;
     float maxIntensity = 0.0;
-
     for(int i = 0; i < count; i++)
     {
         vec4 lightPosRad = LightData[i];
@@ -112,21 +111,26 @@ vec4 getBlockLightColor(vec3 position, int count, vec4 LightData[256], vec4 Ligh
             continue;
 
         float falloff = 1.0 - dist / radius;
-
         float weight = falloff * lightColorIntensity.a;
         
         colorSum += lightColorIntensity.rgb * weight;
-        weightSum += weight;
-
+        totalWeight += weight;
         maxIntensity = max(maxIntensity, weight);
     }
 
-    if(weightSum <= 0.001)
+    if (totalWeight <= 0.001) 
         return vec4(0.0);
-
-    vec3 mixedColor = colorSum / weightSum;
-
-    return vec4(mixedColor, maxIntensity);
+ 
+    vec3 avgColor = colorSum/totalWeight;
+    float intensity = 0.0;
+    
+    if (maxIntensity > 1.0) {
+        intensity = clamp(totalWeight, 0.0, maxIntensity);
+    } else {
+        intensity = clamp(totalWeight, 0.0, 1.0);
+    }
+    
+    return vec4(avgColor, intensity);
 }
                 """;
         GlslTree includeTree = GlslParser.parse(source);
@@ -142,7 +146,7 @@ vec4 getBlockLightColor(vec3 position, int count, vec4 LightData[256], vec4 Ligh
         GlslNodeList body = main.getBody();
 
         body.add(GlslParser.parseExpression("float block = float((a_LightAndData.r >> 4u) & 15u) / 15.0;"));
-        body.add(GlslParser.parseExpression("float factor = block > 0.05 ? 1.0 : 0.0;"));
+        body.add(GlslParser.parseExpression("float factor = block > 0.00 ? 1.0 : 0.0;"));
         String func = """
                 if (factor != 0.0) {
                     blockLightColor = getBlockLightColor(position, u_light_count, u_LightData, u_LightColor);
@@ -168,11 +172,12 @@ vec4 getBlockLightColor(vec3 position, int count, vec4 LightData[256], vec4 Ligh
         String colorModCode = """
 if(blockLightColor.a > 0.0) {
     float lightAmount = clamp(blockLightColor.a, 0.0, 1.0);
-    float vanillaLum = max(dot(color.rgb, vec3(0.2126, 0.7152, 0.0722)),0.001) * (1.0 + blockLightColor.a * 0.10);
-    vec3 tint = color.rgb * blockLightColor.rgb;
-    float tintLum = max(dot(tint, vec3(0.2126, 0.7152, 0.0722)),0.001);
     
-    color.rgb = mix(color.rgb, tint * vanillaLum / tintLum, lightAmount);
+    float lightLum = dot(blockLightColor.rgb, vec3(0.2126, 0.7152, 0.0722));
+    vec3 normalizedLight = lightLum > 0.001 ? blockLightColor.rgb / lightLum * max(1.0, blockLightColor.a) : blockLightColor.rgb;
+    
+    vec3 lightTint = mix(vec3(1.0), normalizedLight, lightAmount);
+    color.rgb = color.rgb * lightTint;
 }
     """;
 
