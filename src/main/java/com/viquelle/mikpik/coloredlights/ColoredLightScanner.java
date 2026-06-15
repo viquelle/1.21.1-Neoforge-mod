@@ -209,7 +209,7 @@ public final class ColoredLightScanner {
                 pos.getX() + 0.5f,
                 pos.getY() + 0.5f,
                 pos.getZ() + 0.5f,
-                state.getLightEmission(level, pos),
+                state.getLightEmission(level, pos) + 1,
                 ((data.color >> 16) & 255) / 255f,
                 ((data.color >> 8) & 255) / 255f,
                 (data.color & 255) / 255f,

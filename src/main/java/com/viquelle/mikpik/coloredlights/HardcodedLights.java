@@ -55,15 +55,15 @@ public final class HardcodedLights {
         );
 
         // Soul источники
-        LIGHTS.put(Blocks.SOUL_TORCH, basicLight(0x3d64FF, 1.0f, false));
-        LIGHTS.put(Blocks.SOUL_WALL_TORCH, basicLight(0x3d64FF, 1.0f, false));
-        LIGHTS.put(Blocks.SOUL_LANTERN, basicLight(0x3d64FF, 1.0f, false));
-        LIGHTS.put(Blocks.SOUL_FIRE, basicLight(0x3d64FF, 1.0f, false));
+        LIGHTS.put(Blocks.SOUL_TORCH, basicLight(0x3d64FF, 1.2f, false));
+        LIGHTS.put(Blocks.SOUL_WALL_TORCH, basicLight(0x3d64FF, 1.2f, false));
+        LIGHTS.put(Blocks.SOUL_LANTERN, basicLight(0x3d64FF, 1.2f, false));
+        LIGHTS.put(Blocks.SOUL_FIRE, basicLight(0x3d64FF, 1.2f, false));
         LIGHTS.put(
                 Blocks.SOUL_CAMPFIRE,
                 new LightDefinition(
                         state -> state.getValue(CampfireBlock.LIT),
-                        new LightData(0x3d64FF, 1.0f, false)
+                        new LightData(0x3d64FF, 1.2f, false)
                 )
         );
 
@@ -101,13 +101,13 @@ public final class HardcodedLights {
         );
 
         // Другие блоки
-        LIGHTS.put(Blocks.SEA_LANTERN, basicLight(0x75FFDB, 1.0f, true));
+        LIGHTS.put(Blocks.SEA_LANTERN, basicLight(0x75FFDB, 1.1f, true));
 
         LIGHTS.put(
                 Blocks.SCULK_SENSOR,
                 new LightDefinition(
                         state -> state.getValue(SculkSensorBlock.PHASE) == SculkSensorPhase.ACTIVE,
-                        new LightData(0x00F7FF, 1.0f, false)
+                        new LightData(0x00F7FF, 1.3f, false)
                 )
         );
 
@@ -115,14 +115,14 @@ public final class HardcodedLights {
                 Blocks.CALIBRATED_SCULK_SENSOR,
                 new LightDefinition(
                         state -> state.getValue(CalibratedSculkSensorBlock.PHASE) == SculkSensorPhase.ACTIVE,
-                        new LightData(0x00F7FF, 1.0f, false)
+                        new LightData(0x00F7FF, 1.3f, false)
                 )
         );
 
         // Froglight
         LIGHTS.put(Blocks.OCHRE_FROGLIGHT, basicLight(0xFFEF80, 1.0f, false));
         LIGHTS.put(Blocks.VERDANT_FROGLIGHT, basicLight(0x91FFAE, 1.0f, false));
-        LIGHTS.put(Blocks.PEARLESCENT_FROGLIGHT, basicLight(0xFFA3DF, 1.0f, false));
+        LIGHTS.put(Blocks.PEARLESCENT_FROGLIGHT, basicLight(0xFFA3DF, 1.1f, false));
 
         // Аметист
         LIGHTS.put(Blocks.SMALL_AMETHYST_BUD, basicLight(0xCFB0FF, 3.5f, false));

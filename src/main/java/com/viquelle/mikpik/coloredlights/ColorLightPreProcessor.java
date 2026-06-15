@@ -96,7 +96,7 @@ vec4 getBlockLightColor(vec3 position, int count, vec4 LightData[256], vec4 Ligh
 {
     vec3 colorSum = vec3(0.0);
     float totalWeight = 0.0;
-
+    float maxIntensity = 0.0;
     for(int i = 0; i < count; i++)
     {
         vec4 lightPosRad = LightData[i];
@@ -115,12 +115,22 @@ vec4 getBlockLightColor(vec3 position, int count, vec4 LightData[256], vec4 Ligh
         
         colorSum += lightColorIntensity.rgb * weight;
         totalWeight += weight;
+        maxIntensity = max(maxIntensity, weight);
     }
 
     if (totalWeight <= 0.001) 
         return vec4(0.0);
  
-    return vec4(colorSum/totalWeight, clamp(totalWeight, 0.0, 1.0));
+    vec3 avgColor = colorSum/totalWeight;
+    float intensity = 0.0;
+    
+    if (maxIntensity > 1.0) {
+        intensity = clamp(totalWeight, 0.0, maxIntensity);
+    } else {
+        intensity = clamp(totalWeight, 0.0, 1.0);
+    }
+    
+    return vec4(avgColor, intensity);
 }
                 """;
         GlslTree includeTree = GlslParser.parse(source);
@@ -164,7 +174,7 @@ if(blockLightColor.a > 0.0) {
     float lightAmount = clamp(blockLightColor.a, 0.0, 1.0);
     
     float lightLum = dot(blockLightColor.rgb, vec3(0.2126, 0.7152, 0.0722));
-    vec3 normalizedLight = lightLum > 0.001 ? blockLightColor.rgb / lightLum : blockLightColor.rgb;
+    vec3 normalizedLight = lightLum > 0.001 ? blockLightColor.rgb / lightLum * max(1.0, blockLightColor.a) : blockLightColor.rgb;
     
     vec3 lightTint = mix(vec3(1.0), normalizedLight, lightAmount);
     color.rgb = color.rgb * lightTint;
