@@ -21,9 +21,9 @@ public class TorchLightSource implements LightSource {
     private final Map<String, PointLightHandle> lights = new HashMap<>();
 
     private enum TorchType {
-        TORCH(Items.TORCH, 20.0f, 1.0f, 0xFFD294, true),
-        SOUL_TORCH(Items.SOUL_TORCH, 16f, 1.0f, 0x3d64FF, true),
-        REDSTONE_TORCH(Items.REDSTONE_TORCH, 9.5f, 1.0f, 0xFF4040, false);
+        TORCH(Items.TORCH, 15.0f, 1.0f, 0xFFD294, true),
+        SOUL_TORCH(Items.SOUL_TORCH, 10f, 1.2f, 0x3d64FF, true),
+        REDSTONE_TORCH(Items.REDSTONE_TORCH, 7f, 1.1f, 0xFF4040, true);
 
         Item item;
         float radius;
