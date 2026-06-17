@@ -3,6 +3,8 @@ package com.viquelle.mikpik.sanity;
 import com.mojang.serialization.Codec;
 import com.viquelle.mikpik.MikpikMod;
 import com.viquelle.mikpik.event.shadow.ShadowedBlocksConsumer;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -30,6 +32,14 @@ public class ModAttachments {
     public static final Supplier<AttachmentType<ShadowedBlocksConsumer>> SHADOWED_BLOCKS = ATTACHMENT_TYPES.register(
             "shadowed_blocks",
             () -> AttachmentType.builder(ShadowedBlocksConsumer::new)
+                    .build()
+    );
+
+    public static final Supplier<AttachmentType<Boolean>> IS_GHOST = ATTACHMENT_TYPES.register(
+            "is_ghost",
+            () -> AttachmentType.builder(() -> false)
+                    .serialize(Codec.BOOL)
+                    .sync(ByteBufCodecs.BOOL)
                     .build()
     );
 

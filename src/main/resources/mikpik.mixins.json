@@ -9,6 +9,7 @@
     "MixinGameRenderer",
     "MixinLightTexture",
     "ShaderChunkRendererMixin",
+    "client.MultiPlayerGameMode",
     "client.PlayerRendererMixin"
   ],
   "mixins": [
