@@ -81,7 +81,7 @@ public class PlayerRendererMixin {
 
         if (player != null && GhostManager.isGhost(player)) {
             return instance.getBuffer(
-                    RenderType.entityTranslucent(GHOST_TEXTURE)
+                    RenderType.entityTranslucentEmissive(GHOST_TEXTURE)
             );
         }
         return instance.getBuffer(renderType);
