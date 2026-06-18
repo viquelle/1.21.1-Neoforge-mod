@@ -1,12 +1,13 @@
 package com.viquelle.mikpik.sanity.factor;
 
+import com.viquelle.mikpik.ghost.GhostManager;
 import com.viquelle.mikpik.sanity.SanityConstants;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
 
 import java.util.List;
 
-public class NearbyPlayersFactor implements SanityFactor {
+public class NearbyPlayersAndGhostFactor implements SanityFactor {
     private static final double RADIUS = 8.0;
 
     @Override
@@ -29,11 +30,15 @@ public class NearbyPlayersFactor implements SanityFactor {
             double dist = player.distanceTo(other);
             float closeness = (float) (1.0 - Math.min(dist / RADIUS, 1.0));
 
-            total += SanityConstants.NEAR_PLAYER_REGEN_PER_TICK * closeness;
+            if (GhostManager.isGhost(other)) {
+                total += SanityConstants.NEAR_GHOSTPLAYER_DRAIN_PER_TICK * closeness;
+            } else {
+                total += SanityConstants.NEAR_PLAYER_REGEN_PER_TICK * closeness;
+            }
         }
 
-        // Чтобы пачка игроков не разгоняла реген в космос.
-        total = Math.min(total, SanityConstants.NEAR_PLAYER_REGEN_PER_TICK);
+        // Чтобы пачка игроков или призраков не разгоняла реген или понижение в космос.
+        total = Math.max(Math.min(total, SanityConstants.NEAR_PLAYER_REGEN_PER_TICK), SanityConstants.NEAR_GHOSTPLAYER_DRAIN_PER_TICK);
 
         return total;
     }
