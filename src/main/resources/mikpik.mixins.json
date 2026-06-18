@@ -14,8 +14,10 @@
     "client.PlayerRendererMixin"
   ],
   "mixins": [
+    "AbstractContainerMenu",
     "BaseFireMixin",
     "CampfireLightMixin",
+    "LivingEntityMixin",
     "LanternLightMixin",
     "LightsMixin",
     "RecipeManagerMixin"

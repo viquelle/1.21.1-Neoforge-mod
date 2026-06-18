@@ -2,12 +2,17 @@ package com.viquelle.mikpik.ghost;
 
 import com.viquelle.mikpik.MikpikMod;
 import com.viquelle.mikpik.sanity.ModAttachments;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.PlayerModel;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.RenderArmEvent;
+import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
 import net.neoforged.neoforge.client.event.RenderPlayerEvent;
+import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.common.util.TriState;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingHealEvent;
@@ -56,6 +61,7 @@ public class GhostManager {
         player.setHealth(10f);
         player.getInventory().dropAll();
         GhostManager.becomeGhost(player);
+        player.dismountTo(player.getX(),player.getY(),player.getZ());
     }
 
     @SubscribeEvent
@@ -123,6 +129,25 @@ public class GhostManager {
     public static void onHeal(LivingHealEvent event) {
         if (event.getEntity() instanceof Player player && isGhost(player)) {
             event.setCanceled(true);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onRenderGuiLayer(RenderGuiLayerEvent.Pre event) {
+        Player player = Minecraft.getInstance().player;
+
+        if (player != null && GhostManager.isGhost(player)) {
+            ResourceLocation name = event.getName();
+            if (name.equals(VanillaGuiLayers.HOTBAR) ||
+                    name.equals(VanillaGuiLayers.PLAYER_HEALTH) ||
+                    name.equals(VanillaGuiLayers.ARMOR_LEVEL) ||
+                    name.equals(VanillaGuiLayers.FOOD_LEVEL) ||
+                    name.equals(VanillaGuiLayers.EXPERIENCE_BAR) ||
+                    name.equals(VanillaGuiLayers.CROSSHAIR) ||
+                    name.equals(VanillaGuiLayers.AIR_LEVEL)
+            ) {
+                event.setCanceled(true);
+            }
         }
     }
 
