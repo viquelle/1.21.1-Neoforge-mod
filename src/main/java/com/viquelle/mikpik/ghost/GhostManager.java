@@ -26,6 +26,7 @@ import net.neoforged.neoforge.common.util.TriState;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingHealEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 import net.neoforged.neoforge.event.entity.player.*;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
@@ -102,14 +103,25 @@ public class GhostManager {
     @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent.Post event) {
         Player player = event.getEntity();
-        //MikpikMod.LOGGER.info("onPlayerTick ticked! {} ticking", player.getDisplayName());
-        MikpikMod.LOGGER.info("mayBuild: {}", player.getAbilities().mayBuild);
-        if (!GhostManager.isGhost(player))
-            return;
+        if (!GhostManager.isGhost(player)) return;
 
-        player.getAbilities().setFlyingSpeed(0.02f);
+        player.setSprinting(false);
+        player.removeAllEffects();
+        Vec3 delta = player.getDeltaMovement();
+        player.setDeltaMovement(
+                delta.x * 0.7,
+                delta.y * 0.5,
+                delta.z * 0.7
+        );
+        player.walkAnimation.setSpeed(player.walkAnimation.speed() * 0.5f);
     }
 
+    @SubscribeEvent
+    public static void OnVanillaRevive(PlayerEvent.PlayerRespawnEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player) {
+            revive(player);
+        }
+    }
 //    @SubscribeEvent
 //    public static void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
 //        if (isGhost(event.getEntity())) {
