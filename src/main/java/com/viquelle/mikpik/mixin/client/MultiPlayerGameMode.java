@@ -24,7 +24,7 @@ public class MultiPlayerGameMode {
             cancellable = true)
     private void preventBreaking(BlockPos loc, Direction face, CallbackInfoReturnable<Boolean> cir) {
         assert minecraft.player != null;
-        MikpikMod.LOGGER.info("breaking {} {}", minecraft.player, GhostManager.isGhost(minecraft.player));
+        //MikpikMod.LOGGER.info("breaking {} {}", minecraft.player, GhostManager.isGhost(minecraft.player));
         if (GhostManager.isGhost(minecraft.player)) {
             cir.setReturnValue(false);
         }
@@ -37,7 +37,7 @@ public class MultiPlayerGameMode {
     )
     private void preventContinue(BlockPos posBlock, Direction directionFacing, CallbackInfoReturnable<Boolean> cir) {
         assert minecraft.player != null;
-        MikpikMod.LOGGER.info("Continue {} {}", minecraft.player, GhostManager.isGhost(minecraft.player));
+        //MikpikMod.LOGGER.info("Continue {} {}", minecraft.player, GhostManager.isGhost(minecraft.player));
         if (GhostManager.isGhost(minecraft.player)) {
             cir.setReturnValue(false);
         }

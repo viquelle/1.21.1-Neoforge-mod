@@ -1,6 +1,7 @@
 package com.viquelle.mikpik.item;
 
 import com.viquelle.mikpik.MikpikMod;
+import com.viquelle.mikpik.item.heart.HeartItem;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -30,5 +31,10 @@ public class ModItems {
     public static final Supplier<Item> MAGNETLAMPE =
             ITEMS.register("magnetlampe", () -> new Magnetlampe(
                     new Item.Properties()
+            ));
+
+    public static final Supplier<Item> HEART =
+            ITEMS.register("heart", () -> new HeartItem(
+                    new Item.Properties().stacksTo(1)
             ));
 }

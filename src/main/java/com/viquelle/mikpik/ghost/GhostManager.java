@@ -1,12 +1,21 @@
 package com.viquelle.mikpik.ghost;
 
 import com.viquelle.mikpik.MikpikMod;
+import com.viquelle.mikpik.MikpikModClient;
+import com.viquelle.mikpik.item.ModItems;
+import com.viquelle.mikpik.network.payload.GhostStatePayload;
+import com.viquelle.mikpik.network.payload.PushItemPayload;
 import com.viquelle.mikpik.sanity.ModAttachments;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.PlayerModel;
+import net.minecraft.network.protocol.game.ServerboundSwingPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.packs.repository.Pack;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RenderArmEvent;
@@ -17,11 +26,14 @@ import net.neoforged.neoforge.common.util.TriState;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingHealEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
-import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
-import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.entity.player.*;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
+
+import java.util.List;
+
+import static com.viquelle.mikpik.item.heart.HeartItem.pickup;
 
 
 @EventBusSubscriber(modid = MikpikMod.MODID)
@@ -31,11 +43,17 @@ public class GhostManager {
     }
 
     public static void revive(Player player) {
+        if (player instanceof ServerPlayer serverPlayer) {
+            PacketDistributor.sendToPlayer(serverPlayer, new GhostStatePayload(false));
+        }
         player.setData(ModAttachments.IS_GHOST, false);
         updateAbilities(player, false);
     }
 
     public static void becomeGhost(Player player) {
+        if (player instanceof ServerPlayer serverPlayer) {
+            PacketDistributor.sendToPlayer(serverPlayer, new GhostStatePayload(true));
+        }
         player.setData(ModAttachments.IS_GHOST, true);
         updateAbilities(player, true);
     }
@@ -53,8 +71,8 @@ public class GhostManager {
 
     @SubscribeEvent
     public static void onDeath(LivingDeathEvent event) {
-        if (!(event.getEntity() instanceof ServerPlayer player)) return;
-        MikpikMod.LOGGER.info("onDeath pushed! {} is dead", player.getTabListDisplayName());
+        if (!(event.getEntity() instanceof Player player)) return;
+        MikpikMod.LOGGER.info("onDeath pushed! {} is dead", player.getName());
 
         if (GhostManager.isGhost(player)) return;
         event.setCanceled(true);
@@ -62,26 +80,42 @@ public class GhostManager {
         player.getInventory().dropAll();
         GhostManager.becomeGhost(player);
         player.dismountTo(player.getX(),player.getY(),player.getZ());
+        player.setArrowCount(0);
+        player.removeAllEffects();
+    }
+
+    @SubscribeEvent
+    public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
+        if (!(event.getEntity() instanceof ServerPlayer player))
+            return;
+
+        if (GhostManager.isGhost(player)) {
+            GhostManager.updateAbilities(player, true);
+
+            PacketDistributor.sendToPlayer(
+                    player,
+                    new GhostStatePayload(true)
+            );
+        }
     }
 
     @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent.Post event) {
         Player player = event.getEntity();
         //MikpikMod.LOGGER.info("onPlayerTick ticked! {} ticking", player.getDisplayName());
-
+        MikpikMod.LOGGER.info("mayBuild: {}", player.getAbilities().mayBuild);
         if (!GhostManager.isGhost(player))
             return;
 
         player.getAbilities().setFlyingSpeed(0.02f);
-        updateAbilities(player, true);
     }
 
-    @SubscribeEvent
-    public static void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
-        if (isGhost(event.getEntity())) {
-            event.setCanceled(true);
-        }
-    }
+//    @SubscribeEvent
+//    public static void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
+//        if (isGhost(event.getEntity())) {
+//            event.setCanceled(true);
+//        }
+//    }
 
     @SubscribeEvent
     public static void onBreak(BlockEvent.BreakEvent event) {
@@ -97,6 +131,7 @@ public class GhostManager {
         }
     }
 
+
     @SubscribeEvent
     public static void onEntityInteractSpecific(PlayerInteractEvent.EntityInteractSpecific event) {
         if (isGhost(event.getEntity())) {
@@ -104,19 +139,12 @@ public class GhostManager {
         }
     }
 
-    @SubscribeEvent
-    public static void onRightClickBlock(PlayerInteractEvent.RightClickItem event) {
-        if (isGhost(event.getEntity())) {
-            event.setCanceled(true);
-        }
-    }
-
-    @SubscribeEvent
-    public static void onAttack(AttackEntityEvent event) {
-        if (isGhost(event.getEntity())) {
-            event.setCanceled(true);
-        }
-    }
+//    @SubscribeEvent
+//    public static void onRightClickBlock(PlayerInteractEvent.RightClickItem event) {
+//        if (isGhost(event.getEntity())) {
+//            event.setCanceled(true);
+//        }
+//    }
 
     @SubscribeEvent
     public static void onPickup(ItemEntityPickupEvent.Pre event) {
@@ -130,6 +158,27 @@ public class GhostManager {
         if (event.getEntity() instanceof Player player && isGhost(player)) {
             event.setCanceled(true);
         }
+    }
+
+    @SubscribeEvent
+    public static void onAttack(AttackEntityEvent event) {
+        if (isGhost(event.getEntity())) {
+            event.setCanceled(true);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onLeftClickEmpty(PlayerInteractEvent.LeftClickEmpty event) {
+        Player player = event.getEntity();
+        if (!player.level().isClientSide() || !isGhost(player)) return;
+        PacketDistributor.sendToServer(PushItemPayload.INSTANCE);
+    }
+
+    @SubscribeEvent
+    public static void onLeftClickBlock(PlayerInteractEvent.LeftClickBlock event) {
+        Player player = event.getEntity();
+        if (!player.level().isClientSide() || !isGhost(player)) return;
+        PacketDistributor.sendToServer(PushItemPayload.INSTANCE);
     }
 
     @SubscribeEvent
