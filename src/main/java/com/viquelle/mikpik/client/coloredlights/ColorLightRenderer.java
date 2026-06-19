@@ -1,6 +1,5 @@
-package com.viquelle.mikpik.coloredlights;
+package com.viquelle.mikpik.client.coloredlights;
 
-import com.viquelle.mikpik.MikpikMod;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.phys.Vec3;
 import org.lwjgl.BufferUtils;
@@ -41,7 +40,7 @@ public class ColorLightRenderer {
         colorBuffer.clear();
 
         for (int i = 0; i < currentLightCount; i++) {
-            com.viquelle.mikpik.coloredlights.ActiveLight light = activeLights.get(i);
+            com.viquelle.mikpik.client.coloredlights.ActiveLight light = activeLights.get(i);
 
             // Позиция и радиус (xyz + w = radius)
             posRadiusBuffer.put((float) (light.x() - cameraPos.x));

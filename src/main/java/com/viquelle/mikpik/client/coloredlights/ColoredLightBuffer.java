@@ -1,4 +1,4 @@
-package com.viquelle.mikpik.coloredlights;
+package com.viquelle.mikpik.client.coloredlights;
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 

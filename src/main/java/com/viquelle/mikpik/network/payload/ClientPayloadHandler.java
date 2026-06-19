@@ -2,12 +2,16 @@ package com.viquelle.mikpik.network.payload;
 
 import com.viquelle.mikpik.MikpikMod;
 import com.viquelle.mikpik.ghost.GhostManager;
+import com.viquelle.mikpik.ghost.GhostRespawnClient;
 import com.viquelle.mikpik.item.heart.HeartItem;
 import com.viquelle.mikpik.sanity.ClientSanityData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.portal.DimensionTransition;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
@@ -21,13 +25,37 @@ public class ClientPayloadHandler {
         ClientSanityData.set(data.sanity());
     }
 
-    public static void handleReviveRequest(ReviveRequestPayload payload, IPayloadContext context) {
+    public static void handleHeartReviveRequest(HeartReviveRequestPayload payload, IPayloadContext context) {
         context.enqueueWork(() -> {
             ServerPlayer player = (ServerPlayer) context.player();
             if (HeartItem.tryRevive(player)) {
                 MikpikMod.LOGGER.info("{} revived, send packet to client", player.getName());
                 PacketDistributor.sendToPlayer(player, ReviveSuccessPayload.INSTANCE);
             }
+        });
+    }
+
+    public static void handleGhostRespawnRequest(GhostRespawnRequest ghostRespawnRequest, IPayloadContext context) {
+        context.enqueueWork(() -> {
+            ServerPlayer player = (ServerPlayer) context.player();
+
+            if (!GhostManager.isGhost(player)) return;
+
+            DimensionTransition transition = player.findRespawnPositionAndUseSpawnBlock(
+                    false,
+                    DimensionTransition.DO_NOTHING
+            );
+            Vec3 pos = transition.pos();
+            GhostManager.revive(player);
+
+            player.teleportTo(
+                    transition.newLevel(),
+                    pos.x,
+                    pos.y,
+                    pos.z,
+                    player.getYRot(),
+                    player.getXRot()
+            );
         });
     }
 

@@ -6,13 +6,13 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 
-public class ReviveRequestPayload implements CustomPacketPayload {
-    public static final CustomPacketPayload.Type<ReviveRequestPayload> TYPE =
-            new Type<>(ResourceLocation.fromNamespaceAndPath(MikpikMod.MODID, "revive_request"));
+public class GhostRespawnRequest implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<GhostRespawnRequest> TYPE =
+            new Type<>(ResourceLocation.fromNamespaceAndPath(MikpikMod.MODID, "ghost_respawn_request"));
 
-    public static final ReviveRequestPayload INSTANCE = new ReviveRequestPayload();
+    public static final GhostRespawnRequest INSTANCE = new GhostRespawnRequest();
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, ReviveRequestPayload> STREAM_CODEC =
+    public static final StreamCodec<RegistryFriendlyByteBuf, GhostRespawnRequest> STREAM_CODEC =
             StreamCodec.unit(INSTANCE);
 
     @Override

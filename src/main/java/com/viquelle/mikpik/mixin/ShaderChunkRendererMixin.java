@@ -1,6 +1,6 @@
 package com.viquelle.mikpik.mixin;
 
-import com.viquelle.mikpik.coloredlights.ColorLightRenderer;
+import com.viquelle.mikpik.client.coloredlights.ColorLightRenderer;
 import net.caffeinemc.mods.sodium.client.render.chunk.ShaderChunkRenderer;
 import net.caffeinemc.mods.sodium.client.render.chunk.terrain.TerrainRenderPass;
 import org.lwjgl.opengl.GL20;

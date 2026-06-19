@@ -1,4 +1,4 @@
-package com.viquelle.mikpik.coloredlights;
+package com.viquelle.mikpik.client.coloredlights;
 
 public record ActiveLight(
         long id,

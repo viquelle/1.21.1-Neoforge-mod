@@ -1,8 +1,7 @@
 package com.viquelle.mikpik;
 
-import com.viquelle.mikpik.coloredlights.ColorLightPreProcessor;
-import com.viquelle.mikpik.coloredlights.ColorLightRenderer;
-import com.viquelle.mikpik.entity.ModEntities;
+import com.viquelle.mikpik.client.coloredlights.ColorLightPreProcessor;
+import com.viquelle.mikpik.client.coloredlights.ColorLightRenderer;
 import com.viquelle.mikpik.entity.shadowgrabber.model.ShadowForearmModel;
 import com.viquelle.mikpik.entity.shadowgrabber.model.ShadowHandModel;
 import com.viquelle.mikpik.entity.shadowgrabber.model.ShadowPortalModel;

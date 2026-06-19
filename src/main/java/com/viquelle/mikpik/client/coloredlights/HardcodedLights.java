@@ -1,8 +1,5 @@
-package com.viquelle.mikpik.coloredlights;
+package com.viquelle.mikpik.client.coloredlights;
 
-import com.viquelle.mikpik.darknesscomputer.Darkness;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.SculkSensorPhase;

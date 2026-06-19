@@ -3,22 +3,18 @@ package com.viquelle.mikpik.item.heart;
 import com.viquelle.mikpik.MikpikMod;
 import com.viquelle.mikpik.ghost.GhostManager;
 import com.viquelle.mikpik.item.ModItems;
-import com.viquelle.mikpik.network.payload.ReviveRequestPayload;
+import com.viquelle.mikpik.network.payload.HeartReviveRequestPayload;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.level.ClipContext;
-import net.minecraft.world.level.Level;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.*;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
-
-import java.util.List;
 
 @EventBusSubscriber(modid = MikpikMod.MODID)
 public class HeartItem extends Item {
@@ -40,10 +36,26 @@ public class HeartItem extends Item {
         Vec3 motion = item.getDeltaMovement();
 
         item.setDeltaMovement(
-                motion.x * 0.9,
-                motion.y * 0.9,
-                motion.z * 0.9
+                motion.x * 0.85,
+                motion.y * 0.85,
+                motion.z * 0.85
         );
+    }
+
+    @SubscribeEvent
+    public static void onEntityInteract(PlayerInteractEvent.EntityInteract event) {
+        Player issuer = event.getEntity();
+        if (!issuer.level().isClientSide) return;
+        if (!(event.getTarget() instanceof Player target)) return;
+
+        if (!GhostManager.isGhost(target)) return;
+
+        ItemStack heart = issuer.getMainHandItem();
+        if (!(heart.is(ModItems.HEART.get()))) return;
+
+        GhostManager.revive(target);
+        heart.shrink(1);
+        event.setCanceled(true);
     }
 
     @SubscribeEvent
@@ -68,7 +80,7 @@ public class HeartItem extends Item {
             if (result.getEntity() instanceof ItemEntity entity) {
                 if (entity.getItem().is(ModItems.HEART.get())) {
                     MikpikMod.LOGGER.debug("Client: sending revive request");
-                    PacketDistributor.sendToServer(ReviveRequestPayload.INSTANCE);
+                    PacketDistributor.sendToServer(HeartReviveRequestPayload.INSTANCE);
                 }
             }
         }
