@@ -18,7 +18,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
-import org.spongepowered.asm.mixin.injection.Redirect;
 
 import java.util.Iterator;
 import java.util.List;

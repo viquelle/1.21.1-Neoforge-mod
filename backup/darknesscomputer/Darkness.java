@@ -1,4 +1,4 @@
-package com.viquelle.mikpik.darknesscomputer;
+package com.viquelle.mikpik.client.darknesscomputer;
 
 import com.viquelle.mikpik.MikpikMod;
 import net.minecraft.client.Minecraft;

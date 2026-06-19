@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import static com.viquelle.mikpik.darknesscomputer.Darkness.calculateLightByHeight;
+import static com.viquelle.mikpik.client.darknesscomputer.Darkness.calculateLightByHeight;
 
 @Mixin(BaseTorchBlock.class)
 public class LightsMixin {

@@ -5,7 +5,6 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.viquelle.mikpik.MikpikMod;
 import com.viquelle.mikpik.entity.shadowgrabber.ShadowGrabberEntity;
 import com.viquelle.mikpik.entity.shadowgrabber.animation.ShadowForearmAnimations;
-import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.HierarchicalModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;

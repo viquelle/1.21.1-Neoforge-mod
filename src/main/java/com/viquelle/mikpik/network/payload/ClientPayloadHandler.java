@@ -2,15 +2,12 @@ package com.viquelle.mikpik.network.payload;
 
 import com.viquelle.mikpik.MikpikMod;
 import com.viquelle.mikpik.ghost.GhostManager;
-import com.viquelle.mikpik.ghost.GhostRespawnClient;
 import com.viquelle.mikpik.item.heart.HeartItem;
 import com.viquelle.mikpik.sanity.ClientSanityData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.portal.DimensionTransition;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;

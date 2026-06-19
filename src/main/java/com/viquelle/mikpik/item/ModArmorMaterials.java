@@ -3,7 +3,6 @@ package com.viquelle.mikpik.item;
 import com.viquelle.mikpik.MikpikMod;
 import net.minecraft.Util;
 import net.minecraft.core.Holder;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.ItemTags;

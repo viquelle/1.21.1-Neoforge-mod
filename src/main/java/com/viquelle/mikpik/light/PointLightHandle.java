@@ -1,6 +1,5 @@
 package com.viquelle.mikpik.light;
 
-import foundry.veil.Veil;
 import foundry.veil.api.client.render.VeilRenderSystem;
 import foundry.veil.api.client.render.light.data.PointLightData;
 import net.minecraft.world.phys.Vec3;

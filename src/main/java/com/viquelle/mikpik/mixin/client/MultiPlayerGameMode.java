@@ -1,6 +1,5 @@
 package com.viquelle.mikpik.mixin.client;
 
-import com.viquelle.mikpik.MikpikMod;
 import com.viquelle.mikpik.ghost.GhostManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;

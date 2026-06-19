@@ -1,6 +1,6 @@
 package com.viquelle.mikpik.sanity.factor;
 
-import com.viquelle.mikpik.darknesscomputer.Darkness;
+import com.viquelle.mikpik.client.darknesscomputer.Darkness;
 import com.viquelle.mikpik.light.ClientLightManager;
 import com.viquelle.mikpik.sanity.SanityConstants;
 import net.minecraft.core.BlockPos;

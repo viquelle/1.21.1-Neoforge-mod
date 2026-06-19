@@ -1,17 +1,11 @@
 package com.viquelle.mikpik.light.source;
 
-import com.viquelle.mikpik.MikpikMod;
-import com.viquelle.mikpik.darknesscomputer.Darkness;
 import com.viquelle.mikpik.light.ClientLightManager;
 import com.viquelle.mikpik.light.LightHandle;
 import com.viquelle.mikpik.light.PointLightHandle;
-import com.viquelle.mikpik.sanity.SanityConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.core.BlockPos;
-import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LightLayer;
 
 import java.util.Collection;
 import java.util.List;

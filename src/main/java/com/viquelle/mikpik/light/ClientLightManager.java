@@ -1,7 +1,6 @@
 package com.viquelle.mikpik.light;
 
-import com.viquelle.mikpik.MikpikMod;
-import com.viquelle.mikpik.darknesscomputer.Darkness;
+import com.viquelle.mikpik.client.darknesscomputer.Darkness;
 import com.viquelle.mikpik.light.source.LightSource;
 import com.viquelle.mikpik.sanity.SanityConstants;
 import net.minecraft.core.BlockPos;
@@ -10,7 +9,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.List;

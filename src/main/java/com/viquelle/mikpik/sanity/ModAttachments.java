@@ -4,13 +4,11 @@ import com.mojang.serialization.Codec;
 import com.viquelle.mikpik.MikpikMod;
 import com.viquelle.mikpik.event.shadow.ShadowedBlocksConsumer;
 import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
-import java.util.HashMap;
 import java.util.function.Supplier;
 
 public class ModAttachments {
