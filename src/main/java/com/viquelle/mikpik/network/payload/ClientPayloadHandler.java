@@ -2,7 +2,7 @@ package com.viquelle.mikpik.network.payload;
 
 import com.viquelle.mikpik.MikpikMod;
 import com.viquelle.mikpik.ghost.GhostManager;
-import com.viquelle.mikpik.item.heart.HeartItem;
+import com.viquelle.mikpik.ghost.HealthPenailtyUtil;
 import com.viquelle.mikpik.sanity.ClientSanityData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -15,7 +15,8 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import static com.viquelle.mikpik.item.heart.HeartItem.raycast;
+import static com.viquelle.mikpik.ghost.GhostManager.raycast;
+import static com.viquelle.mikpik.ghost.GhostManager.tryHeartRaycastRevive;
 
 public class ClientPayloadHandler {
     public static void handleDataOnNetwork(final SanitySyncPayload data, final IPayloadContext context) {
@@ -25,7 +26,7 @@ public class ClientPayloadHandler {
     public static void handleHeartReviveRequest(HeartReviveRequestPayload payload, IPayloadContext context) {
         context.enqueueWork(() -> {
             ServerPlayer player = (ServerPlayer) context.player();
-            if (HeartItem.tryRevive(player)) {
+            if (tryHeartRaycastRevive(player)) {
                 MikpikMod.LOGGER.info("{} revived, send packet to client", player.getName());
                 PacketDistributor.sendToPlayer(player, ReviveSuccessPayload.INSTANCE);
             }
@@ -44,6 +45,7 @@ public class ClientPayloadHandler {
             );
             Vec3 pos = transition.pos();
             GhostManager.revive(player);
+            HealthPenailtyUtil.addPenalty(player, 0.25);
 
             player.teleportTo(
                     transition.newLevel(),

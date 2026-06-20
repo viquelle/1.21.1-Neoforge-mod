@@ -33,7 +33,6 @@ public class GhostRespawnClient {
 
         if (holdTicks >= maxHoldTicks) {
             PacketDistributor.sendToServer(GhostRespawnRequest.INSTANCE);
-
             holdTicks = 0;
         }
     }
@@ -41,6 +40,7 @@ public class GhostRespawnClient {
     @SubscribeEvent
     public static void render(RenderGuiLayerEvent.Post event) {
         Minecraft mc = Minecraft.getInstance();
+        if (mc.options.hideGui) return;
         LocalPlayer player = mc.player;
 
         if (player == null || !GhostManager.isGhost(player)) return;

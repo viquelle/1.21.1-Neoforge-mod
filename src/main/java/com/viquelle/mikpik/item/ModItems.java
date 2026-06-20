@@ -1,7 +1,6 @@
 package com.viquelle.mikpik.item;
 
 import com.viquelle.mikpik.MikpikMod;
-import com.viquelle.mikpik.item.heart.HeartItem;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.registries.DeferredRegister;

@@ -20,6 +20,12 @@ public class ModAttachments {
                     .build()
     );
 
+    public static final Supplier<AttachmentType<Float>> PENALTY = ATTACHMENT_TYPES.register(
+            "penalty", () -> AttachmentType.builder(() -> 0.0f)
+                    .serialize(Codec.FLOAT)
+                    .build()
+    );
+
     public static final Supplier<AttachmentType<String>> ACTIVE_PLUSHY_ID = ATTACHMENT_TYPES.register(
             "active_plushy_id",
             () -> AttachmentType.builder(() -> "")

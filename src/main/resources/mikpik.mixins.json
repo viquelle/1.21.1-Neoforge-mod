@@ -3,8 +3,7 @@
   "minVersion": "0.8",
   "package": "com.viquelle.mikpik.mixin",
   "compatibilityLevel": "JAVA_21",
-
-  "mixinextras" : {
+  "mixinextras": {
     "minVersion": "0.5.3"
   },
   "client": [
@@ -13,6 +12,7 @@
     "MixinGameRenderer",
     "MixinLightTexture",
     "ShaderChunkRendererMixin",
+    "client.GuiMixin",
     "client.LivingEntityRendererMixin",
     "client.MultiPlayerGameMode",
     "client.PlayerRendererMixin"

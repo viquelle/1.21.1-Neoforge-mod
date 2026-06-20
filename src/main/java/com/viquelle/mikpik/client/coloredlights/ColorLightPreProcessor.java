@@ -39,7 +39,7 @@ public class ColorLightPreProcessor implements ShaderPreProcessor {
 
         if (!isTarget) return;
 
-        MikpikMod.LOGGER.debug("Processing shader: {} ({})", shaderName, ctx.type());
+        //MikpikMod.LOGGER.debug("Processing shader: {} ({})", shaderName, ctx.type());
 
         if (ctx.isVertex()) {
             modifyVertexShader(ctx, tree);
@@ -57,13 +57,13 @@ public class ColorLightPreProcessor implements ShaderPreProcessor {
         addLightingFunction(ctx, tree);
 //        MikpikMod.LOGGER.debug("4 vertex RESULT BOBINA to source string: {}", tree.toSourceString());
         modifyVertexMain(tree);
-        MikpikMod.LOGGER.debug("5 vertex RESULT BOBINA to source string: {}", tree.toSourceString());
+//        MikpikMod.LOGGER.debug("5 vertex RESULT BOBINA to source string: {}", tree.toSourceString());
     }
 
     private void modifyFragmentShader(GlslTree tree) throws GlslSyntaxException {
         addFragmentInputVariables(tree);
         modifyFragmentMain(tree);
-        MikpikMod.LOGGER.debug("fragment RESULT BOBINA to source string: {}", tree.toSourceString());
+//        MikpikMod.LOGGER.debug("fragment RESULT BOBINA to source string: {}", tree.toSourceString());
     }
 
     private void addNewUniforms(GlslTree tree) throws GlslSyntaxException {
