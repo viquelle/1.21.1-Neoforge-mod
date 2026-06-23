@@ -201,25 +201,6 @@ public class GhostManager {
     }
 
     @SubscribeEvent
-    public static void onRenderGuiLayer(RenderGuiLayerEvent.Pre event) {
-        Player player = Minecraft.getInstance().player;
-
-        if (player != null && GhostManager.isGhost(player)) {
-            ResourceLocation name = event.getName();
-            if (name.equals(VanillaGuiLayers.HOTBAR) ||
-                    name.equals(VanillaGuiLayers.PLAYER_HEALTH) ||
-                    name.equals(VanillaGuiLayers.ARMOR_LEVEL) ||
-                    name.equals(VanillaGuiLayers.FOOD_LEVEL) ||
-                    name.equals(VanillaGuiLayers.EXPERIENCE_BAR) ||
-                    name.equals(VanillaGuiLayers.CROSSHAIR) ||
-                    name.equals(VanillaGuiLayers.AIR_LEVEL)
-            ) {
-                event.setCanceled(true);
-            }
-        }
-    }
-
-    @SubscribeEvent
     public static void onDamage(LivingIncomingDamageEvent event) {
         if (event.getEntity() instanceof Player player && isGhost(player)) {
             event.setCanceled(true);

@@ -4,17 +4,41 @@ import com.viquelle.mikpik.MikpikMod;
 import com.viquelle.mikpik.network.payload.GhostRespawnRequest;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
+import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.network.PacketDistributor;
 
-@EventBusSubscriber(modid = MikpikMod.MODID)
-public class GhostRespawnClient {
+@EventBusSubscriber(modid = MikpikMod.MODID, value = Dist.CLIENT)
+public class GhostClient {
     private static int holdTicks = 0;
     private static int maxHoldTicks = 100;
 
+    @SubscribeEvent
+    public static void onRenderGuiLayer(RenderGuiLayerEvent.Pre event) {
+        Player player = Minecraft.getInstance().player;
+
+        if (player != null && GhostManager.isGhost(player)) {
+            ResourceLocation name = event.getName();
+            if (name.equals(VanillaGuiLayers.HOTBAR) ||
+                    name.equals(VanillaGuiLayers.PLAYER_HEALTH) ||
+                    name.equals(VanillaGuiLayers.ARMOR_LEVEL) ||
+                    name.equals(VanillaGuiLayers.FOOD_LEVEL) ||
+                    name.equals(VanillaGuiLayers.EXPERIENCE_BAR) ||
+                    name.equals(VanillaGuiLayers.EXPERIENCE_LEVEL) ||
+                    name.equals(VanillaGuiLayers.CROSSHAIR) ||
+                    name.equals(VanillaGuiLayers.AIR_LEVEL)
+            ) {
+                event.setCanceled(true);
+            }
+        }
+    }
+    
     @SubscribeEvent
     public static void onClientTick(ClientTickEvent.Post event) {
         Minecraft mc = Minecraft.getInstance();

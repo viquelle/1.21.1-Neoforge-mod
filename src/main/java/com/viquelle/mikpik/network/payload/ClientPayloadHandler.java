@@ -45,7 +45,7 @@ public class ClientPayloadHandler {
             );
             Vec3 pos = transition.pos();
             GhostManager.revive(player);
-            HealthPenailtyUtil.addPenalty(player, 0.25);
+            HealthPenailtyUtil.addPenaltySoft(player, 0.25);
 
             player.teleportTo(
                     transition.newLevel(),

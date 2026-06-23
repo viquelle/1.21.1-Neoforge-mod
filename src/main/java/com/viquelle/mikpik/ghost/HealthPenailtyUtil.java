@@ -9,7 +9,10 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+
+import java.util.function.Supplier;
 
 @EventBusSubscriber(modid = MikpikMod.MODID)
 public class HealthPenailtyUtil {
@@ -19,19 +22,28 @@ public class HealthPenailtyUtil {
                     "penalty"
             );
 
-    public static void addPenalty(Player player, double amount) {
+    public static void addPenaltySoft(Player player, double amount) {
         double current = player.getData(ModAttachments.PENALTY);
-        MikpikMod.LOGGER.info("current: {}", current);
         double newPenalty = Math.min(0.75, current + (1 - current) * amount);
-        MikpikMod.LOGGER.info("new: {}", newPenalty);
+        applyPenalty(player, newPenalty);
+    }
+
+    public static void addPenaltyHard(Player player, double amount) {
+        double current = player.getData(ModAttachments.PENALTY);
+        double newPenalty = Math.min(0.75, current + amount);
+        applyPenalty(player, newPenalty);
+    }
+
+    public static void reducePenalty(Player player, double amount) {
+        double current = player.getData(ModAttachments.PENALTY);
+        double newPenalty = Math.max(0.0, current - amount);
         applyPenalty(player, newPenalty);
     }
 
     private static void applyPenalty(Player player, double penalty) {
-        MikpikMod.LOGGER.info("applyPenalty!");
         AttributeInstance attribute = player.getAttribute(Attributes.MAX_HEALTH);
         if (attribute == null) return;
-        MikpikMod.LOGGER.info("attribute not null");
+        MikpikMod.LOGGER.info("applying penalty {}", penalty);
         player.setData(ModAttachments.PENALTY, (float) penalty);
 
         attribute.addOrReplacePermanentModifier(

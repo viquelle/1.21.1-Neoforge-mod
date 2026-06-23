@@ -3,11 +3,9 @@ package com.viquelle.mikpik.datagen;
 import com.viquelle.mikpik.item.ModItems;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.recipes.RecipeCategory;
-import net.minecraft.data.recipes.RecipeOutput;
-import net.minecraft.data.recipes.RecipeProvider;
-import net.minecraft.data.recipes.ShapedRecipeBuilder;
+import net.minecraft.data.recipes.*;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.concurrent.CompletableFuture;
@@ -19,7 +17,6 @@ public class ModRecipeProvider extends RecipeProvider {
 
     @Override
     protected void buildRecipes(RecipeOutput recipeOutput) {
-
         ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.FLOWER_CROWN.get())
                 .define('I', Ingredient.of(ItemTags.SMALL_FLOWERS))
                 .pattern("III")
@@ -28,5 +25,22 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_small_flowers", has(ItemTags.FLOWERS))
                 .save(recipeOutput);
 
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.HEART.get())
+                .define('A', Items.LEATHER)
+                .define('B', Items.STRING)
+                .define('M', Items.MAGMA_BLOCK)
+                .define('C', Items.HAY_BLOCK)
+                .pattern("ABA")
+                .pattern("CMC")
+                .pattern("ABA")
+                .unlockedBy("has_magma_block", has(Items.MAGMA_BLOCK))
+                .save(recipeOutput);
+
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, ModItems.PENALTY_REMOVER.get())
+                .requires(Items.SUGAR)
+                .requires(Items.FERMENTED_SPIDER_EYE)
+                .requires(Items.DANDELION)
+                .unlockedBy("has_sugar", has(Items.SUGAR))
+                .save(recipeOutput);
     }
 }

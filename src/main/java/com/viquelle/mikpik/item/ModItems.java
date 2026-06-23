@@ -36,4 +36,9 @@ public class ModItems {
             ITEMS.register("heart", () -> new HeartItem(
                     new Item.Properties().stacksTo(1)
             ));
+
+    public static final Supplier<Item> PENALTY_REMOVER =
+            ITEMS.register("penalty_remover", () -> new PenaltyRemoverItem(
+                    new Item.Properties().stacksTo(1)
+            ));
 }
