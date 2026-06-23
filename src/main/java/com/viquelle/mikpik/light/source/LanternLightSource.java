@@ -3,7 +3,6 @@ package com.viquelle.mikpik.light.source;
 import com.viquelle.mikpik.light.LightHandle;
 import com.viquelle.mikpik.light.PointLightHandle;
 import net.minecraft.client.Minecraft;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -12,15 +11,13 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
 
 public class LanternLightSource implements LightSource {
     private final Map<String, PointLightHandle> lights = new HashMap<>();
 
     private enum LanternType {
-        LANTERN(Items.LANTERN, 20.0f, 1.0f, 0xFFD294, true),
-        SOUL_LANTERN(Items.SOUL_LANTERN, 16.0f, 0.8f, 0x3d64FF, true);
+        LANTERN(Items.LANTERN, 14.0f, 1.0f, 0xFFD294, true),
+        SOUL_LANTERN(Items.SOUL_LANTERN, 9.0f, 1.2f, 0x3d64FF, true);
 
         Item item;
         float radius;

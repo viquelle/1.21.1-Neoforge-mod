@@ -1,28 +1,18 @@
-package com.viquelle.mikpik.coloredlights;
+package com.viquelle.mikpik.client.coloredlights;
 
 import com.viquelle.mikpik.MikpikMod;
 import foundry.veil.api.client.render.shader.processor.ShaderPreProcessor;
-import foundry.veil.impl.compat.sodium.SodiumShaderPreProcessor;
 import io.github.ocelot.glslprocessor.api.GlslInjectionPoint;
 import io.github.ocelot.glslprocessor.api.GlslParser;
 import io.github.ocelot.glslprocessor.api.GlslSyntaxException;
-import io.github.ocelot.glslprocessor.api.grammar.*;
 import io.github.ocelot.glslprocessor.api.node.GlslNode;
 import io.github.ocelot.glslprocessor.api.node.GlslNodeList;
 import io.github.ocelot.glslprocessor.api.node.GlslTree;
-import io.github.ocelot.glslprocessor.api.node.constant.GlslFloatConstantNode;
 import io.github.ocelot.glslprocessor.api.node.function.GlslFunctionNode;
-import io.github.ocelot.glslprocessor.api.node.function.GlslPrimitiveConstructorNode;
-import io.github.ocelot.glslprocessor.api.node.variable.GlslNewFieldNode;
-import io.github.ocelot.glslprocessor.api.node.variable.GlslVariableDeclarationNode;
-import io.github.ocelot.glslprocessor.api.node.variable.GlslVariableNode;
-import io.github.ocelot.glslprocessor.api.visitor.GlslNodeVisitor;
 import io.github.ocelot.glslprocessor.lib.anarres.cpp.LexerException;
 import net.minecraft.resources.ResourceLocation;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ColorLightPreProcessor implements ShaderPreProcessor {
 
@@ -49,7 +39,7 @@ public class ColorLightPreProcessor implements ShaderPreProcessor {
 
         if (!isTarget) return;
 
-        MikpikMod.LOGGER.debug("Processing shader: {} ({})", shaderName, ctx.type());
+        //MikpikMod.LOGGER.debug("Processing shader: {} ({})", shaderName, ctx.type());
 
         if (ctx.isVertex()) {
             modifyVertexShader(ctx, tree);
@@ -67,13 +57,13 @@ public class ColorLightPreProcessor implements ShaderPreProcessor {
         addLightingFunction(ctx, tree);
 //        MikpikMod.LOGGER.debug("4 vertex RESULT BOBINA to source string: {}", tree.toSourceString());
         modifyVertexMain(tree);
-        MikpikMod.LOGGER.debug("5 vertex RESULT BOBINA to source string: {}", tree.toSourceString());
+//        MikpikMod.LOGGER.debug("5 vertex RESULT BOBINA to source string: {}", tree.toSourceString());
     }
 
     private void modifyFragmentShader(GlslTree tree) throws GlslSyntaxException {
         addFragmentInputVariables(tree);
         modifyFragmentMain(tree);
-        MikpikMod.LOGGER.debug("fragment RESULT BOBINA to source string: {}", tree.toSourceString());
+//        MikpikMod.LOGGER.debug("fragment RESULT BOBINA to source string: {}", tree.toSourceString());
     }
 
     private void addNewUniforms(GlslTree tree) throws GlslSyntaxException {

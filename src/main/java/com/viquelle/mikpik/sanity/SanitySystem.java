@@ -1,16 +1,13 @@
 package com.viquelle.mikpik.sanity;
 
 import com.viquelle.mikpik.MikpikMod;
+import com.viquelle.mikpik.ghost.GhostManager;
 import com.viquelle.mikpik.item.PlushyItem;
-import com.viquelle.mikpik.light.ClientLightManager;
 import com.viquelle.mikpik.network.payload.SanitySyncPayload;
 import com.viquelle.mikpik.sanity.factor.*;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.LightLayer;
-import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
@@ -24,7 +21,7 @@ public class SanitySystem {
     private static final List<SanityFactor> FACTORS = List.of(
             new LightFactor(),
             new ShelterFactor(),
-            new NearbyPlayersFactor(),
+            new NearbyPlayersAndGhostFactor(),
             new FlowerCrownFactor()
     );
 
@@ -79,8 +76,12 @@ public class SanitySystem {
             return;
         }
 
-        float delta = calculateDelta(player);
-        add(player, delta);
+        if (GhostManager.isGhost(player)) {
+            set(player, SanityConstants.MAX_SANITY / 2.0f);
+        } else {
+            float delta = calculateDelta(player);
+            add(player, delta);
+        }
         validateActivePlushy(player);
 
 //        if (player.tickCount % 4 == 0) {

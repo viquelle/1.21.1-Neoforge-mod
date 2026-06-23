@@ -3,8 +3,8 @@ package com.viquelle.mikpik.sanity.factor;
 import com.viquelle.mikpik.sanity.SanityConstants;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LightLayer;
 
 public class ShelterFactor implements SanityFactor {
     @Override

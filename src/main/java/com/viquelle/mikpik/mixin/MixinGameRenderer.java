@@ -1,7 +1,7 @@
 package com.viquelle.mikpik.mixin;
 
 import com.viquelle.mikpik.LightMapAccess;
-import com.viquelle.mikpik.darknesscomputer.Darkness;
+import com.viquelle.mikpik.client.darknesscomputer.Darkness;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;

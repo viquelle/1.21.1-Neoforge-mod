@@ -1,7 +1,6 @@
 package com.viquelle.mikpik.command;
 
 import com.mojang.brigadier.arguments.FloatArgumentType;
-import com.viquelle.mikpik.MikpikMod;
 import com.viquelle.mikpik.sanity.SanitySystem;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;

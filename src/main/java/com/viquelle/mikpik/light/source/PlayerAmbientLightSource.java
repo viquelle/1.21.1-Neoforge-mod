@@ -1,16 +1,11 @@
 package com.viquelle.mikpik.light.source;
 
-import com.viquelle.mikpik.darknesscomputer.Darkness;
 import com.viquelle.mikpik.light.ClientLightManager;
 import com.viquelle.mikpik.light.LightHandle;
 import com.viquelle.mikpik.light.PointLightHandle;
-import com.viquelle.mikpik.sanity.SanityConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.core.BlockPos;
-import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LightLayer;
 
 import java.util.Collection;
 import java.util.List;
@@ -24,8 +19,7 @@ public class PlayerAmbientLightSource implements LightSource{
 
     private static final float EPSILON = 0.001f;
     private static final float PROGRESS_TIME = 5f; // 5 seconds
-    private long lastTime = System.nanoTime();
-
+    private long lastGameTime = -1;
     private boolean registered = false;
     private final PointLightHandle light = new PointLightHandle(0, BASE_BRIGHTNESS, COLOR, true, false);
 
@@ -39,9 +33,9 @@ public class PlayerAmbientLightSource implements LightSource{
             registered = true;
         }
 
-        long now = System.nanoTime();
-        float deltaSeconds = (now - lastTime) / 1_000_000_000f;
-        lastTime = now;
+        long now = level.getGameTime() + (long) partialTick;
+        float deltaSeconds = (now - lastGameTime) / 20f;
+        lastGameTime = now;
 
         boolean isDark = ClientLightManager.isDarkOnPos(
                 player.getEyePosition(partialTick),

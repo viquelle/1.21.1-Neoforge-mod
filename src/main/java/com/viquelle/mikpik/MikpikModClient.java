@@ -1,8 +1,7 @@
 package com.viquelle.mikpik;
 
-import com.viquelle.mikpik.coloredlights.ColorLightPreProcessor;
-import com.viquelle.mikpik.coloredlights.ColorLightRenderer;
-import com.viquelle.mikpik.coloredlights.ColoredLightScanner;
+import com.viquelle.mikpik.client.coloredlights.ColorLightPreProcessor;
+import com.viquelle.mikpik.client.coloredlights.ColorLightRenderer;
 import com.viquelle.mikpik.entity.shadowgrabber.model.ShadowForearmModel;
 import com.viquelle.mikpik.entity.shadowgrabber.model.ShadowHandModel;
 import com.viquelle.mikpik.entity.shadowgrabber.model.ShadowPortalModel;
@@ -10,20 +9,11 @@ import com.viquelle.mikpik.item.Magnetlampe;
 import com.viquelle.mikpik.item.ModItems;
 import com.viquelle.mikpik.light.ClientLightManager;
 import com.viquelle.mikpik.light.source.*;
-import foundry.veil.Veil;
 import foundry.veil.api.client.render.VeilRenderSystem;
-import foundry.veil.api.client.render.VeilRenderer;
-import foundry.veil.api.client.render.shader.compiler.VeilShaderSource;
-import foundry.veil.api.client.render.shader.uniform.ShaderUniformAccess;
-import foundry.veil.api.event.VeilAddShaderPreProcessorsEvent;
-import foundry.veil.platform.VeilClientPlatform;
 import foundry.veil.platform.VeilEventPlatform;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.lighting.BlockLightEngine;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
@@ -35,7 +25,6 @@ import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.event.level.LevelEvent;
-import org.joml.Vector4d;
 
 @Mod(value = MikpikMod.MODID, dist = Dist.CLIENT)
 // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
@@ -60,6 +49,7 @@ public class MikpikModClient {
         ClientLightManager.register(new TorchLightSource());
         ClientLightManager.register(new PlayerAmbientLightSource());
         ClientLightManager.register(new MagnetlampeLightSource());
+        ClientLightManager.register(new GhostPlayerLightSource());
         VeilEventPlatform.INSTANCE.onVeilAddShaderProcessors(((resourceProvider, registry) -> {
             registry.addPreprocessor(ColorLightPreProcessor.INSTANCE, true);
         }));

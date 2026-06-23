@@ -1,7 +1,5 @@
 package com.viquelle.mikpik.light;
 
-import com.viquelle.mikpik.MikpikMod;
-import foundry.veil.Veil;
 import foundry.veil.api.client.render.VeilRenderSystem;
 import foundry.veil.api.client.render.light.data.AreaLightData;
 import net.minecraft.world.entity.player.Player;

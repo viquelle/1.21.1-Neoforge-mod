@@ -3,19 +3,28 @@
   "minVersion": "0.8",
   "package": "com.viquelle.mikpik.mixin",
   "compatibilityLevel": "JAVA_21",
+  "mixinextras": {
+    "minVersion": "0.5.3"
+  },
   "client": [
     "LevelChunkMixin",
     "MixinDynamicTexture",
     "MixinGameRenderer",
     "MixinLightTexture",
     "ShaderChunkRendererMixin",
+    "client.GuiMixin",
+    "client.LivingEntityRendererMixin",
+    "client.MultiPlayerGameMode",
     "client.PlayerRendererMixin"
   ],
   "mixins": [
+    "AbstractContainerMenu",
     "BaseFireMixin",
     "CampfireLightMixin",
+    "EntityMixin",
     "LanternLightMixin",
     "LightsMixin",
+    "LivingEntityMixin",
     "RecipeManagerMixin"
   ]
 }

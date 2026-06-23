@@ -1,0 +1,82 @@
+package com.viquelle.mikpik.mixin.client;
+
+import com.viquelle.mikpik.MikpikMod;
+import com.viquelle.mikpik.ghost.HealthPenailtyUtil;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.resources.ResourceLocation;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+@Mixin(Gui.class)
+public class GuiMixin {
+    private static final ResourceLocation PENALTY_FULL =
+            ResourceLocation.fromNamespaceAndPath("mikpik", "textures/gui/heart_penalty_full.png");
+    private static final ResourceLocation PENALTY_HALF_LEFT =
+            ResourceLocation.fromNamespaceAndPath("mikpik", "textures/gui/heart_penalty_half_left.png");
+    private static final ResourceLocation PENALTY_HALF_RIGHT =
+            ResourceLocation.fromNamespaceAndPath("mikpik", "textures/gui/heart_penalty_half_right.png");
+
+    private static final ResourceLocation HEART_CONTAINER =
+            ResourceLocation.withDefaultNamespace("hud/heart/container");
+
+    @Inject(method = "renderHealthLevel", at = @At("TAIL"))
+    private void renderPenalty(GuiGraphics p_283143_, CallbackInfo ci) {
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (player == null) return;
+
+        AttributeInstance attr = player.getAttribute(Attributes.MAX_HEALTH);
+        if (attr == null) return;
+
+        AttributeModifier modifier = attr.getModifier(HealthPenailtyUtil.PENALTY_ID);
+        if (modifier == null) return;
+
+        double penalty = -modifier.amount();
+        if (penalty <= 0) return;
+
+        renderPenaltyHearts(p_283143_, player, penalty);
+    }
+
+    private void renderPenaltyHearts(GuiGraphics graphics, Player player, double penalty) {
+        float currentMax = player.getMaxHealth();
+        float originalMax = (float) (currentMax / (1f - penalty));
+
+        int x = graphics.guiWidth() / 2 - 91;
+        int y = graphics.guiHeight() - 39;
+
+        // Находим диапазон сердец, которые частично или полностью находятся в штрафе
+        int startHeart = Mth.floor(currentMax / 2.0f);
+        int endHeart = Mth.ceil(originalMax / 2.0f);
+
+        for (int heartIndex = endHeart - 1; heartIndex >= startHeart; heartIndex--) {
+            int leftHalfIndex = heartIndex * 2;
+            int rightHalfIndex = heartIndex * 2 + 1;
+
+            int posX = x + (heartIndex % 10) * 8;
+            int posY = y - (heartIndex / 10) * 10;
+
+            if (leftHalfIndex > startHeart * 2) {
+                graphics.blitSprite(HEART_CONTAINER, posX, posY, 9, 9);
+            }
+
+            if (rightHalfIndex > originalMax) {
+                graphics.blit(PENALTY_HALF_LEFT, posX, posY, 0, 0, 9, 9, 9, 9);
+            } else {
+                if (leftHalfIndex < currentMax) {
+                    graphics.blit(PENALTY_HALF_RIGHT, posX, posY, 0, 0, 9, 9, 9, 9);
+                } else {
+                    graphics.blit(PENALTY_FULL, posX, posY, 0, 0, 9, 9, 9, 9);
+                }
+            }
+        }
+    }
+}

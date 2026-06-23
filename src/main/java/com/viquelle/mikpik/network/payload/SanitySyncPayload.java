@@ -1,7 +1,6 @@
 package com.viquelle.mikpik.network.payload;
 
 import com.viquelle.mikpik.MikpikMod;
-
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;

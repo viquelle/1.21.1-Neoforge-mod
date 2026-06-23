@@ -1,8 +1,5 @@
-package com.viquelle.mikpik.coloredlights;
+package com.viquelle.mikpik.client.coloredlights;
 
-import com.viquelle.mikpik.darknesscomputer.Darkness;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.SculkSensorPhase;
@@ -72,7 +69,7 @@ public final class HardcodedLights {
                 Blocks.REDSTONE_TORCH,
                 new LightDefinition(
                         state -> state.getValue(RedstoneTorchBlock.LIT),
-                        new LightData(0xFF4040, 1.0f, false)
+                        new LightData(0xFF4040, 1.1f, false)
                 )
         );
 
@@ -80,7 +77,7 @@ public final class HardcodedLights {
                 Blocks.REDSTONE_WALL_TORCH,
                 new LightDefinition(
                         state -> state.getValue(RedstoneWallTorchBlock.LIT),
-                        new LightData(0xFF4040, 1.0f, false)
+                        new LightData(0xFF4040, 1.1f, false)
                 )
         );
 
@@ -88,7 +85,7 @@ public final class HardcodedLights {
                 Blocks.REDSTONE_ORE,
                 new LightDefinition(
                         state -> state.getValue(RedStoneOreBlock.LIT),
-                        new LightData(0xFF4040, 1.0f, true)
+                        new LightData(0xFF4040, 1.1f, true)
                 )
         );
 
@@ -96,7 +93,7 @@ public final class HardcodedLights {
                 Blocks.DEEPSLATE_REDSTONE_ORE,
                 new LightDefinition(
                         state -> state.getValue(RedStoneOreBlock.LIT),
-                        new LightData(0xFF4040, 1.0f, true)
+                        new LightData(0xFF4040, 1.1f, true)
                 )
         );
 

@@ -1,16 +1,12 @@
 package com.viquelle.mikpik.grue;
 
 import com.viquelle.mikpik.MikpikMod;
-import com.viquelle.mikpik.darknesscomputer.Darkness;
 import com.viquelle.mikpik.light.ClientLightManager;
-import com.viquelle.mikpik.sanity.SanityConstants;
 import com.viquelle.mikpik.sanity.SanitySystem;
-import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageTypes;
-import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;

@@ -1,8 +1,6 @@
 package com.viquelle.mikpik.mixin;
 
-import com.viquelle.mikpik.MikpikMod;
-import com.viquelle.mikpik.MikpikModClient;
-import com.viquelle.mikpik.coloredlights.ColoredLightScanner;
+import com.viquelle.mikpik.client.coloredlights.ColoredLightScanner;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;

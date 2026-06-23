@@ -14,6 +14,7 @@ public class ModDataComponents {
     public static final String charge_ticks = "charge_ticks"; // for items charge
     public static final String last_update = "last_update"; // for items charge
     public static final String charging_start = "charge_start"; // for items charge
+    public static final String heart_charge = "heart_charge";
 
     public static final Supplier<DataComponentType<Float>> PLUSHY_STORED_SANITY =
             COMPONENTS.registerComponentType(
@@ -53,6 +54,14 @@ public class ModDataComponents {
                     integerBuilder -> integerBuilder
                             .persistent(Codec.LONG)
                             .networkSynchronized(ByteBufCodecs.fromCodec(Codec.LONG))
+            );
+
+    public static final Supplier<DataComponentType<Float>> HEART_CHARGE =
+            COMPONENTS.registerComponentType(
+                    heart_charge,
+                    integerBuilder -> integerBuilder
+                            .persistent(Codec.FLOAT)
+                            .networkSynchronized(ByteBufCodecs.fromCodec(Codec.FLOAT))
             );
 
     public static void register(IEventBus modBus) {
