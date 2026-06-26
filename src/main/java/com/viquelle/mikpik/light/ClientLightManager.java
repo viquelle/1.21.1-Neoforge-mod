@@ -15,7 +15,7 @@ import java.util.List;
 
 public class ClientLightManager {
     private static final List<LightSource> SOURCES = new ArrayList<>();
-
+    private static float lastFrameTick = -1;
     public static void register(LightSource source) {
         SOURCES.add(source);
     }
@@ -24,6 +24,7 @@ public class ClientLightManager {
         for (LightSource source : SOURCES) {
             source.tick(level, partialTick);
         }
+        lastFrameTick = level.getGameTime() + partialTick;
     }
 
     public static void clear() {
@@ -46,7 +47,7 @@ public class ClientLightManager {
                 double dz = pos.z - lightPos.z;
                 double distSq = dx * dx + dy * dy + dz * dz;
                 if (distSq < 0.01) {
-                    result = Math.max(brightness,result);
+                    result = Math.max(brightness, result);
                     continue;
                 }
 
@@ -54,11 +55,11 @@ public class ClientLightManager {
                     double radius = point.getRadius();
                     if (distSq > radius * radius) continue;
 
-                    float dist = (float)Math.sqrt(distSq);
-                    float t = 1.0f - (dist / (float)radius);
+                    float dist = (float) Math.sqrt(distSq);
+                    float t = 1.0f - (dist / (float) radius);
 
-                    float influence = brightness * (float) Math.pow(t,2.0f);
-                    result = Math.max(influence,result);
+                    float influence = brightness * (float) Math.pow(t, 2.0f);
+                    result = Math.max(influence, result);
                     continue;
                 }
 
@@ -68,21 +69,21 @@ public class ClientLightManager {
 
                     Vec3 dir = area.getForward();
                     float invDist = (float) Mth.fastInvSqrt(distSq);
-                    float dist = (float)(distSq * invDist);
-                    float dot = (float)(
+                    float dist = (float) (distSq * invDist);
+                    float dot = (float) (
                             dir.x * dx * invDist +
                                     dir.y * dy * invDist +
                                     dir.z * dz * invDist
                     );
 
-                    float halfAngleCos = (float)Math.cos(area.getAngle() * 0.5f);
+                    float halfAngleCos = (float) Math.cos(area.getAngle() * 0.5f);
 
                     if (dot < halfAngleCos) continue;
 
                     float angleFactor = (dot - halfAngleCos) / (1.0f - halfAngleCos);
                     angleFactor = Math.max(0f, Math.min(1f, angleFactor));
 
-                    float distanceFactor = 1.0f - (dist / (float)range);
+                    float distanceFactor = 1.0f - (dist / (float) range);
 
                     float influence = brightness * (float) Math.pow(distanceFactor, 2.0f) * angleFactor;
                     result = Math.max(result, influence);
@@ -97,7 +98,11 @@ public class ClientLightManager {
         float veilLight = sampleLight(pos) * SanityConstants.VEIL_NORMALIZATION;
         float blockLight = level.getBrightness(LightLayer.BLOCK, BlockPos.containing(pos));
         float skyLight = Darkness.posSkyLight(pos, level, partialTick);
-        float localBrightness = Math.max(Math.max(blockLight,skyLight), veilLight);
+        float localBrightness = Math.max(Math.max(blockLight, skyLight), veilLight);
         return localBrightness <= SanityConstants.BRIGHTNESS_THRESHOLD;
+    }
+
+    public static float getLastFrameTick() {
+        return lastFrameTick;
     }
 }
