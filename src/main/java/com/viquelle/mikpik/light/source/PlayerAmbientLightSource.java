@@ -44,18 +44,16 @@ public class PlayerAmbientLightSource implements LightSource{
 
         float targetBrightness = isDark ? BASE_BRIGHTNESS : 0.0f;
 
-        if (Math.abs(CURRENT_BRIGHTNESS - targetBrightness) >= EPSILON) {
-            if (CURRENT_BRIGHTNESS < targetBrightness) {
-                CURRENT_BRIGHTNESS = Math.min(
-                        CURRENT_BRIGHTNESS + (BASE_BRIGHTNESS / PROGRESS_TIME) * deltaSeconds,
-                        targetBrightness
-                );
-            } else {
-                CURRENT_BRIGHTNESS = Math.max(
-                        CURRENT_BRIGHTNESS - (BASE_BRIGHTNESS / PROGRESS_TIME) * deltaSeconds,
-                        0f
-                );
-            }
+        if (CURRENT_BRIGHTNESS < targetBrightness) {
+            CURRENT_BRIGHTNESS = Math.min(
+                    CURRENT_BRIGHTNESS + (BASE_BRIGHTNESS / PROGRESS_TIME) * deltaSeconds,
+                    targetBrightness
+            );
+        } else if (CURRENT_BRIGHTNESS > targetBrightness) {
+            CURRENT_BRIGHTNESS = Math.max(
+                    CURRENT_BRIGHTNESS - (BASE_BRIGHTNESS / PROGRESS_TIME) * deltaSeconds,
+                    0f
+            );
         }
 
         light.setBrightness(CURRENT_BRIGHTNESS);
@@ -74,5 +72,10 @@ public class PlayerAmbientLightSource implements LightSource{
     @Override
     public Collection<? extends LightHandle> getLights() {
         return List.of(light);
+    }
+
+    @Override
+    public UpdatePhase getUpdatePhase() {
+        return UpdatePhase.AFTER_LIGHTS;
     }
 }

@@ -39,7 +39,7 @@ public class AreaLightHandle extends LightHandle<AreaLightData> {
         this.brightness = brightness;
         this.color = color;
         this.occlusion = occlusion;
-        this.countsAsLight = countsAsLight;
+        this.affectDarkness = countsAsLight;
         data.setAngle(angle)
                 .setDistance(range)
                 .setBrightness(brightness)

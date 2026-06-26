@@ -2,6 +2,7 @@ package com.viquelle.mikpik.light;
 
 import com.viquelle.mikpik.client.darknesscomputer.Darkness;
 import com.viquelle.mikpik.light.source.LightSource;
+import com.viquelle.mikpik.light.source.UpdatePhase;
 import com.viquelle.mikpik.sanity.SanityConstants;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
@@ -21,9 +22,13 @@ public class ClientLightManager {
     }
 
     public static void tick(Level level, Player player, float partialTick) {
-        for (LightSource source : SOURCES) {
-            source.tick(level, partialTick);
-        }
+        for (LightSource source : SOURCES)
+            if (source.getUpdatePhase() == UpdatePhase.NORMAL)
+                source.tick(level, partialTick);
+
+        for (LightSource source : SOURCES)
+            if (source.getUpdatePhase() == UpdatePhase.AFTER_LIGHTS)
+                source.tick(level, partialTick);
         lastFrameTick = level.getGameTime() + partialTick;
     }
 
@@ -37,7 +42,7 @@ public class ClientLightManager {
         for (LightSource source : SOURCES) {
             for (LightHandle<?> handle : source.getLights()) {
 
-                if (!handle.countsAsLight) continue;
+                if (!handle.affectDarkness) continue;
 
                 Vec3 lightPos = handle.getPosition();
                 float brightness = handle.getBrightness();

@@ -9,4 +9,9 @@ public interface LightSource {
     void tick(Level level, float partialTick);
     void destroy();
     Collection<? extends LightHandle> getLights();
+
+    default UpdatePhase getUpdatePhase() {
+        return UpdatePhase.NORMAL;
+    }
 }
+

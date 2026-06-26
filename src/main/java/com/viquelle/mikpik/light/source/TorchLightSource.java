@@ -51,9 +51,10 @@ public class TorchLightSource implements LightSource {
         boolean shouldRemove = false; // Если яркость < 0.001, то удалит
         boolean isDead = false;
 
-        TorchState(Entity owner, TorchType type) {
+        TorchState(Entity owner, TorchType type, boolean instantBright) {
             this.owner = owner;
             this.type = type;
+            currentBrightness = instantBright ? type.brightness : currentBrightness;
             this.light = createLight(type);
         }
 
@@ -62,13 +63,13 @@ public class TorchLightSource implements LightSource {
             MikpikMod.LOGGER.info("{} \n{} \n{} \n{} \n{} \n{}", currentBrightness, type, owner, shouldRemove, currentPartialTick, currentDeltaTime);
             if (owner.isRemoved()) shouldRemove = true;
 
-            updatePosition(currentPartialTick);
+            updatePosition();
             updateBrightness(currentDeltaTime);
             if (shouldRemove && currentBrightness < 0.001) isDead = true;
         }
 
-        private void updatePosition(float partialTick) {
-            light.setPosition(owner.getEyePosition(partialTick));
+        private void updatePosition() {
+            light.setPosition(owner.getEyePosition(currentPartialTick));
         }
 
         private void updateBrightness(float deltatime) {
@@ -127,13 +128,13 @@ public class TorchLightSource implements LightSource {
             TorchType Torch = TorchType.fromItem(HandItem.getItem());
             if (Torch != null) {
                 String key = "player_" + player.getUUID() + "_main_" + HandItem.getItem();
-                activateOrFlag(player, Torch, key);
+                activateOrFlag(player, Torch, key, false);
             }
             HandItem = player.getOffhandItem();
             Torch = TorchType.fromItem(HandItem.getItem());
             if (Torch != null) {
                 String key = "player_" + player.getUUID() + "_off_" + HandItem.getItem();
-                activateOrFlag(player, Torch, key);
+                activateOrFlag(player, Torch, key, false);
             }
         }
 
@@ -143,7 +144,7 @@ public class TorchLightSource implements LightSource {
             TorchType torch = TorchType.fromItem(itemStack.getItem());
             if (torch != null) {
                 String key = "item_" + item.getId() + "_" + itemStack.getItem();
-                activateOrFlag(item, torch, key);
+                activateOrFlag(item, torch, key, true);
             }
         }
 
@@ -161,20 +162,20 @@ public class TorchLightSource implements LightSource {
         torches.clear();
     }
 
-    private List<PointLightHandle> BUFFER = new ArrayList<>();
     @Override
     public Collection<? extends LightHandle> getLights() {
-        BUFFER.clear();
-        for (TorchState state : torches.values()) {
-            BUFFER.add(state.light);
-        }
-        return BUFFER;
+        List<PointLightHandle> buffer = new ArrayList<>();
+
+        for (TorchState state : torches.values())
+            buffer.add(state.light);
+
+        return buffer;
     }
 
-    private void activateOrFlag(Entity entity, TorchType type, String key) {
+    private void activateOrFlag(Entity entity, TorchType type, String key, boolean instantBright) {
         TorchState state = torches.get(key);
         if (state == null) {
-            state = new TorchState(entity, type);
+            state = new TorchState(entity, type, instantBright);
             torches.put(key, state);
         } else {
             state.shouldRemove = false;
