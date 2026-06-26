@@ -5,6 +5,7 @@ import com.viquelle.mikpik.light.ClientLightManager;
 import com.viquelle.mikpik.light.LightHandle;
 import com.viquelle.mikpik.light.PointLightHandle;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -12,6 +13,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.*;
 
@@ -48,6 +50,7 @@ public class TorchLightSource implements LightSource {
         float currentBrightness = 0f;
         TorchType type;
         Entity owner;
+        Vec3 lastKnownPos = Vec3.ZERO;
         boolean shouldRemove = false; // Если яркость < 0.001, то удалит
         boolean isDead = false;
 
@@ -69,18 +72,20 @@ public class TorchLightSource implements LightSource {
         }
 
         private void updatePosition() {
-            light.setPosition(owner.getEyePosition(currentPartialTick));
+            lastKnownPos = owner.getEyePosition(currentPartialTick);
+            light.setPosition(lastKnownPos);
         }
 
         private void updateBrightness(float deltatime) {
-            if (owner.isRemoved()) currentBrightness = Math.max(currentBrightness - SUPER_EXTING_SPEED * deltatime, 0f);
-            else {
-                if (shouldRemove) {
-                    currentBrightness = Math.max(currentBrightness - EXTING_SPEED * deltatime, 0f);
-                } else {
-                    currentBrightness = Math.min(currentBrightness + LIT_SPEED * deltatime, type.brightness);
-                }
-            }
+            float currentSpeed = 0;
+            if (owner.isRemoved()) currentSpeed = SUPER_EXTING_SPEED;
+            else if (shouldRemove) currentSpeed = USUAL_EXTING_SPEED;
+            else if (type != TorchType.REDSTONE_TORCH &&
+                            owner.level().isRaining() &&
+                            owner.level().isRainingAt(BlockPos.containing(lastKnownPos))) currentSpeed = RAIN_EXTING_SPEED;
+            else if (owner.isUnderWater()) currentSpeed = UNDERWATER_EXTING_SPEED;
+            else currentSpeed = LIT_SPEED;
+            currentBrightness = Math.clamp(currentBrightness + currentSpeed * deltatime,0,type.brightness);
             light.setBrightness(currentBrightness);
         }
 
@@ -96,8 +101,11 @@ public class TorchLightSource implements LightSource {
     }
     private final Map<String, TorchState> torches = new HashMap<>();
     private final float LIT_SPEED = 0.5f; // 2s
-    private final float EXTING_SPEED = 2f; // 0.5f
-    private final float SUPER_EXTING_SPEED = 5f; // 0.2f
+    private final float USUAL_EXTING_SPEED = -2f; // 0.5f
+    private final float SUPER_EXTING_SPEED = -5f; // 0.2f
+    private final float RAIN_EXTING_SPEED = -0.2f;
+    private final float UNDERWATER_EXTING_SPEED = -10f;
+
     private float currentPartialTick;
     private float currentDeltaTime;
 
