@@ -45,7 +45,6 @@ public class MikpikModClient {
         MikpikMod.LOGGER.info("HELLO FROM CLIENT SETUP");
         MikpikMod.LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
         ClientLightManager.register(new NetherStarLightSource());
-        ClientLightManager.register(new LanternLightSource());
         ClientLightManager.register(new TorchLightSource());
         ClientLightManager.register(new PlayerAmbientLightSource());
         ClientLightManager.register(new MagnetlampeLightSource());

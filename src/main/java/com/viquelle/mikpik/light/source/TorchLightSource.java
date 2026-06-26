@@ -21,13 +21,17 @@ public class TorchLightSource implements LightSource {
     private enum TorchType {
         TORCH(Items.TORCH, 15.0f, 1.0f, 0xFFD294, true),
         SOUL_TORCH(Items.SOUL_TORCH, 10f, 1.2f, 0x3d64FF, true),
-        REDSTONE_TORCH(Items.REDSTONE_TORCH, 7f, 1.1f, 0xFF4040, true);
+        REDSTONE_TORCH(Items.REDSTONE_TORCH, 7f, 1.1f, 0xFF4040, true, false, false),
+        LANTERN(Items.LANTERN, 14.0f, 1.0f, 0xFFD294, true, false, true),
+        SOUL_LANTERN(Items.SOUL_LANTERN, 9.0f, 1.2f, 0x3d64FF, true, false, true);
 
         Item item;
         float radius;
         float brightness;
         int color;
         boolean occlusion;
+        boolean rainAffectable = true;
+        boolean depthAffectable = true;
 
         TorchType(Item torch, float radius, float brightness, int color, boolean occlusion) {
             this.item = torch;
@@ -35,6 +39,12 @@ public class TorchLightSource implements LightSource {
             this.brightness = brightness;
             this.color = color;
             this.occlusion = occlusion;
+        }
+
+        TorchType(Item torch, float radius, float brightness, int color, boolean occlusion, boolean rainAffectable, boolean depthAffectable) {
+            this(torch,radius,brightness,color,occlusion);
+            this.rainAffectable = rainAffectable;
+            this.depthAffectable = depthAffectable;
         }
 
         static TorchType fromItem(Item item) {
@@ -48,16 +58,16 @@ public class TorchLightSource implements LightSource {
     private class TorchState {
         PointLightHandle light;
         float currentBrightness = 0f;
+        float targetBrightness = 1f;
         TorchType type;
         Entity owner;
         Vec3 lastKnownPos = Vec3.ZERO;
         boolean shouldRemove = false; // Если яркость < 0.001, то удалит
         boolean isDead = false;
 
-        TorchState(Entity owner, TorchType type, boolean instantBright) {
+        TorchState(Entity owner, TorchType type) {
             this.owner = owner;
             this.type = type;
-            currentBrightness = instantBright ? type.brightness : currentBrightness;
             this.light = createLight(type);
         }
 
@@ -67,7 +77,7 @@ public class TorchLightSource implements LightSource {
             if (owner.isRemoved()) shouldRemove = true;
 
             updatePosition();
-            updateBrightness(currentDeltaTime);
+            updateBrightness();
             if (shouldRemove && currentBrightness < 0.001) isDead = true;
         }
 
@@ -76,16 +86,18 @@ public class TorchLightSource implements LightSource {
             light.setPosition(lastKnownPos);
         }
 
-        private void updateBrightness(float deltatime) {
-            float currentSpeed = 0;
+        private void updateBrightness() {
+            float currentSpeed;
+            targetBrightness = type.brightness;
+            targetBrightness *= type.depthAffectable ? (float) Math.clamp(lastKnownPos.y / 64f, 0, 1) : 1;
             if (owner.isRemoved()) currentSpeed = SUPER_EXTING_SPEED;
             else if (shouldRemove) currentSpeed = USUAL_EXTING_SPEED;
-            else if (type != TorchType.REDSTONE_TORCH &&
+            else if (type.rainAffectable &&
                             owner.level().isRaining() &&
                             owner.level().isRainingAt(BlockPos.containing(lastKnownPos))) currentSpeed = RAIN_EXTING_SPEED;
             else if (owner.isUnderWater()) currentSpeed = UNDERWATER_EXTING_SPEED;
             else currentSpeed = LIT_SPEED;
-            currentBrightness = Math.clamp(currentBrightness + currentSpeed * deltatime,0,type.brightness);
+            currentBrightness = Math.clamp(currentBrightness + currentSpeed * currentDeltaTime,0,targetBrightness);
             light.setBrightness(currentBrightness);
         }
 
@@ -100,9 +112,9 @@ public class TorchLightSource implements LightSource {
         }
     }
     private final Map<String, TorchState> torches = new HashMap<>();
-    private final float LIT_SPEED = 0.5f; // 2s
-    private final float USUAL_EXTING_SPEED = -2f; // 0.5f
-    private final float SUPER_EXTING_SPEED = -5f; // 0.2f
+    private final float LIT_SPEED = 0.75f; // 1.33s
+    private final float USUAL_EXTING_SPEED = -2f; // 0.5s
+    private final float SUPER_EXTING_SPEED = -5f; // 0.2s
     private final float RAIN_EXTING_SPEED = -0.2f;
     private final float UNDERWATER_EXTING_SPEED = -10f;
 
@@ -183,7 +195,7 @@ public class TorchLightSource implements LightSource {
     private void activateOrFlag(Entity entity, TorchType type, String key, boolean instantBright) {
         TorchState state = torches.get(key);
         if (state == null) {
-            state = new TorchState(entity, type, instantBright);
+            state = new TorchState(entity, type);
             torches.put(key, state);
         } else {
             state.shouldRemove = false;
