@@ -72,8 +72,8 @@ public class TorchLightSource implements LightSource {
         }
 
         void update() {
-            MikpikMod.LOGGER.info("trying update {} in {}", type.item, owner.getName());
-            MikpikMod.LOGGER.info("{} \n{} \n{} \n{} \n{} \n{}", currentBrightness, type, owner, shouldRemove, currentPartialTick, currentDeltaTime);
+//            MikpikMod.LOGGER.info("trying update {} in {}", type.item, owner.getName());
+//            MikpikMod.LOGGER.info("{} \n{} \n{} \n{} \n{} \n{}", currentBrightness, type, owner, shouldRemove, currentPartialTick, currentDeltaTime);
             if (owner.isRemoved()) shouldRemove = true;
 
             updatePosition();

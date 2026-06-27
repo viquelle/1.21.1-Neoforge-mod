@@ -16,7 +16,7 @@ import java.util.List;
 
 public class ClientLightManager {
     private static final List<LightSource> SOURCES = new ArrayList<>();
-    private static float lastFrameTick = -1;
+    private static float lastFrameTick = 1;
     public static void register(LightSource source) {
         SOURCES.add(source);
     }
