@@ -34,6 +34,7 @@ public final class GrueSystem {
 
     @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent.Post event) {
+        if (true) return; // Пока выключу, хз че с этим делать
         if (!(event.getEntity() instanceof ServerPlayer player)) {
             return;
         }
