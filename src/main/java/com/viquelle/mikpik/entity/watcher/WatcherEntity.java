@@ -1,5 +1,7 @@
 package com.viquelle.mikpik.entity.watcher;
 
+import com.viquelle.mikpik.MikpikMod;
+import com.viquelle.mikpik.MikpikModClient;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.entity.Entity;
@@ -18,7 +20,9 @@ public class WatcherEntity extends Entity {
 
     public WatcherEntity(EntityType<? extends WatcherEntity> type, Level level) {
         super(type, level);
+        this.setNoGravity(true);
         this.noPhysics = true;
+        this.maxLifeTime = 600 + level.random.nextInt(200);
     }
 
     @Override
@@ -26,23 +30,23 @@ public class WatcherEntity extends Entity {
 
     }
 
-//    @Override
-//    public void tick() {
-//        if (!level().isClientSide) return;
-//
-//        lifeTime++;
-//        animationTimer = (animationTimer + 1) % 200; // Цикл 10 секунд (200 тиков)
-//
-//        Player player = Minecraft.getInstance().player;
-//        if (player == null) return;
-//
-//        boolean isClose = distanceTo(player) < 8.0;
-//        boolean isLit = !ClientLightManager.isDarkOnPos(blockPosition().getCenter(), level(), 1f);
-//
-//        if (isClose || isLit || lifeTime >= maxLifeTime) {
-//            discard();
-//        }
-//    }
+    @Override
+    public void tick() {
+        if (!level().isClientSide) return;
+
+        lifeTime++;
+        animationTimer = (animationTimer + 1) % 200; // Цикл 10 секунд (200 тиков)
+
+        Player player = Minecraft.getInstance().player;
+        if (player == null) return;
+
+        boolean isClose = distanceTo(player) < 8.0;
+        boolean isLit = !ClientLightManager.isDarkOnPos(blockPosition().getCenter(), level(), 1f);
+        MikpikMod.LOGGER.info("{} || {} || {}", isClose, isLit, blockPosition().getCenter());
+        if (isClose || isLit || lifeTime >= maxLifeTime) {
+            discard();
+        }
+    }
 
     public int getBlinkFrame() {
         // 0-159 тиков (8 сек): кадр 0 (открыты)

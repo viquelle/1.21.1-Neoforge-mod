@@ -2,9 +2,11 @@ package com.viquelle.mikpik;
 
 import com.viquelle.mikpik.client.coloredlights.ColorLightPreProcessor;
 import com.viquelle.mikpik.client.coloredlights.ColorLightRenderer;
+import com.viquelle.mikpik.entity.ModEntities;
 import com.viquelle.mikpik.entity.shadowgrabber.model.ShadowForearmModel;
 import com.viquelle.mikpik.entity.shadowgrabber.model.ShadowHandModel;
 import com.viquelle.mikpik.entity.shadowgrabber.model.ShadowPortalModel;
+import com.viquelle.mikpik.entity.watcher.WatcherRenderer;
 import com.viquelle.mikpik.item.Magnetlampe;
 import com.viquelle.mikpik.item.ModItems;
 import com.viquelle.mikpik.light.ClientLightManager;
@@ -37,6 +39,11 @@ public class MikpikModClient {
 
         container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
 
+    }
+
+    @SubscribeEvent
+    public static void onre(EntityRenderersEvent.RegisterRenderers event) {
+        event.registerEntityRenderer(ModEntities.WATCHER.get(), WatcherRenderer::new);
     }
 
     @SubscribeEvent
@@ -104,5 +111,6 @@ public class MikpikModClient {
                 ShadowPortalModel.LAYER_LOCATION,
                 ShadowPortalModel::createBodyLayer
         );
+
     }
 }

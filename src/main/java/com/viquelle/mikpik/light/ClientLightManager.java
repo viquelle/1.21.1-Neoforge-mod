@@ -1,6 +1,7 @@
 package com.viquelle.mikpik.light;
 
 import com.viquelle.mikpik.MikpikMod;
+import com.viquelle.mikpik.MikpikModClient;
 import com.viquelle.mikpik.client.darknesscomputer.Darkness;
 import com.viquelle.mikpik.light.source.LightSource;
 import com.viquelle.mikpik.light.source.UpdatePhase;
@@ -27,14 +28,11 @@ import java.util.List;
 public class ClientLightManager {
     private static final List<LightSource> SOURCES = new ArrayList<>();
     private static float lastFrameTick = 0;
-    private static float sampleLight = 0;
-    private static boolean sampleLightDirty = true;
     public static void register(LightSource source) {
         SOURCES.add(source);
     }
 
     public static void tick(Level level, Player player, float partialTick) {
-        sampleLightDirty = true;
         for (LightSource source : SOURCES)
             if (source.getUpdatePhase() == UpdatePhase.NORMAL)
                 source.tick(level, partialTick);
@@ -59,13 +57,10 @@ public class ClientLightManager {
     public static void clear() {
         SOURCES.forEach(LightSource::destroy);
         lastFrameTick = 0;
-        sampleLight = 0;
-        sampleLightDirty = true;
     }
 
     public static float sampleLight(Vec3 pos) {
         float result = 0f;
-        if (!sampleLightDirty) return sampleLight;
         for (LightSource source : SOURCES) {
             for (LightHandle<?> handle : source.getLights()) {
 
@@ -123,8 +118,6 @@ public class ClientLightManager {
             }
         }
 
-        sampleLight = result;
-        sampleLightDirty = false;
         return result;
     }
 
@@ -133,6 +126,7 @@ public class ClientLightManager {
         float blockLight = level.getBrightness(LightLayer.BLOCK, BlockPos.containing(pos));
         float skyLight = Darkness.posSkyLight(pos, level, partialTick);
         float localBrightness = Math.max(Math.max(blockLight, skyLight), veilLight);
+        MikpikMod.LOGGER.info("{}",veilLight);
         return localBrightness <= SanityConstants.BRIGHTNESS_THRESHOLD;
     }
 

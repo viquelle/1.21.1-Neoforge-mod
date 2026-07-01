@@ -41,7 +41,6 @@ public class ModEntities {
                     .sized(0.5f, 0.5f)
                     .clientTrackingRange(64)
                     .updateInterval(3)
-                    .noSummon()
                     .fireImmune()
                     .build("watcher"));
 }

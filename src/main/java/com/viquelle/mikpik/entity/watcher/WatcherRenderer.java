@@ -44,7 +44,7 @@ public class WatcherRenderer extends EntityRenderer<WatcherEntity> {
         float[] uv = FRAME_UVS[frame];
 
         poseStack.pushPose();
-
+        poseStack.translate(0.0, 0.25,0.0);
         // Billboard: поворачиваем quad к камере
         poseStack.mulPose(this.entityRenderDispatcher.cameraOrientation());
 
@@ -99,7 +99,6 @@ public class WatcherRenderer extends EntityRenderer<WatcherEntity> {
     @Override
     public boolean shouldRender(WatcherEntity entity, net.minecraft.client.renderer.culling.Frustum frustum,
                                 double camX, double camY, double camZ) {
-        // Всегда рендерим, если entity в мире (frustum culling может отсечь из-за маленького bounding box)
         return true;
     }
 }
