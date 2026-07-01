@@ -1,6 +1,5 @@
 package com.viquelle.mikpik.light.source;
 
-import com.viquelle.mikpik.MikpikMod;
 import com.viquelle.mikpik.light.ClientLightManager;
 import com.viquelle.mikpik.light.LightHandle;
 import com.viquelle.mikpik.light.PointLightHandle;

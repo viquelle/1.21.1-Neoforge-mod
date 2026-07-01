@@ -1,27 +1,40 @@
 package com.viquelle.mikpik.light;
 
+import com.viquelle.mikpik.MikpikMod;
 import com.viquelle.mikpik.client.darknesscomputer.Darkness;
 import com.viquelle.mikpik.light.source.LightSource;
 import com.viquelle.mikpik.light.source.UpdatePhase;
+import com.viquelle.mikpik.network.payload.DynamicBrightPayload;
 import com.viquelle.mikpik.sanity.SanityConstants;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@EventBusSubscriber(modid = MikpikMod.MODID, value = Dist.CLIENT)
 public class ClientLightManager {
     private static final List<LightSource> SOURCES = new ArrayList<>();
-    private static float lastFrameTick = 1;
+    private static float lastFrameTick = 0;
+    private static float sampleLight = 0;
+    private static boolean sampleLightDirty = true;
     public static void register(LightSource source) {
         SOURCES.add(source);
     }
 
     public static void tick(Level level, Player player, float partialTick) {
+        sampleLightDirty = true;
         for (LightSource source : SOURCES)
             if (source.getUpdatePhase() == UpdatePhase.NORMAL)
                 source.tick(level, partialTick);
@@ -32,13 +45,27 @@ public class ClientLightManager {
         lastFrameTick = level.getGameTime() + partialTick;
     }
 
+    @SubscribeEvent
+    public static void onClientTick(ClientTickEvent.Post event) {
+        Minecraft mc = Minecraft.getInstance();
+        Level level = mc.level;
+        LocalPlayer player = mc.player;
+        if (level == null || !level.isClientSide || player == null) return;
+        PacketDistributor.sendToServer(
+                new DynamicBrightPayload(sampleLight(player.getEyePosition(1f)))
+        );
+    }
+
     public static void clear() {
         SOURCES.forEach(LightSource::destroy);
+        lastFrameTick = 0;
+        sampleLight = 0;
+        sampleLightDirty = true;
     }
 
     public static float sampleLight(Vec3 pos) {
         float result = 0f;
-
+        if (!sampleLightDirty) return sampleLight;
         for (LightSource source : SOURCES) {
             for (LightHandle<?> handle : source.getLights()) {
 
@@ -96,6 +123,8 @@ public class ClientLightManager {
             }
         }
 
+        sampleLight = result;
+        sampleLightDirty = false;
         return result;
     }
 

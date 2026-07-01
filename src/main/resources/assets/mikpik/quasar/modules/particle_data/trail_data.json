@@ -1,0 +1,47 @@
+{
+  "render_type": "CUBE",
+  "should_collide": false,
+  "face_velocity": false,
+  "additive": true,
+  "sprite_data": {
+    "sprite": "mikpik:textures/particle/glow.png"
+  },
+  "init_modules": [
+    {
+      "module": "light",
+      "gradient": {
+        "color": "0xFF8800FF"
+      },
+      "brightness": "3 - q.agePercent * 3",
+      "radius": 4
+    }
+  ],
+  "forces": [
+    {
+      "module": "drag",
+      "strength": 0.85
+    }
+  ],
+  "update_modules": [
+    {
+      "module": "tick_size",
+      "size": "0.15 - q.agePercent * 0.1"
+    }
+  ],
+  "render_modules": [
+    {
+      "module": "color",
+      "gradient": {
+        "rgb_points": [
+          {"percent": 0.0, "color": "0xFF00FF"},
+          {"percent": 1.0, "color": "0x8800FF"}
+        ],
+        "alpha_points": [
+          {"percent": 0.0, "alpha": 1},
+          {"percent": 1.0, "alpha": 0}
+        ]
+      },
+      "interpolant": "q.agePercent"
+    }
+  ]
+}

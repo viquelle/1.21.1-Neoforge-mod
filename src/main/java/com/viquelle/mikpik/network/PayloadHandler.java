@@ -1,8 +1,10 @@
-package com.viquelle.mikpik.network.payload;
+package com.viquelle.mikpik.network;
 
 import com.viquelle.mikpik.MikpikMod;
 import com.viquelle.mikpik.ghost.GhostManager;
 import com.viquelle.mikpik.ghost.HealthPenailtyUtil;
+import com.viquelle.mikpik.light.ServerLightManager;
+import com.viquelle.mikpik.network.payload.*;
 import com.viquelle.mikpik.sanity.ClientSanityData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -18,9 +20,18 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import static com.viquelle.mikpik.ghost.GhostManager.raycast;
 import static com.viquelle.mikpik.ghost.GhostManager.tryHeartRaycastRevive;
 
-public class ClientPayloadHandler {
+public class PayloadHandler {
     public static void handleDataOnNetwork(final SanitySyncPayload data, final IPayloadContext context) {
         ClientSanityData.set(data.sanity());
+    }
+
+    public static void handleDynamicBright(final DynamicBrightPayload data, final IPayloadContext context) {
+        context.enqueueWork(() -> {
+            ServerPlayer player = (ServerPlayer) context.player();
+            if (!player.level().isClientSide) {
+                ServerLightManager.setPlayerDynamicBright(player.getUUID(), data.bright());
+            }
+        });
     }
 
     public static void handleHeartReviveRequest(HeartReviveRequestPayload payload, IPayloadContext context) {

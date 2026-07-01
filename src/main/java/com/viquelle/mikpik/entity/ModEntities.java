@@ -3,6 +3,7 @@ package com.viquelle.mikpik.entity;
 import com.viquelle.mikpik.MikpikMod;
 import com.viquelle.mikpik.entity.eye.EyeEntity;
 import com.viquelle.mikpik.entity.shadowgrabber.ShadowGrabberEntity;
+import com.viquelle.mikpik.entity.watcher.WatcherEntity;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
@@ -33,4 +34,14 @@ public class ModEntities {
                     .updateInterval(1)
                     .noSave()
                     .build("shadow_grabber"));
+
+    public static final Supplier<EntityType<WatcherEntity>> WATCHER =
+            ENTITY_TYPES.register("watcher", () -> EntityType.Builder
+                    .of(WatcherEntity::new, MobCategory.MISC)
+                    .sized(0.5f, 0.5f)
+                    .clientTrackingRange(64)
+                    .updateInterval(3)
+                    .noSummon()
+                    .fireImmune()
+                    .build("watcher"));
 }

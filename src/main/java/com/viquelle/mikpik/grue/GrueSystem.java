@@ -2,6 +2,7 @@ package com.viquelle.mikpik.grue;
 
 import com.viquelle.mikpik.MikpikMod;
 import com.viquelle.mikpik.light.ClientLightManager;
+import com.viquelle.mikpik.light.ServerLightManager;
 import com.viquelle.mikpik.sanity.SanitySystem;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -128,7 +129,7 @@ public final class GrueSystem {
         var level = player.level();
         Vec3 pos = player.getEyePosition(0f);
 
-        return ClientLightManager.isDarkOnPos(pos, level, 0f);
+        return ServerLightManager.isPlayerInDark(player);
     }
 
     private static float calculatePitch(int attackSoundTicks) {

@@ -17,7 +17,6 @@ public class PlayerAmbientLightSource implements LightSource{
     private float CURRENT_RADIUS = 0f;
     private float CURRENT_BRIGHTNESS = 0f;;
 
-    private static final float EPSILON = 0.001f;
     private static final float PROGRESS_TIME = 5f; // 5 seconds
     private boolean registered = false;
     private final PointLightHandle light = new PointLightHandle(0, BASE_BRIGHTNESS, COLOR, true, false);
@@ -33,7 +32,7 @@ public class PlayerAmbientLightSource implements LightSource{
         }
 
         float now = level.getGameTime() + partialTick;
-        float deltaSeconds = (now - ClientLightManager.getLastFrameTick()) / 20f;
+        float deltaSeconds = Math.max((now - ClientLightManager.getLastFrameTick()) / 20f, 0f);
 
         boolean isDark = ClientLightManager.isDarkOnPos(
                 player.getEyePosition(partialTick),
@@ -55,7 +54,6 @@ public class PlayerAmbientLightSource implements LightSource{
                     0f
             );
         }
-
         light.setBrightness(CURRENT_BRIGHTNESS);
         light.setRadius(CURRENT_RADIUS);
         light.setPosition(player.getEyePosition(partialTick));

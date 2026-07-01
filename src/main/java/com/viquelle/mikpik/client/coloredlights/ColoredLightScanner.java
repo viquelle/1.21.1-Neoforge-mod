@@ -10,7 +10,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 
 public final class ColoredLightScanner {
-
     private static final int SCAN_RADIUS = 160;
     private static final double RADIUS_SQR = SCAN_RADIUS * SCAN_RADIUS;
     private static final double STABILITY_FACTOR = 0.8;
