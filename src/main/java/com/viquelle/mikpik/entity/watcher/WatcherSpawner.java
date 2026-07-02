@@ -32,7 +32,7 @@ public class WatcherSpawner {
     @SubscribeEvent
     public static void onClientTick(ClientTickEvent.Post event) {
         Minecraft mc = Minecraft.getInstance();
-        if (mc.level == null || mc.player == null) return;
+        if (mc.level == null || mc.player == null || mc.isPaused()) return;
 
         if (cooldown > 0) {
             cooldown--;

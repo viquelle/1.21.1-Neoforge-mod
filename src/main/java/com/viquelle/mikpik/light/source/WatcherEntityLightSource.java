@@ -13,7 +13,7 @@ import java.util.*;
 
 public class WatcherEntityLightSource implements LightSource {
 
-    private static final float RADIUS = 15.0f;
+    private static final float RADIUS = 8.0f;
     private static final float TARGET_BRIGHTNESS = -1.0f;
     private static final int COLOR = 0xFFFFFF;
     private static final boolean OCCLUSION = true;
