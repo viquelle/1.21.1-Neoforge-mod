@@ -33,25 +33,11 @@ public class WatcherEntity extends Entity {
         lifeTime++;
         animationTimer = (animationTimer + 1) % 200;
 
-        if (lifeTime == 1) {
-            MikpikMod.LOGGER.info("Watcher spawned at {}", position());
-        }
-
         Player player = net.minecraft.client.Minecraft.getInstance().player;
         if (player == null) return;
 
         boolean isClose = distanceTo(player) < 16.0;
         boolean isLit = !ClientLightManager.isDarkOnPos(blockPosition().getCenter(), level(), 1f);
-
-        if (isClose) {
-            MikpikMod.LOGGER.info("Watcher discarded: too close");
-        }
-        if (isLit) {
-            MikpikMod.LOGGER.info("Watcher discarded: too lit");
-        }
-        if (lifeTime >= maxLifeTime) {
-            MikpikMod.LOGGER.info("Watcher discarded: lifetime expired");
-        }
 
         if (isClose || isLit || lifeTime >= maxLifeTime) {
             discard();

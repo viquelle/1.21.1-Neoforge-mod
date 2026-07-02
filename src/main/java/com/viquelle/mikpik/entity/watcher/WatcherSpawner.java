@@ -43,12 +43,10 @@ public class WatcherSpawner {
         ClientLevel level = mc.player.clientLevel;
 
         float sanity = ClientSanityData.get();
-        MikpikMod.LOGGER.info("Sanity: {}", sanity);
         if (sanity >= 70) return;
 
         double spawnChance = getSpawnChance(sanity);
         double roll = random.nextDouble();
-        MikpikMod.LOGGER.info("Spawn chance: {}, roll: {}", spawnChance, roll);
         if (roll > spawnChance) return;
 
         Vec3 spawnPos = findSpawnPosition(player, level);
@@ -61,9 +59,6 @@ public class WatcherSpawner {
             level.addEntity(watcher);
 
             cooldown = MIN_COOLDOWN;
-            MikpikMod.LOGGER.info("Spawned watcher at {}", spawnPos);
-        } else {
-            MikpikMod.LOGGER.info("No valid spawn position found");
         }
     }
 
