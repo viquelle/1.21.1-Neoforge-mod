@@ -35,6 +35,7 @@ public class ModEntities {
                     .noSave()
                     .build("shadow_grabber"));
 
+
     public static final Supplier<EntityType<WatcherEntity>> WATCHER =
             ENTITY_TYPES.register("watcher", () -> EntityType.Builder
                     .of(WatcherEntity::new, MobCategory.MISC)

@@ -17,10 +17,9 @@ public class WatcherRenderer extends EntityRenderer<WatcherEntity> {
             MikpikMod.MODID, "textures/entity/watcher_eyes.png"
     );
 
-    // Размер quad в блоках
+
     private static final float SIZE = 0.5F;
 
-    // UV координаты для текстуры 64x16 (4 кадра по 16x16 в ряд)
     private static final float[][] FRAME_UVS = {
             {0.0F, 0.0F, 0.25F, 1.0F},    // Кадр 0: открытые
             {0.25F, 0.0F, 0.5F, 1.0F},    // Кадр 1: закрываются
@@ -28,7 +27,7 @@ public class WatcherRenderer extends EntityRenderer<WatcherEntity> {
             {0.75F, 0.0F, 1.0F, 1.0F}     // Кадр 3: открываются
     };
 
-    // Максимальная яркость (свечение в темноте)
+
     private static final int FULL_BRIGHT = 0xF000F0;
 
     public WatcherRenderer(EntityRendererProvider.Context context) {
@@ -45,7 +44,7 @@ public class WatcherRenderer extends EntityRenderer<WatcherEntity> {
 
         poseStack.pushPose();
         poseStack.translate(0.0, 0.25,0.0);
-        // Billboard: поворачиваем quad к камере
+
         poseStack.mulPose(this.entityRenderDispatcher.cameraOrientation());
 
         Matrix4f pose = poseStack.last().pose();
@@ -55,8 +54,6 @@ public class WatcherRenderer extends EntityRenderer<WatcherEntity> {
 
         float halfSize = SIZE / 2;
 
-        // Рисуем quad из 2 треугольников
-        // Левый-верхний
         consumer.addVertex(pose, -halfSize, -halfSize, 0)
                 .setColor(255, 255, 255, 255)
                 .setUv(uv[0], uv[3])
@@ -64,7 +61,7 @@ public class WatcherRenderer extends EntityRenderer<WatcherEntity> {
                 .setLight(FULL_BRIGHT)
                 .setNormal(0, 0, 1);
 
-        // Левый-нижний
+
         consumer.addVertex(pose, -halfSize, halfSize, 0)
                 .setColor(255, 255, 255, 255)
                 .setUv(uv[0], uv[1])
@@ -72,7 +69,7 @@ public class WatcherRenderer extends EntityRenderer<WatcherEntity> {
                 .setLight(FULL_BRIGHT)
                 .setNormal(0, 0, 1);
 
-        // Правый-нижний
+
         consumer.addVertex(pose, halfSize, halfSize, 0)
                 .setColor(255, 255, 255, 255)
                 .setUv(uv[2], uv[1])
@@ -80,7 +77,7 @@ public class WatcherRenderer extends EntityRenderer<WatcherEntity> {
                 .setLight(FULL_BRIGHT)
                 .setNormal(0, 0, 1);
 
-        // Правый-верхний
+
         consumer.addVertex(pose, halfSize, -halfSize, 0)
                 .setColor(255, 255, 255, 255)
                 .setUv(uv[2], uv[3])

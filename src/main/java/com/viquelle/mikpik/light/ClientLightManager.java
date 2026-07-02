@@ -126,7 +126,6 @@ public class ClientLightManager {
         float blockLight = level.getBrightness(LightLayer.BLOCK, BlockPos.containing(pos));
         float skyLight = Darkness.posSkyLight(pos, level, partialTick);
         float localBrightness = Math.max(Math.max(blockLight, skyLight), veilLight);
-        MikpikMod.LOGGER.info("{}",veilLight);
         return localBrightness <= SanityConstants.BRIGHTNESS_THRESHOLD;
     }
 

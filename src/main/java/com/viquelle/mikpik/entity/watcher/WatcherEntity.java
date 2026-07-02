@@ -1,8 +1,7 @@
 package com.viquelle.mikpik.entity.watcher;
 
 import com.viquelle.mikpik.MikpikMod;
-import com.viquelle.mikpik.MikpikModClient;
-import net.minecraft.client.Minecraft;
+import com.viquelle.mikpik.light.source.WatcherEntityLightSource;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -12,8 +11,6 @@ import net.minecraft.world.entity.player.Player;
 import com.viquelle.mikpik.light.ClientLightManager;
 
 public class WatcherEntity extends Entity {
-    private BlockPos spawnPos;
-    private BlockPos watchPos;
     private int lifeTime = 0;
     private int maxLifeTime;
     private int animationTimer = 0;
@@ -27,7 +24,6 @@ public class WatcherEntity extends Entity {
 
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
-
     }
 
     @Override
@@ -35,41 +31,45 @@ public class WatcherEntity extends Entity {
         if (!level().isClientSide) return;
 
         lifeTime++;
-        animationTimer = (animationTimer + 1) % 200; // Цикл 10 секунд (200 тиков)
+        animationTimer = (animationTimer + 1) % 200;
 
-        Player player = Minecraft.getInstance().player;
+        if (lifeTime == 1) {
+            MikpikMod.LOGGER.info("Watcher spawned at {}", position());
+        }
+
+        Player player = net.minecraft.client.Minecraft.getInstance().player;
         if (player == null) return;
 
-        boolean isClose = distanceTo(player) < 8.0;
+        boolean isClose = distanceTo(player) < 16.0;
         boolean isLit = !ClientLightManager.isDarkOnPos(blockPosition().getCenter(), level(), 1f);
-        MikpikMod.LOGGER.info("{} || {} || {}", isClose, isLit, blockPosition().getCenter());
+
+        if (isClose) {
+            MikpikMod.LOGGER.info("Watcher discarded: too close");
+        }
+        if (isLit) {
+            MikpikMod.LOGGER.info("Watcher discarded: too lit");
+        }
+        if (lifeTime >= maxLifeTime) {
+            MikpikMod.LOGGER.info("Watcher discarded: lifetime expired");
+        }
+
         if (isClose || isLit || lifeTime >= maxLifeTime) {
             discard();
         }
     }
 
     public int getBlinkFrame() {
-        // 0-159 тиков (8 сек): кадр 0 (открыты)
-        // 160-161 тиков (100мс): кадр 1 (закрываются)
-        // 162-163 тика (100мс): кадр 2 (закрыты)
-        // 164-165 тиков (100мс): кадр 3 (открываются)
-        // 166-199 тиков: снова кадр 0
-
         if (animationTimer < 160) {
-            return 0; // Открыты
+            return 0;
         } else if (animationTimer < 162) {
-            return 1; // Закрываются
+            return 1;
         } else if (animationTimer < 164) {
-            return 2; // Закрыты
+            return 2;
         } else if (animationTimer < 166) {
-            return 3; // Открываются
+            return 3;
         } else {
-            return 0; // Снова открыты
+            return 0;
         }
-    }
-
-    public void setMaxLifeTime(int maxLifeTime) {
-        this.maxLifeTime = maxLifeTime;
     }
 
     @Override
@@ -77,4 +77,5 @@ public class WatcherEntity extends Entity {
 
     @Override
     protected void addAdditionalSaveData(net.minecraft.nbt.CompoundTag tag) {}
+
 }

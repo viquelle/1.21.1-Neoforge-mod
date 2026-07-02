@@ -56,6 +56,7 @@ public class MikpikModClient {
         ClientLightManager.register(new PlayerAmbientLightSource());
         ClientLightManager.register(new MagnetlampeLightSource());
         ClientLightManager.register(new GhostPlayerLightSource());
+        ClientLightManager.register(new WatcherEntityLightSource());
         VeilEventPlatform.INSTANCE.onVeilAddShaderProcessors(((resourceProvider, registry) -> {
             registry.addPreprocessor(ColorLightPreProcessor.INSTANCE, true);
         }));
