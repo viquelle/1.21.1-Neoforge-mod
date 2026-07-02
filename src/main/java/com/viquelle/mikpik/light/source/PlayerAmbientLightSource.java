@@ -17,9 +17,7 @@ public class PlayerAmbientLightSource implements LightSource{
     private float CURRENT_RADIUS = 0f;
     private float CURRENT_BRIGHTNESS = 0f;;
 
-    private static final float EPSILON = 0.001f;
     private static final float PROGRESS_TIME = 5f; // 5 seconds
-    private long lastGameTime = -1;
     private boolean registered = false;
     private final PointLightHandle light = new PointLightHandle(0, BASE_BRIGHTNESS, COLOR, true, false);
 
@@ -33,9 +31,8 @@ public class PlayerAmbientLightSource implements LightSource{
             registered = true;
         }
 
-        long now = level.getGameTime() + (long) partialTick;
-        float deltaSeconds = (now - lastGameTime) / 20f;
-        lastGameTime = now;
+        float now = level.getGameTime() + partialTick;
+        float deltaSeconds = Math.max((now - ClientLightManager.getLastFrameTick()) / 20f, 0f);
 
         boolean isDark = ClientLightManager.isDarkOnPos(
                 player.getEyePosition(partialTick),
@@ -46,20 +43,17 @@ public class PlayerAmbientLightSource implements LightSource{
 
         float targetBrightness = isDark ? BASE_BRIGHTNESS : 0.0f;
 
-        if (Math.abs(CURRENT_BRIGHTNESS - targetBrightness) >= EPSILON) {
-            if (CURRENT_BRIGHTNESS < targetBrightness) {
-                CURRENT_BRIGHTNESS = Math.min(
-                        CURRENT_BRIGHTNESS + (BASE_BRIGHTNESS / PROGRESS_TIME) * deltaSeconds,
-                        targetBrightness
-                );
-            } else {
-                CURRENT_BRIGHTNESS = Math.max(
-                        CURRENT_BRIGHTNESS - (BASE_BRIGHTNESS / PROGRESS_TIME) * deltaSeconds,
-                        0f
-                );
-            }
+        if (CURRENT_BRIGHTNESS < targetBrightness) {
+            CURRENT_BRIGHTNESS = Math.min(
+                    CURRENT_BRIGHTNESS + (BASE_BRIGHTNESS / PROGRESS_TIME) * deltaSeconds,
+                    targetBrightness
+            );
+        } else if (CURRENT_BRIGHTNESS > targetBrightness) {
+            CURRENT_BRIGHTNESS = Math.max(
+                    CURRENT_BRIGHTNESS - (BASE_BRIGHTNESS / PROGRESS_TIME) * deltaSeconds,
+                    0f
+            );
         }
-
         light.setBrightness(CURRENT_BRIGHTNESS);
         light.setRadius(CURRENT_RADIUS);
         light.setPosition(player.getEyePosition(partialTick));
@@ -76,5 +70,10 @@ public class PlayerAmbientLightSource implements LightSource{
     @Override
     public Collection<? extends LightHandle> getLights() {
         return List.of(light);
+    }
+
+    @Override
+    public UpdatePhase getUpdatePhase() {
+        return UpdatePhase.AFTER_LIGHTS;
     }
 }

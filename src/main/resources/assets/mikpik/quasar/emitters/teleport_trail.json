@@ -1,0 +1,11 @@
+{
+  "max_lifetime": 40,
+  "loop": false,
+  "rate": 1,
+  "count": 5,
+  "emitter_settings": {
+    "shape": "mikpik:trail_shape",
+    "particle_settings": "mikpik:trail_settings"
+  },
+  "particle_data": "mikpik:trail_data"
+}

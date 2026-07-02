@@ -2,9 +2,11 @@ package com.viquelle.mikpik;
 
 import com.viquelle.mikpik.client.coloredlights.ColorLightPreProcessor;
 import com.viquelle.mikpik.client.coloredlights.ColorLightRenderer;
+import com.viquelle.mikpik.entity.ModEntities;
 import com.viquelle.mikpik.entity.shadowgrabber.model.ShadowForearmModel;
 import com.viquelle.mikpik.entity.shadowgrabber.model.ShadowHandModel;
 import com.viquelle.mikpik.entity.shadowgrabber.model.ShadowPortalModel;
+import com.viquelle.mikpik.entity.watcher.WatcherRenderer;
 import com.viquelle.mikpik.item.Magnetlampe;
 import com.viquelle.mikpik.item.ModItems;
 import com.viquelle.mikpik.light.ClientLightManager;
@@ -40,16 +42,21 @@ public class MikpikModClient {
     }
 
     @SubscribeEvent
+    public static void onre(EntityRenderersEvent.RegisterRenderers event) {
+        event.registerEntityRenderer(ModEntities.WATCHER.get(), WatcherRenderer::new);
+    }
+
+    @SubscribeEvent
     static void onClientSetup(FMLClientSetupEvent event) {
         // Some client setup code
         MikpikMod.LOGGER.info("HELLO FROM CLIENT SETUP");
         MikpikMod.LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
         ClientLightManager.register(new NetherStarLightSource());
-        ClientLightManager.register(new LanternLightSource());
         ClientLightManager.register(new TorchLightSource());
         ClientLightManager.register(new PlayerAmbientLightSource());
         ClientLightManager.register(new MagnetlampeLightSource());
         ClientLightManager.register(new GhostPlayerLightSource());
+        ClientLightManager.register(new WatcherEntityLightSource());
         VeilEventPlatform.INSTANCE.onVeilAddShaderProcessors(((resourceProvider, registry) -> {
             registry.addPreprocessor(ColorLightPreProcessor.INSTANCE, true);
         }));
@@ -105,5 +112,6 @@ public class MikpikModClient {
                 ShadowPortalModel.LAYER_LOCATION,
                 ShadowPortalModel::createBodyLayer
         );
+
     }
 }

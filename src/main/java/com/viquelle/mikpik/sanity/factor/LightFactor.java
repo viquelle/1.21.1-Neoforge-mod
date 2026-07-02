@@ -2,6 +2,7 @@ package com.viquelle.mikpik.sanity.factor;
 
 import com.viquelle.mikpik.client.darknesscomputer.Darkness;
 import com.viquelle.mikpik.light.ClientLightManager;
+import com.viquelle.mikpik.light.ServerLightManager;
 import com.viquelle.mikpik.sanity.SanityConstants;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
@@ -23,7 +24,7 @@ public class LightFactor implements SanityFactor {
         }
 
         float blocklight = level.getBrightness(LightLayer.BLOCK, BlockPos.containing(pos));
-        if (ClientLightManager.isDarkOnPos(pos, level, 1f)) {
+        if (ServerLightManager.isPlayerInDark(player)) {
             return SanityConstants.DARK_DRAIN_PER_TICK;
         } else if (skyLight <= SanityConstants.BRIGHTNESS_THRESHOLD && blocklight <= SanityConstants.BRIGHTNESS_THRESHOLD) {
             return SanityConstants.DARK_DRAIN_PER_TICK / 10.f;

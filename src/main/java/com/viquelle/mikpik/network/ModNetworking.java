@@ -12,11 +12,13 @@ public class ModNetworking {
     @SubscribeEvent
     public static void register(RegisterPayloadHandlersEvent event) {
         PayloadRegistrar registrar = event.registrar("1");
-        registrar.playToClient(SanitySyncPayload.TYPE, SanitySyncPayload.STREAM_CODEC, ClientPayloadHandler::handleDataOnNetwork);
-        registrar.playToServer(HeartReviveRequestPayload.TYPE, HeartReviveRequestPayload.STREAM_CODEC, ClientPayloadHandler::handleHeartReviveRequest);
-        registrar.playToServer(PushItemPayload.TYPE, PushItemPayload.STREAM_CODEC, ClientPayloadHandler::handePushRequest);
-        registrar.playToClient(ReviveSuccessPayload.TYPE, ReviveSuccessPayload.STREAM_CODEC, ClientPayloadHandler::handleReviveResult);
-        registrar.playToClient(GhostStatePayload.TYPE, GhostStatePayload.STREAM_CODEC, ClientPayloadHandler::handleGhostState);
-        registrar.playToServer(GhostRespawnRequest.TYPE, GhostRespawnRequest.STREAM_CODEC, ClientPayloadHandler::handleGhostRespawnRequest);
+        registrar.playToClient(SanitySyncPayload.TYPE, SanitySyncPayload.STREAM_CODEC, PayloadHandler::handleDataOnNetwork);
+        registrar.playToServer(HeartReviveRequestPayload.TYPE, HeartReviveRequestPayload.STREAM_CODEC, PayloadHandler::handleHeartReviveRequest);
+        registrar.playToServer(PushItemPayload.TYPE, PushItemPayload.STREAM_CODEC, PayloadHandler::handePushRequest);
+        registrar.playToClient(ReviveSuccessPayload.TYPE, ReviveSuccessPayload.STREAM_CODEC, PayloadHandler::handleReviveResult);
+        registrar.playToClient(GhostStatePayload.TYPE, GhostStatePayload.STREAM_CODEC, PayloadHandler::handleGhostState);
+        registrar.playToServer(GhostRespawnRequest.TYPE, GhostRespawnRequest.STREAM_CODEC, PayloadHandler::handleGhostRespawnRequest);
+        registrar.playToServer(DynamicBrightPayload.TYPE, DynamicBrightPayload.STREAM_CODEC, PayloadHandler::handleDynamicBright);
     }
+
 }

@@ -29,7 +29,7 @@ public class PointLightHandle extends LightHandle<PointLightData> {
         this.brightness = brightness;
         this.color = color;
         this.occlusion = occlusion;
-        this.countsAsLight = countsAsLight;
+        this.affectDarkness = countsAsLight;
 
         data.setRadius(radius)
                     .setBrightness(brightness)

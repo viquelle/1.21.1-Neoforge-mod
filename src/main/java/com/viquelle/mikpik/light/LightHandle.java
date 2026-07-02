@@ -10,14 +10,14 @@ public abstract class LightHandle<T extends LightData> {
     protected final T data;
     protected float brightness;
     protected int color;
-    protected boolean countsAsLight;
+    protected boolean affectDarkness;
     protected Vec3 position = Vec3.ZERO;
 
     public LightHandle(T data, float brightness, int color, boolean countsAsLight) {
         this.data = data;
         this.brightness = brightness;
         this.color = color;
-        this.countsAsLight = countsAsLight;
+        this.affectDarkness = countsAsLight;
         data.setColor(color).setBrightness(brightness);
     }
 
