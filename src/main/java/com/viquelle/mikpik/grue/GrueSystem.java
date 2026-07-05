@@ -126,9 +126,6 @@ public final class GrueSystem {
     }
 
     private static boolean isGrueDark(ServerPlayer player) {
-        var level = player.level();
-        Vec3 pos = player.getEyePosition(0f);
-
         return ServerLightManager.isPlayerInDark(player);
     }
 

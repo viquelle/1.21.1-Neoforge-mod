@@ -3,6 +3,7 @@ package com.viquelle.mikpik;
 import com.viquelle.mikpik.client.coloredlights.ColorLightPreProcessor;
 import com.viquelle.mikpik.client.coloredlights.ColorLightRenderer;
 import com.viquelle.mikpik.entity.ModEntities;
+import com.viquelle.mikpik.entity.hand.HandRenderer;
 import com.viquelle.mikpik.entity.shadowgrabber.model.ShadowForearmModel;
 import com.viquelle.mikpik.entity.shadowgrabber.model.ShadowHandModel;
 import com.viquelle.mikpik.entity.shadowgrabber.model.ShadowPortalModel;
@@ -44,6 +45,7 @@ public class MikpikModClient {
     @SubscribeEvent
     public static void onre(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(ModEntities.WATCHER.get(), WatcherRenderer::new);
+        event.registerEntityRenderer(ModEntities.HAND.get(), HandRenderer::new);
     }
 
     @SubscribeEvent

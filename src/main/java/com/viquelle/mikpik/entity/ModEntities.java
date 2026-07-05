@@ -2,6 +2,7 @@ package com.viquelle.mikpik.entity;
 
 import com.viquelle.mikpik.MikpikMod;
 import com.viquelle.mikpik.entity.eye.EyeEntity;
+import com.viquelle.mikpik.entity.hand.HandEntity;
 import com.viquelle.mikpik.entity.shadowgrabber.ShadowGrabberEntity;
 import com.viquelle.mikpik.entity.watcher.WatcherEntity;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -44,4 +45,13 @@ public class ModEntities {
                     .updateInterval(3)
                     .fireImmune()
                     .build("watcher"));
+
+    public static final Supplier<EntityType<HandEntity>> HAND =
+            ENTITY_TYPES.register("hand", () -> EntityType.Builder
+                    .of(HandEntity::new, MobCategory.MISC)
+                    .sized(1f, 1f)
+                    .clientTrackingRange(64)
+                    .updateInterval(3)
+                    .fireImmune()
+                    .build("hand"));
 }
