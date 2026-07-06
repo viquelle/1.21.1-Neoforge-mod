@@ -11,7 +11,6 @@ import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 
@@ -21,9 +20,9 @@ public class HandRenderer extends EntityRenderer<HandEntity> {
 
     private static final ResourceLocation FRONT = ResourceLocation.fromNamespaceAndPath(MikpikMod.MODID, "textures/entity/hand/front.png");
     private static final ResourceLocation BACK = ResourceLocation.fromNamespaceAndPath(MikpikMod.MODID, "textures/entity/hand/back.png");
-    private static final ResourceLocation SIDE1 = ResourceLocation.fromNamespaceAndPath(MikpikMod.MODID, "textures/entity/hand/side1.png");
-    private static final ResourceLocation SIDE2 = ResourceLocation.fromNamespaceAndPath(MikpikMod.MODID, "textures/entity/hand/side2.png");
-    private static final ResourceLocation SIDE3 = ResourceLocation.fromNamespaceAndPath(MikpikMod.MODID, "textures/entity/hand/side3.png");
+//    private static final ResourceLocation SIDE1 = ResourceLocation.fromNamespaceAndPath(MikpikMod.MODID, "textures/entity/hand/side1.png");
+    private static final ResourceLocation RIGHT = ResourceLocation.fromNamespaceAndPath(MikpikMod.MODID, "textures/entity/hand/right.png");
+//    private static final ResourceLocation SIDE3 = ResourceLocation.fromNamespaceAndPath(MikpikMod.MODID, "textures/entity/hand/side3.png");
     private static final ResourceLocation BLACK = ResourceLocation.fromNamespaceAndPath(MikpikMod.MODID,"textures/black.png");
 
     public HandRenderer(EntityRendererProvider.Context context) {
@@ -37,7 +36,7 @@ public class HandRenderer extends EntityRenderer<HandEntity> {
 
         Vec3 attachLocal = entity.getOrigin().subtract(entity.getPosition(partialTick)).add(0,-0.5,0);
         Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
-        renderForearm(poseStack, buffer, attachLocal, Vec3.ZERO, camera.getPosition().subtract(entity.position()), packedLight);
+        renderForearm(poseStack, buffer, attachLocal, Vec3.ZERO, camera.getPosition().subtract(entity.getPosition(partialTick)), packedLight);
 
         poseStack.mulPose(this.entityRenderDispatcher.cameraOrientation());
 
@@ -78,17 +77,14 @@ public class HandRenderer extends EntityRenderer<HandEntity> {
         float angle = (float)Math.toDegrees(Math.atan2(cross, dot));
         angle = (angle + 360f) % 360f;
 
-        int dir = Math.round(angle / 45f) & 7;
+        int dir = Math.round(angle / 90f) & 3;
 
         return switch (dir) {
             case 0 -> new TextureData(FRONT, false);
-            case 1 -> new TextureData(SIDE1, false);
-            case 2 -> new TextureData(SIDE2, false);
-            case 3 -> new TextureData(SIDE3, false);
-            case 4 -> new TextureData(BACK, false);
-            case 5 -> new TextureData(SIDE3, true);
-            case 6 -> new TextureData(SIDE2, true);
-            default -> new TextureData(SIDE1, true);
+            case 1 -> new TextureData(RIGHT, false);
+            case 2 -> new TextureData(BACK, false);
+            case 3 -> new TextureData(RIGHT, true);
+            default -> new TextureData(FRONT, false);
         };
     }
 

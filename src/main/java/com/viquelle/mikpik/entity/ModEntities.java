@@ -51,7 +51,7 @@ public class ModEntities {
                     .of(HandEntity::new, MobCategory.MISC)
                     .sized(1f, 1f)
                     .clientTrackingRange(64)
-                    .updateInterval(3)
+                    .updateInterval(1)
                     .fireImmune()
                     .build("hand"));
 }
