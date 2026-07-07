@@ -26,7 +26,7 @@ public class ServerLightManager {
         if (time == null || System.currentTimeMillis() - time > 3000) {
             return 0f;
         }
-        return playerDynamicBright.getOrDefault(playerId, 0f);
+        return playerDynamicBright.getOrDefault(playerId, 0f) * SanityConstants.VEIL_NORMALIZATION;
     }
 
     public static boolean isPlayerInDark(Player player) {
