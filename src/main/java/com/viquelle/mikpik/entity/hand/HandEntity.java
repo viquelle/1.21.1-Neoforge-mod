@@ -1,5 +1,6 @@
 package com.viquelle.mikpik.entity.hand;
 
+import com.viquelle.mikpik.ghost.GhostManager;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -68,6 +69,14 @@ public class HandEntity extends Entity {
         return new Vec3(entityData.get(ORIGIN));
     }
 
+    public LivingEntity getTarget() {
+        return target;
+    }
+
+    public void setTarget(LivingEntity entity) {
+        this.target = entity;
+    }
+
     @Override
     public void tick() {
         super.tick();
@@ -109,12 +118,8 @@ public class HandEntity extends Entity {
 
 
     private void idleTick() {
-        findTarget();
-
-        if (target != null && target.isAlive()) {
-            setState(State.REACHING);
-            return;
-        }
+        discard();
+        return;
     }
 
     private void reachingTick() {
@@ -125,20 +130,24 @@ public class HandEntity extends Entity {
 
         Vec3 targetPos = target.position().add(0, target.getBbHeight() * 0.3, 0);
 
-        applyMotion(targetPos.subtract(position()), 0.5);
-
-        if (position().distanceToSqr(targetPos) < 0.5 * 0.5) {
+        if (position().distanceToSqr(targetPos) < 1) {
             setState(State.ATTACHED);
+            HandManager.register(this, target);
+            return;
         }
 
-        if (getOrigin().distanceToSqr(targetPos) > BREAK_DISTANCE * BREAK_DISTANCE) {
+        if (position().distanceToSqr(getOrigin()) > REACH_DISTANCE * REACH_DISTANCE) {
             setState(State.RETURNING);
+            return;
+        } else {
+            applyMotion(targetPos.subtract(position()), 0.5);
         }
     }
 
     private void attachedTick() {
-        if (target == null || !target.isAlive()) {
+        if (target == null || !target.isAlive() || GhostManager.isGhost((Player) target)) {
             setState(State.RETURNING);
+            HandManager.unregister(this, target);
             return;
         }
 
@@ -146,6 +155,7 @@ public class HandEntity extends Entity {
         Vec3 me = position();
         if (origin.distanceToSqr(me) > BREAK_DISTANCE * BREAK_DISTANCE) {
             setState(State.RETURNING);
+            HandManager.unregister(this, target);
             return;
         }
 
@@ -175,36 +185,8 @@ public class HandEntity extends Entity {
 
         applyMotion(origin.subtract(position()), 0.15);
 
-        if (position().distanceToSqr(origin) < 0.2 * 0.2) {
+        if (position().distanceToSqr(origin) < 0.1) {
             setState(State.IDLE);
-        }
-    }
-
-    private void findTarget() {
-        if (target != null && target.isAlive()) return;
-
-        double radius = BREAK_DISTANCE + 2;
-
-        List<LivingEntity> list = level().getEntitiesOfClass(
-                LivingEntity.class,
-                getBoundingBox().inflate(radius),
-                e -> e instanceof Player && e.isAlive()
-        );
-
-        LivingEntity best = null;
-        double bestDist = Double.MAX_VALUE;
-
-        for (LivingEntity e : list) {
-            double d = distanceToSqr(e);
-            if (d < bestDist) {
-                best = e;
-                bestDist = d;
-            }
-        }
-
-        if (best != null) {
-            target = best;
-            setState(State.REACHING);
         }
     }
 
