@@ -9,6 +9,7 @@ public class PointLightHandle extends LightHandle<PointLightData> {
     private float brightness;
     private int color;
     private boolean occlusion;
+    private float inscatter;
 
     public PointLightHandle(float radius, float brightness, int color, boolean occlusion, boolean countsAsLight, float inscatter) {
         super(new PointLightData(), brightness, color, countsAsLight);
@@ -17,6 +18,7 @@ public class PointLightHandle extends LightHandle<PointLightData> {
         this.color = color;
         this.occlusion = occlusion;
         this.affectDarkness = countsAsLight;
+        this.inscatter = inscatter;
 
         data.setRadius(radius)
                     .setBrightness(brightness)
@@ -38,5 +40,12 @@ public class PointLightHandle extends LightHandle<PointLightData> {
     @Override
     protected void updatePositionInData(Vec3 pos) {
         data.getPositionMutable().set(pos.x, pos.y, pos.z);
+    }
+
+    public void setInscattering(float value) {
+        this.inscatter = value;
+        if (handle != null) {
+            VeilRenderSystem.renderThreadExecutor().execute(() -> data.setInscatteringStrength(inscatter));
+        }
     }
 }

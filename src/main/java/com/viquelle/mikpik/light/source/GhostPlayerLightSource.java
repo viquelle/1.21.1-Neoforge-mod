@@ -4,6 +4,7 @@ import com.viquelle.mikpik.ghost.GhostManager;
 import com.viquelle.mikpik.light.LightHandle;
 import com.viquelle.mikpik.light.PointLightHandle;
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -21,7 +22,8 @@ public class GhostPlayerLightSource implements LightSource {
     public void tick(Level level, float partialTick) {
         if (level == null) return;
 
-        Player localPlayer = Minecraft.getInstance().player;
+        Minecraft mc = Minecraft.getInstance();
+        Player localPlayer = mc.player;
         if (localPlayer == null) return;
 
         Set<String> validKeys = new HashSet<>();
@@ -38,7 +40,7 @@ public class GhostPlayerLightSource implements LightSource {
                         COLOR,
                         false,
                         true,
-                        0
+                        1
                 );
                 p.register();
                 return p;
@@ -46,6 +48,10 @@ public class GhostPlayerLightSource implements LightSource {
 
             Vec3 pos = player.getPosition(partialTick);
             light.setPosition(pos.add(0,player.getBoundingBox().getYsize() / 2f,0));
+
+            double distance = mc.gameRenderer.getMainCamera().getPosition().distanceTo(light.getPosition());
+            float t = Mth.clamp((float) ((distance - 3.0) / 10.0), 0.0f, 1.0f);
+            light.setInscattering(Mth.lerp(t, 1f, 40f));
         }
 
         lights.keySet().removeIf(key -> {

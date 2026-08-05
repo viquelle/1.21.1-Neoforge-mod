@@ -241,12 +241,18 @@ public class GhostManager {
 
     @SubscribeEvent
     public static void onRightClickItem(PlayerInteractEvent.RightClickItem event) {
-        if (tryHeartRaycastRevive(event.getEntity())) event.setCanceled(true);
+        if (isGhost(event.getEntity())) {
+            tryHeartRaycastRevive(event.getEntity());
+            event.setCanceled(true);
+        }
     }
 
     @SubscribeEvent
     public static void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
-        if (tryHeartRaycastRevive(event.getEntity())) event.setCanceled(true);
+        if (isGhost(event.getEntity())) {
+            tryHeartRaycastRevive(event.getEntity());
+            event.setCanceled(true);
+        }
     }
 
     @SubscribeEvent

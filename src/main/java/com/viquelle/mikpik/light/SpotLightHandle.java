@@ -15,6 +15,7 @@ public class SpotLightHandle extends LightHandle<SpotLightData> {
     private float range;
     private float size;
     private boolean occlusion;
+    private float inscatter;
 
     public SpotLightHandle(float size, float angle, float range, float brightness, int color, boolean occlusion, boolean countsAsLight, float inscatter) {
         super(new SpotLightData(), brightness, color, countsAsLight);
@@ -24,6 +25,7 @@ public class SpotLightHandle extends LightHandle<SpotLightData> {
         this.color = color;
         this.occlusion = occlusion;
         this.affectDarkness = countsAsLight;
+        this.inscatter = inscatter;
         data.setSize(size)
                 .setAngle(angle)
                 .setDistance(range)
@@ -84,4 +86,10 @@ public class SpotLightHandle extends LightHandle<SpotLightData> {
         return new Vec3(v.x, v.y, v.z).normalize();
     }
 
+    public void setInscattering(float value) {
+        this.inscatter = value;
+        if (handle != null) {
+            VeilRenderSystem.renderThreadExecutor().execute(() -> data.setInscatteringStrength(inscatter));
+        }
+    }
 }
