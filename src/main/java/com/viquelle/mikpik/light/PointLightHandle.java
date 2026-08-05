@@ -10,20 +10,7 @@ public class PointLightHandle extends LightHandle<PointLightData> {
     private int color;
     private boolean occlusion;
 
-    public PointLightHandle(float radius, float brightness, int color, boolean occlusion) {
-        super(new PointLightData(), brightness, color, true);
-        this.radius = radius;
-        this.brightness = brightness;
-        this.color = color;
-        this.occlusion = occlusion;
-
-        data.setRadius(radius)
-                .setBrightness(brightness)
-                .setColor(color)
-                .setOcclusionEnabled(occlusion);
-    }
-
-    public PointLightHandle(float radius, float brightness, int color, boolean occlusion, boolean countsAsLight) {
+    public PointLightHandle(float radius, float brightness, int color, boolean occlusion, boolean countsAsLight, float inscatter) {
         super(new PointLightData(), brightness, color, countsAsLight);
         this.radius = radius;
         this.brightness = brightness;
@@ -34,8 +21,8 @@ public class PointLightHandle extends LightHandle<PointLightData> {
         data.setRadius(radius)
                     .setBrightness(brightness)
                     .setColor(color)
+                    .setInscatteringStrength(inscatter)
                     .setOcclusionEnabled(occlusion);
-
     }
 
     public void setRadius(float radius) {
@@ -50,6 +37,6 @@ public class PointLightHandle extends LightHandle<PointLightData> {
 
     @Override
     protected void updatePositionInData(Vec3 pos) {
-        data.setPosition((float) pos.x, (float) pos.y, (float) pos.z);
+        data.getPositionMutable().set(pos.x, pos.y, pos.z);
     }
 }

@@ -1,8 +1,13 @@
 package com.viquelle.mikpik.item;
 
 import com.viquelle.mikpik.MikpikMod;
+import com.viquelle.mikpik.block.ModBlocks;
+import com.viquelle.mikpik.entity.ModEntities;
+import com.viquelle.mikpik.item.items.*;
 import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Rarity;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.function.Supplier;
@@ -34,11 +39,20 @@ public class ModItems {
 
     public static final Supplier<Item> HEART =
             ITEMS.register("heart", () -> new HeartItem(
-                    new Item.Properties().stacksTo(1)
+                    new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON)
             ));
 
     public static final Supplier<Item> PENALTY_REMOVER =
             ITEMS.register("penalty_remover", () -> new PenaltyRemoverItem(
                     new Item.Properties().stacksTo(1)
             ));
+
+    public static final Supplier<Item> MEAT_EFFIGY =
+            ITEMS.register(
+                    "meat_effigy",
+                    () -> new BlockItem(
+                            ModBlocks.MEAT_EFFIGY.get(),
+                            new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON)
+                    )
+            );
 }

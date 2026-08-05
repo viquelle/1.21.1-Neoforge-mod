@@ -1,7 +1,8 @@
-package com.viquelle.mikpik.item;
+package com.viquelle.mikpik.item.items;
 
 import com.viquelle.mikpik.MikpikMod;
 import com.viquelle.mikpik.ModDataComponents;
+import com.viquelle.mikpik.item.CustomArmPoseItem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.network.chat.Component;
@@ -16,7 +17,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
 
-public class Magnetlampe extends Item implements CustomArmPoseItem{
+public class Magnetlampe extends Item implements CustomArmPoseItem {
     public static final int MAX_CHARGE = 1*60*20;
     private static final int PERFECT_TIME = 16;
     private static final int WINDOW = 10;
@@ -51,7 +52,7 @@ public class Magnetlampe extends Item implements CustomArmPoseItem{
     @Override
     public void releaseUsing(ItemStack stack, Level level, LivingEntity entity, int timeCharged) {
         if (level.isClientSide) return;
-
+        Player player = (Player) entity;
         long startTime = stack.getOrDefault(ModDataComponents.CHARGING_START.get(),0L);
 
         if (startTime == -1L) {
@@ -68,13 +69,6 @@ public class Magnetlampe extends Item implements CustomArmPoseItem{
             efficiency = 1.0f - (distance / WINDOW) * (distance / WINDOW);
         }
 
-        MikpikMod.LOGGER.info(
-                "heldTime {} efficiency {} distance {}",
-                heldTime,
-                efficiency,
-                distance
-        );
-
         int chargeToAdd = (int) (MAX_CHARGE * 0.4f * efficiency);
         addCharge(stack, level, chargeToAdd);
 
@@ -83,7 +77,7 @@ public class Magnetlampe extends Item implements CustomArmPoseItem{
         if (efficiency > 0) {
             level.playSound(
                     null,
-                    entity.blockPosition(),
+                    player.blockPosition(),
                     SoundEvents.EXPERIENCE_ORB_PICKUP,
                     SoundSource.PLAYERS,
                     1f,
@@ -92,7 +86,7 @@ public class Magnetlampe extends Item implements CustomArmPoseItem{
         } else {
             level.playSound(
                     null,
-                    entity.blockPosition(),
+                    player.blockPosition(),
                     SoundEvents.FLINTANDSTEEL_USE,
                     SoundSource.PLAYERS,
                     1f,
@@ -101,13 +95,13 @@ public class Magnetlampe extends Item implements CustomArmPoseItem{
         }
 
         if (efficiency >= 0.95f) {
-            entity.sendSystemMessage(Component.literal("✓ Идеальная заводка!").withStyle(ChatFormatting.GREEN));
+            player.displayClientMessage(Component.translatable("message." + MikpikMod.MODID + ".wind_perfect").withColor(0x00FF00), true);
         } else if (efficiency >= 0.8f) {
-            entity.sendSystemMessage(Component.literal("Хорошая заводка").withStyle(ChatFormatting.GOLD));
+            player.displayClientMessage(Component.translatable("message." + MikpikMod.MODID + ".wind_good").withColor(0xFFFF00), true);
         } else if (efficiency > 0) {
-            entity.sendSystemMessage(Component.literal("Слабая заводка").withStyle(ChatFormatting.GRAY));
+            player.displayClientMessage(Component.translatable("message." + MikpikMod.MODID + ".wind_weak").withColor(0xFFA600), true);
         } else {
-            entity.sendSystemMessage(Component.literal("✗ Мимо!").withStyle(ChatFormatting.RED));
+            player.displayClientMessage(Component.translatable("message." + MikpikMod.MODID + ".wind_miss").withColor(0xBDBDBD), true);
         }
 
     }

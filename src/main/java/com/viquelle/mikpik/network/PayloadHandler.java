@@ -1,11 +1,14 @@
 package com.viquelle.mikpik.network;
 
 import com.viquelle.mikpik.MikpikMod;
+import com.viquelle.mikpik.blockentity.MeatEffigyBlockEntity;
 import com.viquelle.mikpik.ghost.GhostManager;
 import com.viquelle.mikpik.ghost.HealthPenailtyUtil;
 import com.viquelle.mikpik.light.ServerLightManager;
 import com.viquelle.mikpik.network.payload.*;
 import com.viquelle.mikpik.sanity.ClientSanityData;
+import com.viquelle.mikpik.world.Gameplay;
+import com.viquelle.mikpik.world.GameplayMode;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.server.level.ServerPlayer;
@@ -47,9 +50,16 @@ public class PayloadHandler {
     public static void handleGhostRespawnRequest(GhostRespawnRequest ghostRespawnRequest, IPayloadContext context) {
         context.enqueueWork(() -> {
             ServerPlayer player = (ServerPlayer) context.player();
-
             if (!GhostManager.isGhost(player)) return;
 
+            MeatEffigyBlockEntity entity = MeatEffigyBlockEntity.getValidEffigy(player);
+            if (entity != null) {
+                MeatEffigyBlockEntity.tryReviveAtEffigy(player);
+                return;
+            }
+
+            if (Gameplay.isDst(player.level())) return;
+            // Дальше дефолтное возрождение
             DimensionTransition transition = player.findRespawnPositionAndUseSpawnBlock(
                     false,
                     DimensionTransition.DO_NOTHING
@@ -63,8 +73,8 @@ public class PayloadHandler {
                     pos.x,
                     pos.y,
                     pos.z,
-                    player.getYRot(),
-                    player.getXRot()
+                    0,
+                    0
             );
         });
     }
@@ -108,4 +118,11 @@ public class PayloadHandler {
             }
         });
     }
+
+    public static void handleGameplayMode(GameplayModePayload payload, IPayloadContext context) {
+        context.enqueueWork(() ->
+                Gameplay.setClientMode(payload.mode())
+        );
+    }
+
 }

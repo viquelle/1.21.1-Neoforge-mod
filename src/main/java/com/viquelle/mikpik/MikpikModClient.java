@@ -1,5 +1,8 @@
 package com.viquelle.mikpik;
 
+import com.viquelle.mikpik.block.meateffigy.MeatEffigyBlockRenderer;
+import com.viquelle.mikpik.block.meateffigy.MeatEffigyModel;
+import com.viquelle.mikpik.blockentity.ModBlockEntities;
 import com.viquelle.mikpik.client.coloredlights.ColorLightPreProcessor;
 import com.viquelle.mikpik.client.coloredlights.ColorLightRenderer;
 import com.viquelle.mikpik.entity.ModEntities;
@@ -8,7 +11,7 @@ import com.viquelle.mikpik.entity.shadowgrabber.model.ShadowForearmModel;
 import com.viquelle.mikpik.entity.shadowgrabber.model.ShadowHandModel;
 import com.viquelle.mikpik.entity.shadowgrabber.model.ShadowPortalModel;
 import com.viquelle.mikpik.entity.watcher.WatcherRenderer;
-import com.viquelle.mikpik.item.Magnetlampe;
+import com.viquelle.mikpik.item.items.Magnetlampe;
 import com.viquelle.mikpik.item.ModItems;
 import com.viquelle.mikpik.light.ClientLightManager;
 import com.viquelle.mikpik.light.source.*;
@@ -46,6 +49,7 @@ public class MikpikModClient {
     public static void onre(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(ModEntities.WATCHER.get(), WatcherRenderer::new);
         event.registerEntityRenderer(ModEntities.HAND.get(), HandRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.MEAT_EFFIGY.get(), MeatEffigyBlockRenderer::new);
     }
 
     @SubscribeEvent
@@ -53,7 +57,6 @@ public class MikpikModClient {
         // Some client setup code
         MikpikMod.LOGGER.info("HELLO FROM CLIENT SETUP");
         MikpikMod.LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
-        ClientLightManager.register(new NetherStarLightSource());
         ClientLightManager.register(new TorchLightSource());
         ClientLightManager.register(new PlayerAmbientLightSource());
         ClientLightManager.register(new MagnetlampeLightSource());
@@ -115,5 +118,9 @@ public class MikpikModClient {
                 ShadowPortalModel::createBodyLayer
         );
 
+        event.registerLayerDefinition(
+                MeatEffigyModel.LAYER_LOCATION,
+                MeatEffigyModel::createBodyLayer
+        );
     }
 }

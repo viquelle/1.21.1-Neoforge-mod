@@ -54,4 +54,5 @@ public class ModEntities {
                     .updateInterval(1)
                     .fireImmune()
                     .build("hand"));
+
 }

@@ -41,14 +41,16 @@ public class GuiMixin {
         if (modifier == null) return;
 
         double penalty = -modifier.amount();
-        if (penalty <= 0) return;
+        if (penalty <= 0.001) return;
 
         renderPenaltyHearts(p_283143_, player, penalty);
     }
 
     private void renderPenaltyHearts(GuiGraphics graphics, Player player, double penalty) {
-        float currentMax = player.getMaxHealth();
-        float originalMax = (float) (currentMax / (1f - penalty));
+        double currentMax = player.getMaxHealth();
+        double originalMax = currentMax / (1f - penalty);
+        currentMax = Math.round(currentMax * 1000.0) / 1000.0;
+        originalMax = Math.round(originalMax * 1000.0) / 1000.0;
 
         int x = graphics.guiWidth() / 2 - 91;
         int y = graphics.guiHeight() - 39;
@@ -56,7 +58,7 @@ public class GuiMixin {
         // Находим диапазон сердец, которые частично или полностью находятся в штрафе
         int startHeart = Mth.floor(currentMax / 2.0f);
         int endHeart = Mth.ceil(originalMax / 2.0f);
-
+        //MikpikMod.LOGGER.info("{} {} {} {}", currentMax, originalMax, startHeart, endHeart);
         for (int heartIndex = endHeart - 1; heartIndex >= startHeart; heartIndex--) {
             int leftHalfIndex = heartIndex * 2;
             int rightHalfIndex = heartIndex * 2 + 1;
@@ -64,16 +66,14 @@ public class GuiMixin {
             int posX = x + (heartIndex % 10) * 8;
             int posY = y - (heartIndex / 10) * 10;
 
-            if (leftHalfIndex > startHeart * 2) {
-                graphics.blitSprite(HEART_CONTAINER, posX, posY, 9, 9);
-            }
-
             if (rightHalfIndex > originalMax) {
+                graphics.blitSprite(HEART_CONTAINER, posX, posY, 9, 9);
                 graphics.blit(PENALTY_HALF_LEFT, posX, posY, 0, 0, 9, 9, 9, 9);
             } else {
                 if (leftHalfIndex < currentMax) {
                     graphics.blit(PENALTY_HALF_RIGHT, posX, posY, 0, 0, 9, 9, 9, 9);
                 } else {
+                    graphics.blitSprite(HEART_CONTAINER, posX, posY, 9, 9);
                     graphics.blit(PENALTY_FULL, posX, posY, 0, 0, 9, 9, 9, 9);
                 }
             }

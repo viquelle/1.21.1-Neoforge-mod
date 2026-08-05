@@ -5,22 +5,28 @@ import com.viquelle.mikpik.item.ModItems;
 import com.viquelle.mikpik.network.payload.GhostStatePayload;
 import com.viquelle.mikpik.network.payload.HeartReviveRequestPayload;
 import com.viquelle.mikpik.network.payload.PushItemPayload;
-import com.viquelle.mikpik.sanity.ModAttachments;
-import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
+import com.viquelle.mikpik.ModAttachments;
+import net.minecraft.core.GlobalPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.stats.Stats;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.scores.ScoreAccess;
+import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
-import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.common.util.TriState;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingHealEvent;
@@ -32,6 +38,8 @@ import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
+
+import java.util.Optional;
 
 
 @EventBusSubscriber(modid = MikpikMod.MODID)
@@ -70,16 +78,40 @@ public class GhostManager {
     @SubscribeEvent
     public static void onDeath(LivingDeathEvent event) {
         if (!(event.getEntity() instanceof Player player)) return;
-        MikpikMod.LOGGER.info("onDeath pushed! {} is dead", player.getName());
-
-        if (GhostManager.isGhost(player)) return;
         event.setCanceled(true);
+        if (GhostManager.isGhost(player)) return;
+
+        MinecraftServer server = player.getServer();
+        if (server != null) {
+            server.getPlayerList().broadcastSystemMessage(
+                    event.getSource().getLocalizedDeathMessage(player),
+                    false
+            );
+        }
+
+        player.level().getScoreboard().forAllObjectives(ObjectiveCriteria.DEATH_COUNT, player, ScoreAccess::increment);
+        player.awardStat(Stats.DEATHS);
+        player.resetStat(Stats.CUSTOM.get(Stats.TIME_SINCE_DEATH));
+        player.resetStat(Stats.CUSTOM.get(Stats.TIME_SINCE_REST));
+        player.clearFire();
+        player.setTicksFrozen(0);
+        player.setSharedFlagOnFire(false);
+
+        player.setLastDeathLocation(Optional.of(GlobalPos.of(player.level().dimension(), player.blockPosition())));
+        player.stopRiding();
+        player.stopUsingItem();
+        player.stopSleeping();
+
         player.setHealth(10f);
-        player.getInventory().dropAll();
-        GhostManager.becomeGhost(player);
-        player.dismountTo(player.getX(),player.getY(),player.getZ());
+        if (!player.level().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY)) {
+            player.getInventory().dropAll();
+            player.drop(player.containerMenu.getCarried(), false);
+            player.containerMenu.setCarried(ItemStack.EMPTY);
+        }
+
         player.setArrowCount(0);
         player.removeAllEffects();
+        GhostManager.becomeGhost(player);
     }
 
     @SubscribeEvent
@@ -266,6 +298,16 @@ public class GhostManager {
         if (hit instanceof EntityHitResult entityHitResult) {
             if (entityHitResult.getEntity() instanceof ItemEntity itemEntity) {
                 if (itemEntity.getItem().is(ModItems.HEART.get())) {
+
+                    player.level().playSound(
+                            null,
+                            player.getX(), player.getY(),player.getZ(),
+                            SoundEvents.SOUL_ESCAPE,
+                            SoundSource.BLOCKS,
+                            1F,
+                            1F
+                    );
+
                     GhostManager.revive(player);
                     itemEntity.discard();
 

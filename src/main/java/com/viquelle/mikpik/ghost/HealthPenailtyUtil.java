@@ -1,7 +1,7 @@
 package com.viquelle.mikpik.ghost;
 
 import com.viquelle.mikpik.MikpikMod;
-import com.viquelle.mikpik.sanity.ModAttachments;
+import com.viquelle.mikpik.ModAttachments;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -9,10 +9,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-
-import java.util.function.Supplier;
 
 @EventBusSubscriber(modid = MikpikMod.MODID)
 public class HealthPenailtyUtil {
@@ -43,8 +40,7 @@ public class HealthPenailtyUtil {
     private static void applyPenalty(Player player, double penalty) {
         AttributeInstance attribute = player.getAttribute(Attributes.MAX_HEALTH);
         if (attribute == null) return;
-        MikpikMod.LOGGER.info("applying penalty {}", penalty);
-        player.setData(ModAttachments.PENALTY, (float) penalty);
+        player.setData(ModAttachments.PENALTY, penalty);
 
         attribute.addOrReplacePermanentModifier(
                 new AttributeModifier(

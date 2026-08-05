@@ -1,6 +1,6 @@
 package com.viquelle.mikpik.sanity.factor;
 
-import com.viquelle.mikpik.item.FlowerCrownItem;
+import com.viquelle.mikpik.item.items.FlowerCrownItem;
 import com.viquelle.mikpik.sanity.SanityConstants;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;

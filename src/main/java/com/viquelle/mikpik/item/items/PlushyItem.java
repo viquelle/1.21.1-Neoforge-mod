@@ -1,7 +1,7 @@
-package com.viquelle.mikpik.item;
+package com.viquelle.mikpik.item.items;
 
 import com.viquelle.mikpik.ModDataComponents;
-import com.viquelle.mikpik.sanity.ModAttachments;
+import com.viquelle.mikpik.ModAttachments;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;

@@ -1,7 +1,6 @@
 package com.viquelle.mikpik.light;
 
 import com.viquelle.mikpik.MikpikMod;
-import com.viquelle.mikpik.MikpikModClient;
 import com.viquelle.mikpik.client.darknesscomputer.Darkness;
 import com.viquelle.mikpik.light.source.LightSource;
 import com.viquelle.mikpik.light.source.UpdatePhase;
@@ -90,7 +89,7 @@ public class ClientLightManager {
                     continue;
                 }
 
-                if (handle instanceof AreaLightHandle area) {
+                if (handle instanceof SpotLightHandle area) {
                     double range = area.getRange();
                     if (distSq > range * range) continue;
 

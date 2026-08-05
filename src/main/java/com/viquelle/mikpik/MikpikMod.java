@@ -1,13 +1,14 @@
 package com.viquelle.mikpik;
 
 import com.mojang.logging.LogUtils;
+import com.viquelle.mikpik.block.ModBlocks;
+import com.viquelle.mikpik.blockentity.ModBlockEntities;
 import com.viquelle.mikpik.command.SanityCommands;
 import com.viquelle.mikpik.command.ShadowGrabberDebugCommand;
 import com.viquelle.mikpik.datagen.ModLanguageProvider;
 import com.viquelle.mikpik.datagen.ModRecipeProvider;
 import com.viquelle.mikpik.entity.ModEntities;
 import com.viquelle.mikpik.item.ModItems;
-import com.viquelle.mikpik.sanity.ModAttachments;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
@@ -19,6 +20,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import org.slf4j.Logger;
 
@@ -42,6 +44,13 @@ public class MikpikMod {
         ModEntities.ENTITY_TYPES.register(modEventBus);
         NeoForge.EVENT_BUS.register(ShadowGrabberDebugCommand.class);
         NeoForge.EVENT_BUS.register(SanityCommands.class);
+        ModBlockEntities.BLOCK_ENTITIES.register(modEventBus);
+        ModBlocks.BLOCKS.register(modEventBus);
+    }
+
+    @SubscribeEvent
+    public void registerCommands(RegisterCommandsEvent event) {
+        ModCommands.register(event.getDispatcher());
     }
 
     private void addCreative(BuildCreativeModeTabContentsEvent event) {

@@ -37,7 +37,8 @@ public class GhostPlayerLightSource implements LightSource {
                         BASE_BRIGHTNESS,
                         COLOR,
                         false,
-                        true
+                        true,
+                        0
                 );
                 p.register();
                 return p;

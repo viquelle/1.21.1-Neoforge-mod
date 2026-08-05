@@ -1,15 +1,22 @@
 package com.viquelle.mikpik.ghost;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.viquelle.mikpik.MikpikMod;
+import com.viquelle.mikpik.blockentity.MeatEffigyBlockEntity;
 import com.viquelle.mikpik.network.payload.GhostRespawnRequest;
+import com.viquelle.mikpik.world.Gameplay;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -17,7 +24,18 @@ import net.neoforged.neoforge.network.PacketDistributor;
 @EventBusSubscriber(modid = MikpikMod.MODID, value = Dist.CLIENT)
 public class GhostClient {
     private static int holdTicks = 0;
-    private static int maxHoldTicks = 100;
+    private static final int maxHoldTicks = 100;
+    private static boolean shouldTryRevive = false;
+    private static boolean hasEffigy = false;
+
+    public static final KeyMapping RESPAWN_KEY = new KeyMapping(
+            "key." + MikpikMod.MODID + ".ghost_resurrect", InputConstants.KEY_R, "key.categories." + MikpikMod.MODID
+    );
+
+    @SubscribeEvent
+    public static void onRegisterKeys(RegisterKeyMappingsEvent event) {
+        event.register(RESPAWN_KEY);
+    }
 
     @SubscribeEvent
     public static void onRenderGuiLayer(RenderGuiLayerEvent.Pre event) {
@@ -38,21 +56,33 @@ public class GhostClient {
             }
         }
     }
-    
+
+    private static boolean checkShoulding(Player player) {
+        if (hasEffigy) {
+            return true;
+        } else return !Gameplay.isDst(player.level());
+    }
+
     @SubscribeEvent
     public static void onClientTick(ClientTickEvent.Post event) {
         Minecraft mc = Minecraft.getInstance();
         LocalPlayer player = mc.player;
 
-        if (player == null || !GhostManager.isGhost(player)) {
+        if (player == null) return;
+        if (player.tickCount % 5 == 0) {
+            hasEffigy = MeatEffigyBlockEntity.hasBinding(player);
+            shouldTryRevive = checkShoulding(player);
+        }
+
+        if (!GhostManager.isGhost(player) || !shouldTryRevive) {
             holdTicks = 0;
             return;
         }
 
-        if (mc.options.keyAttack.isDown()) {
+        if (RESPAWN_KEY.isDown()) {
             holdTicks++;
         } else {
-            holdTicks = Math.max(holdTicks-1,0);
+            holdTicks = Math.max(holdTicks - 1, 0);
         }
 
         if (holdTicks >= maxHoldTicks) {
@@ -69,6 +99,15 @@ public class GhostClient {
 
         if (player == null || !GhostManager.isGhost(player)) return;
 
+        Component text;
+        Component keyName = RESPAWN_KEY.getTranslatedKeyMessage();
+
+        if (shouldTryRevive) {
+            text = hasEffigy ?
+                    Component.translatable("gui." + MikpikMod.MODID + ".ghost_resurrect_effigy", keyName):
+                    Component.translatable("gui." + MikpikMod.MODID + ".ghost_resurrect", keyName);
+        } else return;
+
         int width = mc.getWindow().getGuiScaledWidth();
         int height = mc.getWindow().getGuiScaledHeight();
 
@@ -76,7 +115,7 @@ public class GhostClient {
 
         event.getGuiGraphics().drawCenteredString(
                 mc.font,
-                "Hold LMB to respawn",
+                text,
                 width/2,
                 height/2 - 20 + 100,
                 0xFFFFFF
@@ -91,7 +130,6 @@ public class GhostClient {
                 height/2 + 8 + 100,
                 0xFF555555
         );
-
 
         event.getGuiGraphics().fill(
                 width / 2 - size / 2,

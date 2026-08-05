@@ -1,8 +1,9 @@
 package com.viquelle.mikpik.sanity;
 
 import com.viquelle.mikpik.MikpikMod;
+import com.viquelle.mikpik.ModAttachments;
 import com.viquelle.mikpik.ghost.GhostManager;
-import com.viquelle.mikpik.item.PlushyItem;
+import com.viquelle.mikpik.item.items.PlushyItem;
 import com.viquelle.mikpik.network.payload.SanitySyncPayload;
 import com.viquelle.mikpik.sanity.factor.*;
 import net.minecraft.server.level.ServerPlayer;

@@ -1,7 +1,7 @@
 package com.viquelle.mikpik.light;
 
 import foundry.veil.api.client.render.VeilRenderSystem;
-import foundry.veil.api.client.render.light.data.AreaLightData;
+import foundry.veil.api.client.render.light.data.SpotLightData;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Quaternionf;
@@ -9,42 +9,27 @@ import org.joml.Vector2f;
 import org.joml.Vector2fc;
 import org.joml.Vector3f;
 
-public class AreaLightHandle extends LightHandle<AreaLightData> {
+public class SpotLightHandle extends LightHandle<SpotLightData> {
     private final Quaternionf direction = new Quaternionf();
     private float angle;
     private float range;
+    private float size;
     private boolean occlusion;
-    private Vector2f SIZE = new Vector2f(0f,0f);
 
-    public AreaLightHandle(float angle, float range, float brightness, int color, boolean occlusion, Vector2f SIZE) {
-        super(new AreaLightData(), brightness, color, true);
-        this.angle = angle;
-        this.range = range;
-        this.brightness = brightness;
-        this.color = color;
-        this.occlusion = occlusion;
-        this.SIZE = SIZE;
-        data.setAngle(angle)
-                .setDistance(range)
-                .setBrightness(brightness)
-                .setColor(color)
-                .setSize(SIZE.x, SIZE.y)
-                .setOcclusionEnabled(occlusion);
-    }
-
-    public AreaLightHandle(float angle, float range, float brightness, int color, boolean occlusion, Vector2f SIZE, boolean countsAsLight) {
-        super(new AreaLightData(), brightness, color, countsAsLight);
+    public SpotLightHandle(float size, float angle, float range, float brightness, int color, boolean occlusion, boolean countsAsLight, float inscatter) {
+        super(new SpotLightData(), brightness, color, countsAsLight);
         this.angle = angle;
         this.range = range;
         this.brightness = brightness;
         this.color = color;
         this.occlusion = occlusion;
         this.affectDarkness = countsAsLight;
-        data.setAngle(angle)
+        data.setSize(size)
+                .setAngle(angle)
                 .setDistance(range)
                 .setBrightness(brightness)
                 .setColor(color)
-                .setSize(SIZE.x,SIZE.y)   // размер источника (можно настроить)
+                .setInscatteringStrength(inscatter)
                 .setOcclusionEnabled(occlusion);
     }
 
@@ -60,7 +45,7 @@ public class AreaLightHandle extends LightHandle<AreaLightData> {
     public void setOrientation(float xRot, float yRot, float zRot) {
         direction.identity().rotationXYZ(xRot, yRot, zRot);
         if (handle != null) {
-            VeilRenderSystem.renderThreadExecutor().execute(() -> data.getOrientation().set(direction));
+            VeilRenderSystem.renderThreadExecutor().execute(() -> data.getOrientationMutable().set(direction));
         }
     }
 
@@ -90,7 +75,7 @@ public class AreaLightHandle extends LightHandle<AreaLightData> {
 
     @Override
     protected void updatePositionInData(Vec3 pos) {
-        data.getPosition().set((float) pos.x, (float) pos.y, (float) pos.z);
+        data.getPositionMutable().set(pos.x, pos.y, pos.z);
     }
 
     public Vec3 getForward() {
@@ -99,15 +84,4 @@ public class AreaLightHandle extends LightHandle<AreaLightData> {
         return new Vec3(v.x, v.y, v.z).normalize();
     }
 
-    public void setSIZE(float x, float y) {
-        this.SIZE.x = x;
-        this.SIZE.y = y;
-        if (handle != null) {
-            VeilRenderSystem.renderThreadExecutor().execute(() -> data.setSize(x,y));
-        }
-    }
-
-    public Vector2fc getSIZE() {
-        return SIZE;
-    }
 }

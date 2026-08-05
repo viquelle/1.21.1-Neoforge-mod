@@ -1,8 +1,10 @@
-package com.viquelle.mikpik.item;
+package com.viquelle.mikpik.item.items;
 
 import com.viquelle.mikpik.MikpikMod;
 import com.viquelle.mikpik.ModDataComponents;
+import com.viquelle.mikpik.item.ModItems;
 import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
@@ -72,13 +74,21 @@ public class HeartItem extends Item {
         if (health <= 1) return false;
         float itemNeed = TARGET_CHARGE - getCharge(stack);
         float canConsume = (float) Math.min(
-                Math.min(
-                        5.0, Math.max(health - 1,0)
-                ),
+                Math.clamp(health - 1, 0, 5.0),
                 itemNeed
         );
         player.setHealth(health - canConsume);
         addCharge(stack, canConsume);
+        float pitch = 1.2F - (itemNeed / TARGET_CHARGE) * 0.4F;
+        player.level().playSound(
+                null,
+                player.getX(), player.getY(), player.getZ(),
+                SoundEvents.WITHER_SKELETON_AMBIENT,
+                net.minecraft.sounds.SoundSource.PLAYERS,
+                1F,
+                pitch
+        );
+
         return true;
     }
 
@@ -112,27 +122,14 @@ public class HeartItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag
-    ) {
-
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
         float charge = getCharge(stack);
 
-        tooltip.add(
-                Component.literal(
-                        "This item can't kill you"
-                )
-        );
-
-        tooltip.add(
-                Component.literal(
-                        "Charge: " + charge + "/" + TARGET_CHARGE
-                )
-        );
-
         if (isCharged(stack)) {
-            tooltip.add(
-                    Component.literal("Ready to revive")
-            );
+            tooltip.add(Component.translatable("tooltip." + MikpikMod.MODID + ".heart_ready"));
+        } else {
+            tooltip.add(Component.translatable("tooltip." + MikpikMod.MODID + ".heart_cant_kill"));
+            tooltip.add(Component.translatable("tooltip." + MikpikMod.MODID + ".heart_charge", charge, TARGET_CHARGE));
         }
     }
 

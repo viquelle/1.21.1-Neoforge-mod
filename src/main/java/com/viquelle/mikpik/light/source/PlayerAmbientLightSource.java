@@ -19,7 +19,7 @@ public class PlayerAmbientLightSource implements LightSource{
 
     private static final float PROGRESS_TIME = 5f; // 5 seconds
     private boolean registered = false;
-    private final PointLightHandle light = new PointLightHandle(0, BASE_BRIGHTNESS, COLOR, true, false);
+    private final PointLightHandle light = new PointLightHandle(0, BASE_BRIGHTNESS, COLOR, true, false, 0);
 
     @Override
     public void tick(Level level, float partialTick) {

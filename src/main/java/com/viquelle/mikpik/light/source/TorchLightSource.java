@@ -105,7 +105,7 @@ public class TorchLightSource implements LightSource {
         }
 
         private PointLightHandle createLight(TorchType type) {
-            PointLightHandle light = new PointLightHandle(type.radius, currentBrightness, type.color, type.occlusion);
+            PointLightHandle light = new PointLightHandle(type.radius, currentBrightness, type.color, type.occlusion, true, 0);
             light.register();
             return light;
         }

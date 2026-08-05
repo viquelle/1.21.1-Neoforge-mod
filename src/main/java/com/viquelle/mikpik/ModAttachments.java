@@ -1,14 +1,17 @@
-package com.viquelle.mikpik.sanity;
+package com.viquelle.mikpik;
 
 import com.mojang.serialization.Codec;
-import com.viquelle.mikpik.MikpikMod;
 import com.viquelle.mikpik.event.shadow.ShadowedBlocksConsumer;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.GlobalPos;
 import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
+import java.util.UUID;
 import java.util.function.Supplier;
 
 public class ModAttachments {
@@ -20,9 +23,9 @@ public class ModAttachments {
                     .build()
     );
 
-    public static final Supplier<AttachmentType<Float>> PENALTY = ATTACHMENT_TYPES.register(
-            "penalty", () -> AttachmentType.builder(() -> 0.0f)
-                    .serialize(Codec.FLOAT)
+    public static final Supplier<AttachmentType<Double>> PENALTY = ATTACHMENT_TYPES.register(
+            "penalty", () -> AttachmentType.builder(() -> 0.0d)
+                    .serialize(Codec.DOUBLE)
                     .build()
     );
 
@@ -44,6 +47,15 @@ public class ModAttachments {
             () -> AttachmentType.builder(() -> false)
                     .serialize(Codec.BOOL)
                     .sync(ByteBufCodecs.BOOL)
+                    .build()
+    );
+
+    public static final Supplier<AttachmentType<GlobalPos>> BOUND_EFFIGY = ATTACHMENT_TYPES.register(
+            "bound_effigy_pos",
+            () -> AttachmentType.builder(() -> GlobalPos.of(Level.OVERWORLD, BlockPos.ZERO))
+                    .serialize(GlobalPos.CODEC)
+                    .sync(ByteBufCodecs.fromCodec(GlobalPos.CODEC))
+                    .copyOnDeath()
                     .build()
     );
 

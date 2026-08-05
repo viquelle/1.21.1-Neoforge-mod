@@ -1,14 +1,13 @@
 package com.viquelle.mikpik.light.source;
 
-import com.viquelle.mikpik.item.Magnetlampe;
-import com.viquelle.mikpik.light.AreaLightHandle;
+import com.viquelle.mikpik.item.items.Magnetlampe;
+import com.viquelle.mikpik.light.SpotLightHandle;
 import com.viquelle.mikpik.light.LightHandle;
 import com.viquelle.mikpik.light.PointLightHandle;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Vector2f;
 
 import java.util.*;
 
@@ -18,7 +17,7 @@ public class MagnetlampeLightSource implements LightSource {
 
     private static class LightPair {
         PointLightHandle point;
-        AreaLightHandle area;
+        SpotLightHandle area;
     }
 
     private static final float RADIUS = 22f;
@@ -52,17 +51,21 @@ public class MagnetlampeLightSource implements LightSource {
                         RADIUS,
                         BASE_BRIGHTNESS * 0.75f,
                         0xFFF2C2,
-                        false
+                        false,
+                        true,
+                        0
                 );
                 p.point.register();
 
-                p.area = new AreaLightHandle(
-                        (float) Math.toRadians(75),
+                p.area = new SpotLightHandle(
+                        (float) Math.toRadians(45),
+                        (float) Math.toRadians(25),
                         RADIUS,
                         BASE_BRIGHTNESS,
                         0xFFF4C2,
                         true,
-                        new Vector2f(0.0f, 0.0f)
+                        true,
+                        0
                 );
                 p.area.register();
 

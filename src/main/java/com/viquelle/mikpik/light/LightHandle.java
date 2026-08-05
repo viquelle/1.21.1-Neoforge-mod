@@ -2,8 +2,10 @@ package com.viquelle.mikpik.light;
 
 import foundry.veil.api.client.render.VeilRenderSystem;
 import foundry.veil.api.client.render.light.data.LightData;
+import foundry.veil.api.client.render.light.data.PointLightData;
 import foundry.veil.api.client.render.light.renderer.LightRenderHandle;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.UnknownNullability;
 
 public abstract class LightHandle<T extends LightData> {
     protected volatile LightRenderHandle<T> handle;

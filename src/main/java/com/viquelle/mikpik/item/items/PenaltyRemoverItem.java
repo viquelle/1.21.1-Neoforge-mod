@@ -1,4 +1,4 @@
-package com.viquelle.mikpik.item;
+package com.viquelle.mikpik.item.items;
 
 import com.viquelle.mikpik.ghost.HealthPenailtyUtil;
 import net.minecraft.server.level.ServerPlayer;

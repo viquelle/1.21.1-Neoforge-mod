@@ -1,4 +1,4 @@
-package com.viquelle.mikpik.item;
+package com.viquelle.mikpik.item.items;
 
 import net.minecraft.world.item.Item;
 

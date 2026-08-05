@@ -44,10 +44,9 @@ public class SanityPostShaderHandler {
                 Minecraft mc = Minecraft.getInstance();
 
                 if (mc.level != null) {
-                    long time = System.currentTimeMillis();
-                    long dayMillis = 24 * 60 * 60 * 1000L;
-                    float timeOfDay = (time % dayMillis) / 1000.0f;
-                    timeUniform.setFloat(timeOfDay);
+                    float time = mc.level.getGameTime() + mc.gameRenderer.getMainCamera().getPartialTickTime();
+                    time /= 20f;
+                    timeUniform.setFloat(time);
                 }
             }
         });
