@@ -299,7 +299,7 @@ public class GhostManager {
 
         if (!GhostManager.isGhost(player)) return false;
 
-        HitResult hit = raycast(player, 4.0);
+        HitResult hit = raycast(player, player.blockInteractionRange());
 
         if (hit instanceof EntityHitResult entityHitResult) {
             if (entityHitResult.getEntity() instanceof ItemEntity itemEntity) {

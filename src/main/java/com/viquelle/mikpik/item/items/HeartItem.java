@@ -51,11 +51,6 @@ public class HeartItem extends Item {
     }
 
     @Override
-    public boolean isFoil(ItemStack stack) {
-        return isCharged(stack);
-    }
-
-    @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (isCharged(stack)) {

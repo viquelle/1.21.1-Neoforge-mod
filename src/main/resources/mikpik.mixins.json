@@ -15,7 +15,10 @@
     "client.GuiMixin",
     "client.LivingEntityRendererMixin",
     "client.MultiPlayerGameMode",
-    "client.PlayerRendererMixin"
+    "client.PlayerRendererMixin",
+    "client.HeartItemRendererMixin",
+    "client.HeartItemEntityRendererMixin",
+    "client.ItemEntityMixin"
   ],
   "mixins": [
     "AbstractContainerMenu",

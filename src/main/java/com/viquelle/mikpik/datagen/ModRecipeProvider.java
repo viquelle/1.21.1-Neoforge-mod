@@ -36,7 +36,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_magma_block", has(Items.MAGMA_BLOCK))
                 .save(recipeOutput);
 
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, ModItems.PENALTY_REMOVER.get())
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, ModItems.LIFE_INJECTOR.get())
                 .requires(Items.SUGAR)
                 .requires(Items.FERMENTED_SPIDER_EYE)
                 .requires(Items.DANDELION)

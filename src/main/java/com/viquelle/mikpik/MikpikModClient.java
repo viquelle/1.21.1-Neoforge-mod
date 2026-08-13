@@ -3,6 +3,7 @@ package com.viquelle.mikpik;
 import com.viquelle.mikpik.block.meateffigy.MeatEffigyBlockRenderer;
 import com.viquelle.mikpik.block.meateffigy.MeatEffigyModel;
 import com.viquelle.mikpik.blockentity.ModBlockEntities;
+import com.viquelle.mikpik.client.ClientHeartManager;
 import com.viquelle.mikpik.client.coloredlights.ColorLightPreProcessor;
 import com.viquelle.mikpik.client.coloredlights.ColorLightRenderer;
 import com.viquelle.mikpik.entity.ModEntities;
@@ -26,6 +27,7 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
@@ -122,5 +124,10 @@ public class MikpikModClient {
                 MeatEffigyModel.LAYER_LOCATION,
                 MeatEffigyModel::createBodyLayer
         );
+    }
+
+    @SubscribeEvent
+    public static void onClientTick(ClientTickEvent.Post event) {
+        ClientHeartManager.clientTick();
     }
 }

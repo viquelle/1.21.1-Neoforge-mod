@@ -1,7 +1,9 @@
 package com.viquelle.mikpik.mixin.client;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.viquelle.mikpik.MikpikMod;
+import com.viquelle.mikpik.client.ClientHeartManager;
 import com.viquelle.mikpik.ghost.GhostManager;
 import com.viquelle.mikpik.item.CustomArmPoseItem;
 import net.minecraft.client.Minecraft;
@@ -20,6 +22,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(PlayerRenderer.class)
@@ -97,4 +100,33 @@ public class PlayerRendererMixin {
 //            ci.cancel();
 //        }
 //    }
+
+    @Inject(method = "render", at = @At("HEAD"))
+    private void mikpik$startRender(
+        AbstractClientPlayer player,
+        float entityYaw,
+        float partialTick,
+        PoseStack poseStack,
+        MultiBufferSource buffer,
+        int packedLight,
+        CallbackInfo ci
+    ) {
+        ClientHeartManager.renderingPlayer = player;
+    }
+
+    @Inject(
+            method = "render",
+            at = @At("TAIL")
+    )
+    private void mikpik$endRender(
+        AbstractClientPlayer player,
+        float entityYaw,
+        float partialTick,
+        PoseStack poseStack,
+        MultiBufferSource buffer,
+        int packedLight,
+        CallbackInfo ci
+    ) {
+        ClientHeartManager.renderingPlayer = null;
+    }
 }

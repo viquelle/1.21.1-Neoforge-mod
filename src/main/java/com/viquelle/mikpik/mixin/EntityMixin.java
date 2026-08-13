@@ -2,10 +2,13 @@ package com.viquelle.mikpik.mixin;
 
 import com.viquelle.mikpik.ghost.GhostManager;
 import com.viquelle.mikpik.item.ModItems;
+import com.viquelle.mikpik.item.items.HeartItem;
+import net.caffeinemc.mods.sodium.client.render.viewport.frustum.Frustum;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -26,6 +29,7 @@ public class EntityMixin {
 
         if (player == null) return;
         if (!GhostManager.isGhost(player)) return;
+        if (!HeartItem.isCharged(item.getItem())) return;
         if (item.getItem().is(ModItems.HEART.get())) {
             cir.setReturnValue(true);
         }
@@ -38,22 +42,18 @@ public class EntityMixin {
             cancellable = true
     )
     private void ghostHeartColor(CallbackInfoReturnable<Integer> cir) {
-
         Entity entity = (Entity)(Object)this;
 
-        if (!(entity instanceof ItemEntity item))
-            return;
+        if (!(entity instanceof ItemEntity item)) return;
 
         LocalPlayer player = Minecraft.getInstance().player;
 
-        if (player == null)
-            return;
-
-        if (!GhostManager.isGhost(player))
-            return;
-
+        if (player == null) return;
+        if (!GhostManager.isGhost(player)) return;
+        if (!HeartItem.isCharged(item.getItem())) return;
         if (item.getItem().is(ModItems.HEART.get())) {
             cir.setReturnValue(0xFF0000);
         }
     }
+
 }
