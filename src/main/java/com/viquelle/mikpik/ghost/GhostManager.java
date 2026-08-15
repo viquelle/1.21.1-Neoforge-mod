@@ -14,6 +14,8 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
@@ -28,6 +30,7 @@ import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.util.TriState;
+import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingHealEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
@@ -65,6 +68,7 @@ public class GhostManager {
     }
 
     public static void updateAbilities(Player player, boolean isGhost) {
+        player.setInvulnerable(isGhost);
         player.getAbilities().invulnerable = isGhost;
         player.getAbilities().flying = isGhost;
         player.getAbilities().mayfly = isGhost;
@@ -73,6 +77,16 @@ public class GhostManager {
         player.minorHorizontalCollision = !isGhost;
         player.getFoodData().setFoodLevel(20);
         player.getFoodData().setSaturation(20);
+
+    }
+
+    @SubscribeEvent
+    public static void onLivingChangeTarget(LivingChangeTargetEvent event) {
+        LivingEntity target = event.getNewAboutToBeSetTarget();
+
+        if (target instanceof Player player && GhostManager.isGhost(player)) {
+            event.setNewAboutToBeSetTarget(null);
+        }
     }
 
     @SubscribeEvent

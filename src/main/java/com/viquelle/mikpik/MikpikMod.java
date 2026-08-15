@@ -3,8 +3,8 @@ package com.viquelle.mikpik;
 import com.mojang.logging.LogUtils;
 import com.viquelle.mikpik.block.ModBlocks;
 import com.viquelle.mikpik.blockentity.ModBlockEntities;
+import com.viquelle.mikpik.command.ModCommands;
 import com.viquelle.mikpik.command.SanityCommands;
-import com.viquelle.mikpik.command.ShadowGrabberDebugCommand;
 import com.viquelle.mikpik.datagen.ModLanguageProvider;
 import com.viquelle.mikpik.datagen.ModRecipeProvider;
 import com.viquelle.mikpik.entity.ModEntities;
@@ -42,8 +42,6 @@ public class MikpikMod {
         ModDataComponents.register(modEventBus);
         ModItems.ITEMS.register(modEventBus);
         ModEntities.ENTITY_TYPES.register(modEventBus);
-        NeoForge.EVENT_BUS.register(ShadowGrabberDebugCommand.class);
-        NeoForge.EVENT_BUS.register(SanityCommands.class);
         ModBlockEntities.BLOCK_ENTITIES.register(modEventBus);
         ModBlocks.BLOCKS.register(modEventBus);
     }
