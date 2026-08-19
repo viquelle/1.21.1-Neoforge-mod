@@ -16,7 +16,7 @@ public class FireflyLightSource implements LightSource {
 
     private static final float RADIUS = 3.0f;
     private static final float TARGET_BRIGHTNESS = 1.0f;
-    private static final float INSCATTER_STRENGTH = 25f;
+    private static final float INSCATTER_STRENGTH = 8f;
     private static final int COLOR = 0xC3FFAD;
     private static final boolean OCCLUSION = true;
     private static final float FADE_SPEED = 1.0f / 4.0f;

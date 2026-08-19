@@ -29,7 +29,7 @@ public class WatcherEntityLightSource implements LightSource {
 
         WatcherLightState(Vec3 initialPos) {
             this.currentBrightness = TARGET_BRIGHTNESS;
-            this.light = new PointLightHandle(RADIUS, currentBrightness, COLOR, OCCLUSION, false, 0);
+            this.light = new PointLightHandle(RADIUS, currentBrightness, COLOR, OCCLUSION, false, 0f);
             this.light.register();
             this.light.setPosition(initialPos);
         }
