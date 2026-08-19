@@ -1,8 +1,8 @@
 package com.viquelle.mikpik.item.items;
 
 import com.viquelle.mikpik.MikpikMod;
-import com.viquelle.mikpik.ModDataComponents;
-import com.viquelle.mikpik.item.ModItems;
+import com.viquelle.mikpik.registry.ModDataComponents;
+import com.viquelle.mikpik.registry.ModItems;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;

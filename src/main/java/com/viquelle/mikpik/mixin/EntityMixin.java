@@ -1,14 +1,12 @@
 package com.viquelle.mikpik.mixin;
 
 import com.viquelle.mikpik.ghost.GhostManager;
-import com.viquelle.mikpik.item.ModItems;
+import com.viquelle.mikpik.registry.ModItems;
 import com.viquelle.mikpik.item.items.HeartItem;
-import net.caffeinemc.mods.sodium.client.render.viewport.frustum.Frustum;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

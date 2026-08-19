@@ -1,7 +1,6 @@
-package com.viquelle.mikpik.item;
+package com.viquelle.mikpik.registry;
 
 import com.viquelle.mikpik.MikpikMod;
-import com.viquelle.mikpik.block.ModBlocks;
 import com.viquelle.mikpik.item.items.*;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.BlockItem;

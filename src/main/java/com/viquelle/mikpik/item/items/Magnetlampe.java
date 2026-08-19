@@ -1,7 +1,7 @@
 package com.viquelle.mikpik.item.items;
 
 import com.viquelle.mikpik.MikpikMod;
-import com.viquelle.mikpik.ModDataComponents;
+import com.viquelle.mikpik.registry.ModDataComponents;
 import com.viquelle.mikpik.item.CustomArmPoseItem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.model.HumanoidModel;

@@ -1,4 +1,4 @@
-package com.viquelle.mikpik.block;
+package com.viquelle.mikpik.registry;
 
 import com.viquelle.mikpik.MikpikMod;
 import com.viquelle.mikpik.block.meateffigy.MeatEffigyBlock;
@@ -6,7 +6,6 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 

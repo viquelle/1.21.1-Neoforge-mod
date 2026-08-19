@@ -23,7 +23,7 @@ public class HandRenderer extends EntityRenderer<HandEntity> {
 //    private static final ResourceLocation SIDE1 = ResourceLocation.fromNamespaceAndPath(MikpikMod.MODID, "textures/entity/hand/side1.png");
     private static final ResourceLocation RIGHT = ResourceLocation.fromNamespaceAndPath(MikpikMod.MODID, "textures/entity/hand/right.png");
 //    private static final ResourceLocation SIDE3 = ResourceLocation.fromNamespaceAndPath(MikpikMod.MODID, "textures/entity/hand/side3.png");
-    private static final ResourceLocation BLACK = ResourceLocation.fromNamespaceAndPath(MikpikMod.MODID,"textures/black.png");
+    private static final ResourceLocation BLACK = ResourceLocation.fromNamespaceAndPath(MikpikMod.MODID,"textures/firefly.png");
 
     public HandRenderer(EntityRendererProvider.Context context) {
         super(context);

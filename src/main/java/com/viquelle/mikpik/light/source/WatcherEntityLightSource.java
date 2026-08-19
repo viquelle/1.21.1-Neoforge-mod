@@ -12,7 +12,6 @@ import net.minecraft.world.phys.Vec3;
 import java.util.*;
 
 public class WatcherEntityLightSource implements LightSource {
-
     private static final float RADIUS = 8.0f;
     private static final float TARGET_BRIGHTNESS = -1.0f;
     private static final int COLOR = 0xFFFFFF;
@@ -99,11 +98,7 @@ public class WatcherEntityLightSource implements LightSource {
         }
 
         for (WatcherLightState state : watchers.values()) {
-            if (!state.shouldRemove) {
-                state.update(state.light.getPosition(), currentDeltaTime);
-            } else {
-                state.update(state.light.getPosition(), currentDeltaTime);
-            }
+            state.update(state.light.getPosition(), currentDeltaTime);
         }
 
         Iterator<Map.Entry<Integer, WatcherLightState>> it = watchers.entrySet().iterator();

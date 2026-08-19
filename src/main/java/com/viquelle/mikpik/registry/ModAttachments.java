@@ -1,6 +1,7 @@
-package com.viquelle.mikpik;
+package com.viquelle.mikpik.registry;
 
 import com.mojang.serialization.Codec;
+import com.viquelle.mikpik.MikpikMod;
 import com.viquelle.mikpik.event.shadow.ShadowedBlocksConsumer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
@@ -11,7 +12,6 @@ import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
-import java.util.UUID;
 import java.util.function.Supplier;
 
 public class ModAttachments {

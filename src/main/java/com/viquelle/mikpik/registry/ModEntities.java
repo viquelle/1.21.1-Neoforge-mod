@@ -1,7 +1,8 @@
-package com.viquelle.mikpik.entity;
+package com.viquelle.mikpik.registry;
 
 import com.viquelle.mikpik.MikpikMod;
 import com.viquelle.mikpik.entity.eye.EyeEntity;
+import com.viquelle.mikpik.entity.firefly.FireflyEntity;
 import com.viquelle.mikpik.entity.hand.HandEntity;
 import com.viquelle.mikpik.entity.shadowgrabber.ShadowGrabberEntity;
 import com.viquelle.mikpik.entity.watcher.WatcherEntity;
@@ -55,4 +56,11 @@ public class ModEntities {
                     .fireImmune()
                     .build("hand"));
 
+    public static final Supplier<EntityType<FireflyEntity>> FIREFLY =
+            ENTITY_TYPES.register("firefly", () -> EntityType.Builder
+                    .of(FireflyEntity::new, MobCategory.MISC)
+                    .sized(1.5f, 1.5f)
+                    .clientTrackingRange(64)
+                    .updateInterval(3)
+                    .build("firefly"));
 }

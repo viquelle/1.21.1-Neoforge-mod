@@ -1,7 +1,10 @@
-package com.viquelle.mikpik.command;
+package com.viquelle.mikpik.registry;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.viquelle.mikpik.MikpikMod;
+import com.viquelle.mikpik.command.GameplayCommands;
+import com.viquelle.mikpik.command.GhostCommands;
+import com.viquelle.mikpik.command.SanityCommands;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 

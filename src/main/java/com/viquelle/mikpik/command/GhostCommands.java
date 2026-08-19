@@ -3,7 +3,7 @@ package com.viquelle.mikpik.command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.viquelle.mikpik.ghost.GhostManager;
 import com.viquelle.mikpik.ghost.HealthPenailtyUtil;
-import com.viquelle.mikpik.ModAttachments;
+import com.viquelle.mikpik.registry.ModAttachments;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;

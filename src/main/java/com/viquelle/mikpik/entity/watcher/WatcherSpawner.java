@@ -1,7 +1,6 @@
 package com.viquelle.mikpik.entity.watcher;
 
-import com.viquelle.mikpik.MikpikMod;
-import com.viquelle.mikpik.entity.ModEntities;
+import com.viquelle.mikpik.registry.ModEntities;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;

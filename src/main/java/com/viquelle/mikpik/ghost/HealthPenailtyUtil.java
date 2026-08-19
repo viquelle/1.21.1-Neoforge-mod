@@ -1,7 +1,7 @@
 package com.viquelle.mikpik.ghost;
 
 import com.viquelle.mikpik.MikpikMod;
-import com.viquelle.mikpik.ModAttachments;
+import com.viquelle.mikpik.registry.ModAttachments;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;

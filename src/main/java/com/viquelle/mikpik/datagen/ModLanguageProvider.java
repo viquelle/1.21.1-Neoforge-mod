@@ -1,10 +1,9 @@
 package com.viquelle.mikpik.datagen;
 
 import com.viquelle.mikpik.MikpikMod;
-import com.viquelle.mikpik.block.ModBlocks;
-import com.viquelle.mikpik.item.ModItems;
+import com.viquelle.mikpik.registry.ModBlocks;
+import com.viquelle.mikpik.registry.ModItems;
 import net.minecraft.data.PackOutput;
-import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.data.LanguageProvider;
 
 public class ModLanguageProvider extends LanguageProvider {

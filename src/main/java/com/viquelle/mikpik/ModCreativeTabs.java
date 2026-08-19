@@ -1,6 +1,6 @@
 package com.viquelle.mikpik;
 
-//import com.viquelle.mikpik.item.ModItems;
+//import com.viquelle.mikpik.registry.ModItems;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.CreativeModeTab;

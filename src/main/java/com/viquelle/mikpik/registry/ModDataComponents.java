@@ -1,6 +1,7 @@
-package com.viquelle.mikpik;
+package com.viquelle.mikpik.registry;
 
 import com.mojang.serialization.Codec;
+import com.viquelle.mikpik.MikpikMod;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.neoforged.bus.api.IEventBus;

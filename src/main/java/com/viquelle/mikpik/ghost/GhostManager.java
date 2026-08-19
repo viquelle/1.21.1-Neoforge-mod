@@ -1,21 +1,18 @@
 package com.viquelle.mikpik.ghost;
 
 import com.viquelle.mikpik.MikpikMod;
-import com.viquelle.mikpik.item.ModItems;
+import com.viquelle.mikpik.registry.ModItems;
 import com.viquelle.mikpik.network.payload.GhostStatePayload;
 import com.viquelle.mikpik.network.payload.HeartReviveRequestPayload;
 import com.viquelle.mikpik.network.payload.PushItemPayload;
-import com.viquelle.mikpik.ModAttachments;
+import com.viquelle.mikpik.registry.ModAttachments;
 import net.minecraft.core.GlobalPos;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ProjectileUtil;

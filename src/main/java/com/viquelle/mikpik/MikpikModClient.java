@@ -2,24 +2,30 @@ package com.viquelle.mikpik;
 
 import com.viquelle.mikpik.block.meateffigy.MeatEffigyBlockRenderer;
 import com.viquelle.mikpik.block.meateffigy.MeatEffigyModel;
-import com.viquelle.mikpik.blockentity.ModBlockEntities;
+import com.viquelle.mikpik.registry.ModBlockEntities;
 import com.viquelle.mikpik.client.ClientHeartManager;
 import com.viquelle.mikpik.client.coloredlights.ColorLightPreProcessor;
 import com.viquelle.mikpik.client.coloredlights.ColorLightRenderer;
-import com.viquelle.mikpik.entity.ModEntities;
+import com.viquelle.mikpik.registry.ModEntities;
+import com.viquelle.mikpik.entity.firefly.FirefliRenderer;
+import com.viquelle.mikpik.entity.firefly.FireflyParticleProvider;
 import com.viquelle.mikpik.entity.hand.HandRenderer;
 import com.viquelle.mikpik.entity.shadowgrabber.model.ShadowForearmModel;
 import com.viquelle.mikpik.entity.shadowgrabber.model.ShadowHandModel;
 import com.viquelle.mikpik.entity.shadowgrabber.model.ShadowPortalModel;
 import com.viquelle.mikpik.entity.watcher.WatcherRenderer;
 import com.viquelle.mikpik.item.items.Magnetlampe;
-import com.viquelle.mikpik.item.ModItems;
+import com.viquelle.mikpik.registry.ModItems;
 import com.viquelle.mikpik.light.ClientLightManager;
 import com.viquelle.mikpik.light.source.*;
+import com.viquelle.mikpik.registry.ModParticleTypes;
 import foundry.veil.api.client.render.VeilRenderSystem;
 import foundry.veil.platform.VeilEventPlatform;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.item.ItemProperties;
+import net.minecraft.core.particles.ParticleType;
+import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -29,10 +35,14 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.event.level.LevelEvent;
+import net.neoforged.neoforge.registries.DeferredRegister;
+
+import java.util.function.Supplier;
 
 @Mod(value = MikpikMod.MODID, dist = Dist.CLIENT)
 // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
@@ -51,6 +61,7 @@ public class MikpikModClient {
     public static void onre(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(ModEntities.WATCHER.get(), WatcherRenderer::new);
         event.registerEntityRenderer(ModEntities.HAND.get(), HandRenderer::new);
+        event.registerEntityRenderer(ModEntities.FIREFLY.get(), FirefliRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.MEAT_EFFIGY.get(), MeatEffigyBlockRenderer::new);
     }
 
@@ -64,6 +75,7 @@ public class MikpikModClient {
         ClientLightManager.register(new MagnetlampeLightSource());
         ClientLightManager.register(new GhostPlayerLightSource());
         ClientLightManager.register(new WatcherEntityLightSource());
+        ClientLightManager.register(new FireflyLightSource());
         VeilEventPlatform.INSTANCE.onVeilAddShaderProcessors(((resourceProvider, registry) -> {
             registry.addPreprocessor(ColorLightPreProcessor.INSTANCE, true);
         }));
@@ -124,6 +136,12 @@ public class MikpikModClient {
                 MeatEffigyModel.LAYER_LOCATION,
                 MeatEffigyModel::createBodyLayer
         );
+    }
+
+    @SubscribeEvent
+    public static void registerParticleProviders(RegisterParticleProvidersEvent event) {
+        // Используй общий класс ModParticleTypes
+        event.registerSpriteSet(ModParticleTypes.FIREFLY.get(), FireflyParticleProvider::new);
     }
 
     @SubscribeEvent

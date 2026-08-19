@@ -1,7 +1,7 @@
 package com.viquelle.mikpik.entity.hand;
 
 import com.viquelle.mikpik.MikpikMod;
-import com.viquelle.mikpik.entity.ModEntities;
+import com.viquelle.mikpik.registry.ModEntities;
 import com.viquelle.mikpik.ghost.GhostManager;
 import com.viquelle.mikpik.light.ServerLightManager;
 import com.viquelle.mikpik.sanity.SanitySystem;

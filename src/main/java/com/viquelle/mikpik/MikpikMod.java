@@ -1,14 +1,9 @@
 package com.viquelle.mikpik;
 
 import com.mojang.logging.LogUtils;
-import com.viquelle.mikpik.block.ModBlocks;
-import com.viquelle.mikpik.blockentity.ModBlockEntities;
-import com.viquelle.mikpik.command.ModCommands;
-import com.viquelle.mikpik.command.SanityCommands;
+import com.viquelle.mikpik.registry.*;
 import com.viquelle.mikpik.datagen.ModLanguageProvider;
 import com.viquelle.mikpik.datagen.ModRecipeProvider;
-import com.viquelle.mikpik.entity.ModEntities;
-import com.viquelle.mikpik.item.ModItems;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
@@ -38,6 +33,7 @@ public class MikpikMod {
         ModCreativeTabs.TAB.register(modEventBus);
         modEventBus.addListener(this::gatherData);
 //        modContainer.registerConfig(ModConfig.Type.COMMON, com.viquelle.mikpik.datagen.ModConfig.SPEC);
+        ModParticleTypes.PARTICLE_TYPES.register(modEventBus);
         ModAttachments.register(modEventBus);
         ModDataComponents.register(modEventBus);
         ModItems.ITEMS.register(modEventBus);

@@ -1,6 +1,6 @@
 package com.viquelle.mikpik.datagen;
 
-import com.viquelle.mikpik.item.ModItems;
+import com.viquelle.mikpik.registry.ModItems;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.*;
