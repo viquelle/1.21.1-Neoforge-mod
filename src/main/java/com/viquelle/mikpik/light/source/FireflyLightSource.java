@@ -117,7 +117,7 @@ public class FireflyLightSource implements LightSource {
                     state = new FireflyLightState(firefly);
                     fireflies.put(id, state);
 
-                    MikpikMod.LOGGER.info("FireflyLightSource: found new firefly #{}", id);
+                    //MikpikMod.LOGGER.info("FireflyLightSource: found new firefly #{}", id);
                 }
 
                 if (firefly.isDormant()) {
@@ -125,7 +125,7 @@ public class FireflyLightSource implements LightSource {
                 } else {
                     if (state.light == null) {
                         state.wakeUp();
-                        MikpikMod.LOGGER.info("FireflyLightSource: firefly #{} woke up", id);
+                        //MikpikMod.LOGGER.info("FireflyLightSource: firefly #{} woke up", id);
                     }
                 }
 
@@ -155,10 +155,7 @@ public class FireflyLightSource implements LightSource {
             if (state.light == null) {
                 it.remove();
 
-                MikpikMod.LOGGER.info(
-                        "FireflyLightSource: firefly #{} disappeared, removing",
-                        entry.getKey()
-                );
+                //MikpikMod.LOGGER.info("FireflyLightSource: firefly #{} disappeared, removing", entry.getKey());
             }
         }
     }

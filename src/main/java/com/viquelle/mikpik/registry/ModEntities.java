@@ -59,7 +59,7 @@ public class ModEntities {
     public static final Supplier<EntityType<FireflyEntity>> FIREFLY =
             ENTITY_TYPES.register("firefly", () -> EntityType.Builder
                     .of(FireflyEntity::new, MobCategory.MISC)
-                    .sized(1.5f, 1.5f)
+                    .sized(1f, 1f)
                     .clientTrackingRange(64)
                     .updateInterval(3)
                     .build("firefly"));

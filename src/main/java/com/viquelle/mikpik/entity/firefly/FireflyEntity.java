@@ -18,8 +18,12 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
+import net.minecraft.world.phys.Vec3;
 
 public class FireflyEntity extends Entity {
+    public static final float SKY_BRIGHT_THRESHOLD = 1f;
+    public static final float BLOCK_BRIGHT_THRESHOLD = 3f;
+
     private static final EntityDataAccessor<Boolean> DATA_DORMANT = SynchedEntityData.defineId(FireflyEntity.class, EntityDataSerializers.BOOLEAN);
     private static final int WAKE_UP_DELAY = 200;
     private int sleepTimer = 0;
@@ -41,8 +45,14 @@ public class FireflyEntity extends Entity {
         else serverTick();
     }
 
+    public static boolean isDarkOnPos(Level level, Vec3 pos) {
+        return level.isNight() &&
+                Darkness.posSkyLight(pos, level, 0f) <= SKY_BRIGHT_THRESHOLD &&
+                level.getBrightness(LightLayer.BLOCK, BlockPos.containing(pos)) <= BLOCK_BRIGHT_THRESHOLD;
+    }
     private void serverTick() {
-        boolean isDark = !level().isDay() || Darkness.posSkyLight(this.position(), this.level(), 0f) <= 1;
+        boolean isDark = isDarkOnPos(level(), position());
+
         if (!isDark) {
             setDormant(true);
             sleepTimer = 0;

@@ -80,7 +80,7 @@ public class WatcherEntityLightSource implements LightSource {
                 if (state == null) {
                     state = new WatcherLightState(watcher.position());
                     watchers.put(id, state);
-                    MikpikMod.LOGGER.info("WatcherLightSource: found new watcher #{}", id);
+                    //MikpikMod.LOGGER.info("WatcherLightSource: found new watcher #{}", id);
                 } else {
                     state.update(watcher.position(), currentDeltaTime);
                 }
@@ -93,7 +93,7 @@ public class WatcherEntityLightSource implements LightSource {
 
             if (!aliveIds.contains(id) && !state.shouldRemove) {
                 state.shouldRemove = true;
-                MikpikMod.LOGGER.info("WatcherLightSource: watcher #{} disappeared, starting fade-out", id);
+                //MikpikMod.LOGGER.info("WatcherLightSource: watcher #{} disappeared, starting fade-out", id);
             }
         }
 
@@ -107,7 +107,7 @@ public class WatcherEntityLightSource implements LightSource {
             if (state.isDead) {
                 state.kill();
                 it.remove();
-                MikpikMod.LOGGER.info("WatcherLightSource: removed dead watcher");
+                //MikpikMod.LOGGER.info("WatcherLightSource: removed dead watcher");
             }
         }
     }
