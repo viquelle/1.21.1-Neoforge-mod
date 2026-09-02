@@ -7,6 +7,7 @@ import net.minecraft.data.recipes.*;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.block.HayBlock;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -41,6 +42,26 @@ public class ModRecipeProvider extends RecipeProvider {
                 .requires(Items.FERMENTED_SPIDER_EYE)
                 .requires(Items.DANDELION)
                 .unlockedBy("has_sugar", has(Items.SUGAR))
+                .save(recipeOutput);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.MEAT_EFFIGY.get())
+                .define('A', Ingredient.of(Items.PUMPKIN, Items.CARVED_PUMPKIN))
+                .define('B', Items.HAY_BLOCK)
+                .define('C', Ingredient.of(ItemTags.LOGS))
+                .pattern(" A ")
+                .pattern("CBC")
+                .pattern(" C ")
+                .unlockedBy("has_hay", has(Items.HAY_BLOCK))
+                .save(recipeOutput);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.MAGNETLAMPE.get())
+                .define('I', Items.IRON_INGOT)
+                .define('C', Items.CHAIN)
+                .define('G', Items.GLOWSTONE)
+                .pattern("III")
+                .pattern("CGI")
+                .pattern("III")
+                .unlockedBy("has_iron", has(Items.IRON_INGOT))
                 .save(recipeOutput);
     }
 }
