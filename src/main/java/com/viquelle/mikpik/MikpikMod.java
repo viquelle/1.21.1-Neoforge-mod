@@ -12,6 +12,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
@@ -32,7 +33,7 @@ public class MikpikMod {
 //        ModItems.register(modEventBus);
         ModCreativeTabs.TAB.register(modEventBus);
         modEventBus.addListener(this::gatherData);
-//        modContainer.registerConfig(ModConfig.Type.COMMON, com.viquelle.mikpik.datagen.ModConfig.SPEC);
+        modContainer.registerConfig(ModConfig.Type.COMMON, com.viquelle.mikpik.datagen.ModConfig.SPEC);
         ModParticleTypes.PARTICLE_TYPES.register(modEventBus);
         ModAttachments.register(modEventBus);
         ModDataComponents.register(modEventBus);

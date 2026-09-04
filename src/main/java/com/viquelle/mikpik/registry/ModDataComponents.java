@@ -16,6 +16,9 @@ public class ModDataComponents {
     public static final String last_update = "last_update"; // for items charge
     public static final String charging_start = "charge_start"; // for items charge
     public static final String heart_charge = "heart_charge";
+    public static final String spoil_time = "spoil_time";
+    public static final String spoil_time_remaining = "spoil_time_remaining";
+    public static final String last_reduction = "last_reduction";
 
     public static final Supplier<DataComponentType<Float>> PLUSHY_STORED_SANITY =
             COMPONENTS.registerComponentType(
@@ -61,6 +64,30 @@ public class ModDataComponents {
             COMPONENTS.registerComponentType(
                     heart_charge,
                     integerBuilder -> integerBuilder
+                            .persistent(Codec.FLOAT)
+                            .networkSynchronized(ByteBufCodecs.fromCodec(Codec.FLOAT))
+            );
+
+    public static final Supplier<DataComponentType<Integer>> SPOIL_TIME =
+            COMPONENTS.registerComponentType(
+                    spoil_time,
+                    integerBuilder -> integerBuilder
+                            .persistent(Codec.INT)
+                            .networkSynchronized(ByteBufCodecs.INT)
+            );
+
+    public static final Supplier<DataComponentType<Float>> TIME_REMAINING =
+            COMPONENTS.registerComponentType(
+                    spoil_time_remaining,
+                    b -> b
+                    .persistent(Codec.FLOAT)
+                    .networkSynchronized(ByteBufCodecs.fromCodec(Codec.FLOAT))
+            );
+
+    public static final Supplier<DataComponentType<Float>> LAST_REDUCTION =
+            COMPONENTS.registerComponentType(
+                    last_reduction,
+                    b -> b
                             .persistent(Codec.FLOAT)
                             .networkSynchronized(ByteBufCodecs.fromCodec(Codec.FLOAT))
             );

@@ -33,6 +33,7 @@ public class ModLanguageProvider extends LanguageProvider {
         addItem(ModItems.HEART, "Heart");
         addItem(ModItems.MAGNETLAMPE, "Magnetlampe");
         addItem(ModItems.LIFE_INJECTOR, "Cleansing Syringe");
+        addItem(ModItems.HAM_BAT, "Ham bat");
 
         addBlock(ModBlocks.MEAT_EFFIGY, "Meat effigy");
 
@@ -60,6 +61,7 @@ public class ModLanguageProvider extends LanguageProvider {
         add("tooltip." + MikpikMod.MODID + ".heart_cant_kill", "This item can't kill you");
         add("tooltip." + MikpikMod.MODID + ".heart_charge", "Charge: %s/%s");
         add("tooltip." + MikpikMod.MODID + ".heart_ready", "Ready to revive");
+        add("tooltip." + MikpikMod.MODID + ".spoils_in", "Will spoil in %s days");
     }
 
     private void add_ru() {
@@ -73,6 +75,7 @@ public class ModLanguageProvider extends LanguageProvider {
         addItem(ModItems.MAGNETLAMPE, "Заводной фонарь");
         addItem(ModItems.MEAT_EFFIGY, "Мясное чучело");
         addItem(ModItems.LIFE_INJECTOR, "Очищающий шприц");
+        addItem(ModItems.HAM_BAT, "Мясная бита");
 
         add("entity." + MikpikMod.MODID + ".meat_effigy", "Мясное чучело");
 
@@ -100,6 +103,6 @@ public class ModLanguageProvider extends LanguageProvider {
         add("tooltip." + MikpikMod.MODID + ".heart_cant_kill", "Этот предмет не может вас убить");
         add("tooltip." + MikpikMod.MODID + ".heart_charge", "Заряд: %s/%s");
         add("tooltip." + MikpikMod.MODID + ".heart_ready", "Готово к воскрешению");
-
+        add("tooltip." + MikpikMod.MODID + ".spoils_in", "Испортится через %s дней");
     }
 }

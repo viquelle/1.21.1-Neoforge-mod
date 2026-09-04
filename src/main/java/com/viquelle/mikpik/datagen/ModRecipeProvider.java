@@ -7,7 +7,6 @@ import net.minecraft.data.recipes.*;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.level.block.HayBlock;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -63,5 +62,18 @@ public class ModRecipeProvider extends RecipeProvider {
                 .pattern("III")
                 .unlockedBy("has_iron", has(Items.IRON_INGOT))
                 .save(recipeOutput);
+
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.HAM_BAT.get())
+                .define('A', Items.PORKCHOP)
+                .define('B', Items.BONE_BLOCK)
+                .define('C', Items.BONE)
+                .define('D', Items.STRING)
+                .pattern("DCA")
+                .pattern("ABD")
+                .pattern(" C ")
+                .unlockedBy("has_porkchop", has(Items.PORKCHOP))
+                .save(recipeOutput);
+
     }
 }

@@ -18,16 +18,18 @@
     "client.PlayerRendererMixin",
     "client.HeartItemRendererMixin",
     "client.HeartItemEntityRendererMixin",
-    "client.ItemEntityMixin"
+    "client.ItemEntityMixin",
+    "client.ClientHooksMixin"
   ],
   "mixins": [
-    "AbstractContainerMenu",
+    "AbstractContainerMenuMixin",
     "BaseFireMixin",
     "CampfireLightMixin",
     "EntityMixin",
     "LanternLightMixin",
     "LightsMixin",
     "LivingEntityMixin",
-    "RecipeManagerMixin"
+    "RecipeManagerMixin",
+    "ItemSpoilageMixin"
   ]
 }

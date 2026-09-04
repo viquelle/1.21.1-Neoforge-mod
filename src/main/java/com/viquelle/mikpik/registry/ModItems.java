@@ -53,4 +53,10 @@ public class ModItems {
                             new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON)
                     )
             );
+
+    public static final Supplier<Item> HAM_BAT =
+            ITEMS.register(
+                    "ham_bat",
+                    () -> new HamBatItem(new Item.Properties())
+            );
 }
