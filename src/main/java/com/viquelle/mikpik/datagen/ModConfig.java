@@ -4,11 +4,8 @@ import com.viquelle.mikpik.MikpikMod;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.common.ModConfigSpec;
-import net.neoforged.neoforge.registries.DeferredRegister;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -67,7 +64,9 @@ public class ModConfig {
                 ), () -> "", item -> item instanceof String); // () -> "" enables "Add" button in config GUI
 
         CUSTOM_TIMES = builder
-                .comment("Custom spoil times for specific food items. Format: 'modid:itemid=time_in_ticks'")
+                .comment("Custom spoil times for specific food items.",
+                        "Syntax: item_id=spoil_ticks",
+                        "Example: \"minecraft:salmon=48000\"")
                 .defineList("custom_times", List.of(
                         "minecraft:cod=48000",
                         "minecraft:salmon=48000",
@@ -112,11 +111,15 @@ public class ModConfig {
                 ), () -> "", item -> item instanceof String); // () -> "" enables "Add" button in config GUI
 
         CUSTOM_SPOIL_TRANSFORM = builder
-                .comment("Список кастомной трансформации при сгнивании")
+                .comment(
+                        "List of custom item transformations when spoiling.",
+                        "Syntax: source_item_id=transformed_item_id",
+                        "Example: \"minecraft:milk_bucket=minecraft:bucket\""
+                )
                 .defineList("custom_spoil_transform", List.of(
                         "minecraft:milk_bucket=minecraft:bucket",
                         "minecraft:potato=minecraft:poisonous_potato"
-                ), () -> "", item -> item instanceof String); // () -> "" enables "Add" button in config GUI
+                ), () -> "", item -> item instanceof String);
 
         builder.pop();
 
@@ -149,7 +152,7 @@ public class ModConfig {
 
         MULT_RAIN_WATER = builder
                 .comment("Spoil time multiplier when in rain or water.")
-                .defineInRange("rain_water_multiplier", 2, 0.0, 10.0);
+                .defineInRange("rain_water_multiplier", 2.0, 0.0, 10.0);
 
         MULT_SNOW = builder
                 .comment("Spoil time multiplier when in snow.")
