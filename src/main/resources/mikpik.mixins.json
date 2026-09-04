@@ -15,16 +15,21 @@
     "client.GuiMixin",
     "client.LivingEntityRendererMixin",
     "client.MultiPlayerGameMode",
-    "client.PlayerRendererMixin"
+    "client.PlayerRendererMixin",
+    "client.HeartItemRendererMixin",
+    "client.HeartItemEntityRendererMixin",
+    "client.ItemEntityMixin",
+    "client.ClientHooksMixin"
   ],
   "mixins": [
-    "AbstractContainerMenu",
+    "AbstractContainerMenuMixin",
     "BaseFireMixin",
     "CampfireLightMixin",
     "EntityMixin",
     "LanternLightMixin",
     "LightsMixin",
     "LivingEntityMixin",
-    "RecipeManagerMixin"
+    "RecipeManagerMixin",
+    "ItemSpoilageMixin"
   ]
 }

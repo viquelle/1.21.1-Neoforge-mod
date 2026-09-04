@@ -1,7 +1,7 @@
-package com.viquelle.mikpik.blockentity;
+package com.viquelle.mikpik.registry;
 
 import com.viquelle.mikpik.MikpikMod;
-import com.viquelle.mikpik.block.ModBlocks;
+import com.viquelle.mikpik.blockentity.MeatEffigyBlockEntity;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.neoforge.registries.DeferredRegister;

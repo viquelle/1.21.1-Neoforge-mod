@@ -95,7 +95,7 @@ public class Darkness {
         enabled = true;
 
         float skyIntensity = skyFactor(world, tickDelta);
-        DimensionType dim = world.dimensionType();
+        //DimensionType dim = world.dimensionType();
         for (int b = 0; b < 16; b++) {
             float block = b / 15.0f;
             block = block * (prevFlicker * 0.1f + 1.0f);

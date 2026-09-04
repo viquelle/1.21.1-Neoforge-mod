@@ -1,4 +1,4 @@
-package com.viquelle.mikpik.item;
+package com.viquelle.mikpik.registry;
 
 import com.viquelle.mikpik.MikpikMod;
 import net.minecraft.Util;

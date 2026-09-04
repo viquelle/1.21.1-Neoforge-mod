@@ -1,14 +1,9 @@
 package com.viquelle.mikpik;
 
 import com.mojang.logging.LogUtils;
-import com.viquelle.mikpik.block.ModBlocks;
-import com.viquelle.mikpik.blockentity.ModBlockEntities;
-import com.viquelle.mikpik.command.SanityCommands;
-import com.viquelle.mikpik.command.ShadowGrabberDebugCommand;
+import com.viquelle.mikpik.registry.*;
 import com.viquelle.mikpik.datagen.ModLanguageProvider;
 import com.viquelle.mikpik.datagen.ModRecipeProvider;
-import com.viquelle.mikpik.entity.ModEntities;
-import com.viquelle.mikpik.item.ModItems;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
@@ -17,6 +12,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
@@ -37,13 +33,12 @@ public class MikpikMod {
 //        ModItems.register(modEventBus);
         ModCreativeTabs.TAB.register(modEventBus);
         modEventBus.addListener(this::gatherData);
-//        modContainer.registerConfig(ModConfig.Type.COMMON, com.viquelle.mikpik.datagen.ModConfig.SPEC);
+        modContainer.registerConfig(ModConfig.Type.COMMON, com.viquelle.mikpik.datagen.ModConfig.SPEC);
+        ModParticleTypes.PARTICLE_TYPES.register(modEventBus);
         ModAttachments.register(modEventBus);
         ModDataComponents.register(modEventBus);
         ModItems.ITEMS.register(modEventBus);
         ModEntities.ENTITY_TYPES.register(modEventBus);
-        NeoForge.EVENT_BUS.register(ShadowGrabberDebugCommand.class);
-        NeoForge.EVENT_BUS.register(SanityCommands.class);
         ModBlockEntities.BLOCK_ENTITIES.register(modEventBus);
         ModBlocks.BLOCKS.register(modEventBus);
     }

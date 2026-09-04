@@ -1,15 +1,12 @@
 package com.viquelle.mikpik.blockentity;
 
-import com.viquelle.mikpik.ModAttachments;
+import com.viquelle.mikpik.registry.ModAttachments;
 import com.viquelle.mikpik.ghost.GhostManager;
-import com.viquelle.mikpik.ghost.HealthPenailtyUtil;
+import com.viquelle.mikpik.registry.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
-import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -19,7 +16,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.attachment.AttachmentType;
 
@@ -133,16 +129,6 @@ public class MeatEffigyBlockEntity extends BlockEntity {
         return player.getData(boundEffigyType());
     }
 
-    public static boolean isBoundTo(Player player, Level level, BlockPos pos) {
-        GlobalPos globalPos = getBinding(player);
-        if (globalPos == null) {
-            return false;
-        }
-
-        return globalPos.dimension().equals(level.dimension())
-                && globalPos.pos().equals(pos);
-    }
-
     @Nullable
     public static MeatEffigyBlockEntity getValidEffigy(ServerPlayer player) {
         GlobalPos globalPos = getBinding(player);
@@ -173,37 +159,6 @@ public class MeatEffigyBlockEntity extends BlockEntity {
         }
 
         return null;
-    }
-
-    public static boolean hasValidEffigy(ServerPlayer player) {
-        return getValidEffigy(player) != null;
-    }
-
-    public static void validateBinding(ServerPlayer player) {
-        GlobalPos globalPos = getBinding(player);
-        if (globalPos == null) {
-            return;
-        }
-
-        MinecraftServer server = player.getServer();
-        if (server == null) {
-            return;
-        }
-
-        ServerLevel level = server.getLevel(globalPos.dimension());
-        if (level == null) {
-            return;
-        }
-
-        BlockEntity blockEntity = level.getBlockEntity(globalPos.pos());
-
-        boolean valid = blockEntity instanceof MeatEffigyBlockEntity effigy
-                && effigy.isPowered()
-                && effigy.isOwnedBy(player);
-
-        if (!valid) {
-            clearBinding(player);
-        }
     }
 
     public static void tryReviveAtEffigy(ServerPlayer player) {
@@ -243,7 +198,5 @@ public class MeatEffigyBlockEntity extends BlockEntity {
         clearBinding(player);
 
         GhostManager.revive(player);
-        HealthPenailtyUtil.addPenaltySoft(player, 0.1);
-
     }
 }

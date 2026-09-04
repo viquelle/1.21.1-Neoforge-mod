@@ -1,6 +1,7 @@
-package com.viquelle.mikpik.network;
+package com.viquelle.mikpik.registry;
 
 import com.viquelle.mikpik.MikpikMod;
+import com.viquelle.mikpik.network.PayloadHandler;
 import com.viquelle.mikpik.network.payload.*;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;

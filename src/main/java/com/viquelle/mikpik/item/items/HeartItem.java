@@ -1,8 +1,8 @@
 package com.viquelle.mikpik.item.items;
 
 import com.viquelle.mikpik.MikpikMod;
-import com.viquelle.mikpik.ModDataComponents;
-import com.viquelle.mikpik.item.ModItems;
+import com.viquelle.mikpik.registry.ModDataComponents;
+import com.viquelle.mikpik.registry.ModItems;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
@@ -48,11 +48,6 @@ public class HeartItem extends Item {
 
     public static boolean isCharged(ItemStack stack) {
         return getCharge(stack) >= TARGET_CHARGE;
-    }
-
-    @Override
-    public boolean isFoil(ItemStack stack) {
-        return isCharged(stack);
     }
 
     @Override

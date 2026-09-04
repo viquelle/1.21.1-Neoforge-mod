@@ -12,7 +12,6 @@ import net.minecraft.world.phys.Vec3;
 import java.util.*;
 
 public class WatcherEntityLightSource implements LightSource {
-
     private static final float RADIUS = 8.0f;
     private static final float TARGET_BRIGHTNESS = -1.0f;
     private static final int COLOR = 0xFFFFFF;
@@ -30,7 +29,7 @@ public class WatcherEntityLightSource implements LightSource {
 
         WatcherLightState(Vec3 initialPos) {
             this.currentBrightness = TARGET_BRIGHTNESS;
-            this.light = new PointLightHandle(RADIUS, currentBrightness, COLOR, OCCLUSION, false, 0);
+            this.light = new PointLightHandle(RADIUS, currentBrightness, COLOR, OCCLUSION, false, 0f);
             this.light.register();
             this.light.setPosition(initialPos);
         }
@@ -81,7 +80,7 @@ public class WatcherEntityLightSource implements LightSource {
                 if (state == null) {
                     state = new WatcherLightState(watcher.position());
                     watchers.put(id, state);
-                    MikpikMod.LOGGER.info("WatcherLightSource: found new watcher #{}", id);
+                    //MikpikMod.LOGGER.info("WatcherLightSource: found new watcher #{}", id);
                 } else {
                     state.update(watcher.position(), currentDeltaTime);
                 }
@@ -94,16 +93,12 @@ public class WatcherEntityLightSource implements LightSource {
 
             if (!aliveIds.contains(id) && !state.shouldRemove) {
                 state.shouldRemove = true;
-                MikpikMod.LOGGER.info("WatcherLightSource: watcher #{} disappeared, starting fade-out", id);
+                //MikpikMod.LOGGER.info("WatcherLightSource: watcher #{} disappeared, starting fade-out", id);
             }
         }
 
         for (WatcherLightState state : watchers.values()) {
-            if (!state.shouldRemove) {
-                state.update(state.light.getPosition(), currentDeltaTime);
-            } else {
-                state.update(state.light.getPosition(), currentDeltaTime);
-            }
+            state.update(state.light.getPosition(), currentDeltaTime);
         }
 
         Iterator<Map.Entry<Integer, WatcherLightState>> it = watchers.entrySet().iterator();
@@ -112,7 +107,7 @@ public class WatcherEntityLightSource implements LightSource {
             if (state.isDead) {
                 state.kill();
                 it.remove();
-                MikpikMod.LOGGER.info("WatcherLightSource: removed dead watcher");
+                //MikpikMod.LOGGER.info("WatcherLightSource: removed dead watcher");
             }
         }
     }

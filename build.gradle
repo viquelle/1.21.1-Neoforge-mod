@@ -67,6 +67,7 @@ neoForge {
 
             // Specify the modid for data generation, where to output the resulting resource, and where to look for existing resources.
             programArguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
+            systemProperty 'neoforge.disabledMods', 'sodium'
         }
 
         // applies to all the run configs above
@@ -114,7 +115,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly files("libs/veil-neoforge-1.21.1-4.4.0.jar", "libs/net.caffeinemc.sodium-neoforge-0.8.12-alpha.4+mc1.21.1-mod.jar");
+    compileOnly files("libs/veil-neoforge-1.21.1-4.4.0.jar", "libs/net.caffeinemc.sodium-neoforge-0.8.13+mc1.21.1-mod.jar")
 
     implementation("io.github.ocelot:glsl-processor:0.2.3")
     // Example optional mod dependency with JEI

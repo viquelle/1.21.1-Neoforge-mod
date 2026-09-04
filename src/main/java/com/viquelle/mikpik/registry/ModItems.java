@@ -1,8 +1,6 @@
-package com.viquelle.mikpik.item;
+package com.viquelle.mikpik.registry;
 
 import com.viquelle.mikpik.MikpikMod;
-import com.viquelle.mikpik.block.ModBlocks;
-import com.viquelle.mikpik.entity.ModEntities;
 import com.viquelle.mikpik.item.items.*;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.BlockItem;
@@ -42,8 +40,8 @@ public class ModItems {
                     new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON)
             ));
 
-    public static final Supplier<Item> PENALTY_REMOVER =
-            ITEMS.register("penalty_remover", () -> new PenaltyRemoverItem(
+    public static final Supplier<Item> LIFE_INJECTOR =
+            ITEMS.register("life_injector", () -> new LifeInjectorItem(
                     new Item.Properties().stacksTo(1)
             ));
 
@@ -54,5 +52,11 @@ public class ModItems {
                             ModBlocks.MEAT_EFFIGY.get(),
                             new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON)
                     )
+            );
+
+    public static final Supplier<Item> HAM_BAT =
+            ITEMS.register(
+                    "ham_bat",
+                    () -> new HamBatItem(new Item.Properties())
             );
 }
