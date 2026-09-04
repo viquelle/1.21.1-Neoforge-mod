@@ -1,6 +1,16 @@
 package com.viquelle.mikpik.datagen;
 
+import com.viquelle.mikpik.MikpikMod;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.common.ModConfigSpec;
+import net.neoforged.neoforge.registries.DeferredRegister;
+
+import javax.annotation.Nullable;
 import java.util.List;
 
 public class ModConfig {
@@ -12,6 +22,7 @@ public class ModConfig {
     public static final ModConfigSpec.IntValue DEFAULT_SPOIL_TIME;
     public static final ModConfigSpec.ConfigValue<List<? extends String>> BLACKLIST;
     public static final ModConfigSpec.ConfigValue<List<? extends String>> CUSTOM_TIMES;
+    public static final ModConfigSpec.ConfigValue<List<? extends String>> CUSTOM_SPOIL_TRANSFORM;
 
     public static final ModConfigSpec.IntValue HAM_BAT_SPOIL_TIME;
     public static final ModConfigSpec.BooleanValue HAM_BAT_SPOILING;
@@ -100,6 +111,13 @@ public class ModConfig {
                         "minecraft:pumpkin=336000"
                 ), () -> "", item -> item instanceof String); // () -> "" enables "Add" button in config GUI
 
+        CUSTOM_SPOIL_TRANSFORM = builder
+                .comment("Список кастомной трансформации при сгнивании")
+                .defineList("custom_spoil_transform", List.of(
+                        "minecraft:milk_bucket=minecraft:bucket",
+                        "minecraft:potato=minecraft:poisonous_potato"
+                ), () -> "", item -> item instanceof String); // () -> "" enables "Add" button in config GUI
+
         builder.pop();
 
         builder.push("ham_bat");
@@ -174,5 +192,29 @@ public class ModConfig {
             }
         }
         return customTime;
+    }
+
+    @Nullable
+    public static Item getCustomSpoilTransform(String itemId) {
+        List<? extends String> list = CUSTOM_SPOIL_TRANSFORM.get();
+
+        for (String entry : list) {
+            if (entry == null) continue;
+
+            String[] parts = entry.split("=", 2);
+            if (parts.length == 2 && parts[0].trim().equals(itemId)) {
+                try {
+                    ResourceLocation rl = ResourceLocation.parse(parts[1]);
+                    Item item = BuiltInRegistries.ITEM.get(rl);
+                    MikpikMod.LOGGER.info("{}",item);
+                    if (item != Items.AIR) {
+                        return item;
+                    }
+                } catch (Exception ignored) {
+
+                }
+            }
+        }
+        return null;
     }
 }

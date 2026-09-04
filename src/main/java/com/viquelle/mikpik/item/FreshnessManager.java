@@ -16,6 +16,7 @@ import net.minecraft.tags.BiomeTags;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -23,6 +24,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
@@ -259,6 +261,11 @@ public class FreshnessManager {
     }
 
     private static ItemStack getSpoiledResult(ItemStack original) {
+        MikpikMod.LOGGER.info("{}",original.getItem().toString());
+        Item item = ModConfig.getCustomSpoilTransform(original.getItem().toString());
+        if (item != null) {
+            return new ItemStack(item, original.getCount());
+        }
         return new ItemStack(Blocks.DIRT, original.getCount());
     }
 
