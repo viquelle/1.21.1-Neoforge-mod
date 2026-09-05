@@ -186,7 +186,7 @@ public class FreshnessManager {
             multiplier *= ModConfig.MULT_COLD_BIOME.get().floatValue();
         }
 
-        if (applySpoilageToStack(stack, itemEntity.level(), multiplier, 60)) {
+        if (applySpoilageToStack(stack, multiplier, 60)) {
             itemEntity.setItem(getSpoiledResult(stack));
         }
     }
@@ -195,12 +195,49 @@ public class FreshnessManager {
         ItemStack stack = container.getItem(slot);
         if (stack.isEmpty()) return;
 
-        if (applySpoilageToStack(stack, level, multiplier, deltaTicks)) {
+        if (applySpoilageToStack(stack, multiplier, deltaTicks)) {
             container.setItem(slot, getSpoiledResult(stack));
         }
     }
 
-    private static boolean applySpoilageToStack(ItemStack stack, Level level, float multiplier, int deltaTicks) {
+    public static int shouldSpoiling(ItemStack stack) {
+        String itemId = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
+
+        if (ModConfig.BLACKLIST.get().contains(itemId)) return -1;
+
+        int spoilTime = ModConfig.getCustomTime(itemId);
+        if (spoilTime > 0) return spoilTime;
+
+        if (stack.has(DataComponents.FOOD)) return ModConfig.DEFAULT_SPOIL_TIME.get();
+
+        if (itemId.equals(ModItems.HAM_BAT.get().toString())) {
+            if (ModConfig.HAM_BAT_SPOILING.get()) return ModConfig.HAM_BAT_SPOIL_TIME.get();
+            return -1;
+        }
+
+        return -1;
+    }
+
+    public static void applyComponents(ItemStack stack, int spoilingTime, float remainingTime) {
+        stack.set(ModDataComponents.SPOIL_TIME.get(), spoilingTime);
+        stack.set(ModDataComponents.TIME_REMAINING.get(), remainingTime);
+    }
+
+    public static float getSpoilPercent(ItemStack stack) {
+        if (stack.has(ModDataComponents.TIME_REMAINING.get()) && stack.has(ModDataComponents.SPOIL_TIME.get())) {
+            return stack.get(ModDataComponents.TIME_REMAINING.get()) / stack.get(ModDataComponents.SPOIL_TIME.get());
+        }
+        return 1f;
+    }
+
+    public static void setSpoilPercent(ItemStack stack, float percent) {
+        if (stack.has(ModDataComponents.TIME_REMAINING.get()) && stack.has(ModDataComponents.SPOIL_TIME.get())) {
+            int time = stack.get(ModDataComponents.SPOIL_TIME.get());
+            stack.set(ModDataComponents.TIME_REMAINING.get(), time * Math.clamp(percent, 0f, 1f));
+        }
+    }
+
+    private static boolean applySpoilageToStack(ItemStack stack, float multiplier, int deltaTicks) {
         if (stack.isEmpty()) return false;
 
         ResourceLocation itemId = BuiltInRegistries.ITEM.getKey(stack.getItem());
@@ -208,27 +245,14 @@ public class FreshnessManager {
 
         if (ModConfig.BLACKLIST.get().contains(idString)) return false;
 
-        int targetSpoilTime = ModConfig.getCustomTime(idString);
-        if (targetSpoilTime <= 0) {
-            if (idString.equals(ModItems.HAM_BAT.get().toString())) {
-                if (ModConfig.HAM_BAT_SPOILING.get()) return false;
-                targetSpoilTime = ModConfig.HAM_BAT_SPOIL_TIME.get();
-            } else if (stack.has(DataComponents.FOOD)) {
-                targetSpoilTime = ModConfig.DEFAULT_SPOIL_TIME.get();
-            } else {
-                return false;
-            }
-        }
+        int targetSpoilTime = shouldSpoiling(stack);
+        if (targetSpoilTime <= 0) return false;
 
         if (!stack.has(ModDataComponents.SPOIL_TIME.get())) {
             stack.set(ModDataComponents.SPOIL_TIME.get(), targetSpoilTime);
         }
 
-        Float timeRemaining = stack.get(ModDataComponents.TIME_REMAINING.get());
-        if (timeRemaining == null) {
-            Integer spoilTime = stack.get(ModDataComponents.SPOIL_TIME.get());
-            timeRemaining = spoilTime != null ? spoilTime.floatValue() : (float) targetSpoilTime;
-        }
+        float timeRemaining = stack.getOrDefault(ModDataComponents.TIME_REMAINING.get(), (float)targetSpoilTime);
 
         float deduction = deltaTicks * multiplier;
         float newTimeRemaining = timeRemaining - deduction;

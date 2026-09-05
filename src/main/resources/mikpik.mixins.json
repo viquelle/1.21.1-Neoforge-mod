@@ -30,6 +30,7 @@
     "LightsMixin",
     "LivingEntityMixin",
     "RecipeManagerMixin",
-    "ItemSpoilageMixin"
+    "ItemSpoilageMixin",
+    "AbstractFurnaceBlockEntityMixin"
   ]
 }

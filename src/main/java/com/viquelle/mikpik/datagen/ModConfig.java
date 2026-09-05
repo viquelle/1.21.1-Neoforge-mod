@@ -130,7 +130,7 @@ public class ModConfig {
 
         HAM_BAT_SPOILING = builder
                 .comment("If true, the Ham Bat will spoil over time.")
-                .define("is_spoiling", false);
+                .define("is_spoiling", true);
         builder.pop();
 
         builder.push("environment");

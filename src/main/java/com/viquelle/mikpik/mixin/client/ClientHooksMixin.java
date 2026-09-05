@@ -29,6 +29,9 @@ public class ClientHooksMixin {
         fromCopy.remove(ModDataComponents.LAST_REDUCTION.get());
         toCopy.remove(ModDataComponents.LAST_REDUCTION.get());
 
+        fromCopy.remove(ModDataComponents.HEART_CHARGE.get());
+        toCopy.remove(ModDataComponents.HEART_CHARGE.get());
+
         if (ItemStack.isSameItemSameComponents(fromCopy, toCopy)) {
             cir.setReturnValue(false);
         }
