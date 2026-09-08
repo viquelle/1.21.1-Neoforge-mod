@@ -77,9 +77,9 @@ public class AbstractFurnaceBlockEntityMixin {
     ) {
         // ИГНОРИТЬ ЖЕЛТОЕ ПОДЧЕРКИВАНИЕ ОТ IDE!!!! ОНО ВРЕТ!!!!
         if (recipe != null && canBurn(registryAccess, recipe, inventory, maxStackSize, furnace)) {
-            ItemStack itemstack = (ItemStack)inventory.get(0);
+            ItemStack itemstack = inventory.get(0);
             ItemStack itemstack1 = ((AbstractCookingRecipe)recipe.value()).assemble(new SingleRecipeInput(furnace.getItem(0)), registryAccess);
-            ItemStack itemstack2 = (ItemStack)inventory.get(2);
+            ItemStack itemstack2 = inventory.get(2);
 
             int spoilTime = FreshnessManager.shouldSpoiling(itemstack1);
             if (spoilTime <= 0) return;

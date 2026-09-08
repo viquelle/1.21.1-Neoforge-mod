@@ -31,6 +31,9 @@
     "LivingEntityMixin",
     "RecipeManagerMixin",
     "ItemSpoilageMixin",
-    "AbstractFurnaceBlockEntityMixin"
+    "AbstractFurnaceBlockEntityMixin",
+    "CampfireBlockMixin",
+    "CampfireBlockEntityMixin",
+    "ItemStackMixin"
   ]
 }

@@ -2,8 +2,11 @@ package com.viquelle.mikpik.datagen;
 
 import com.viquelle.mikpik.MikpikMod;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
@@ -34,6 +37,11 @@ public class ModConfig {
     public static final ModConfigSpec.DoubleValue MULT_PACKED_ICE;
     public static final ModConfigSpec.DoubleValue MULT_BLUE_ICE;
     public static final ModConfigSpec.DoubleValue MULT_COLD_BIOME;
+
+    public static final ModConfigSpec.IntValue MAX_CAMP_FUEL_TIME;
+    public static final ModConfigSpec.IntValue INITIAL_CAMP_FUEL_TIME;
+    public static final ModConfigSpec.ConfigValue<List<? extends String>> FUEL_VALUES;
+    public static final ModConfigSpec.ConfigValue<List<? extends String>> FUEL_BLACKLIST;
 
     static {
         ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
@@ -176,6 +184,95 @@ public class ModConfig {
 
         builder.pop();
 
+        builder.push("campfire fuel");
+
+        MAX_CAMP_FUEL_TIME = builder
+                .comment("This value should be bigger than INITIAL_CAMP_FUEL_TIME")
+                .defineInRange("max_camp_fuel_time", 18000, 1, Integer.MAX_VALUE);
+
+        INITIAL_CAMP_FUEL_TIME = builder
+                .comment("Initial campfire fuel duration in ticks.")
+                .defineInRange("initial_camp_fuel_time", 18000, 0, 999999999);
+
+        FUEL_VALUES = builder
+                .comment(
+                        "Defines fuel values for items and tags.",
+                        "Syntax: item_id=ticks OR #tag_id=ticks",
+                        "Examples: 'minecraft:coal=1600', '#minecraft:logs=300'",
+                        "If an item matches multiple tags, the first match in this list is used."
+                )
+                .defineList("fuel_values", List.of(
+                        "minecraft:coal_block=16000",
+                        "minecraft:dried_kelp_block=4000",
+                        "minecraft:blaze_rod=2400",
+                        "minecraft:coal=1600",
+                        "minecraft:charcoal=1600",
+                        "#minecraft:logs=1600",
+                        "#minecraft:bamboo_blocks=1600",
+                        "minecraft:mangrove_roots=1600",
+                        "minecraft:crafting_table=1600",
+                        "minecraft:bookshelf=2800",
+                        "minecraft:chiseled_bookshelf=2800",
+                        "minecraft:note_block=3200",
+                        "minecraft:jukebox=3200",
+                        "minecraft:chest=3200",
+                        "minecraft:trapped_chest=3200",
+                        "#minecraft:wooden_fences=1600",
+                        "#minecraft:fence_gates=1600",
+                        "minecraft:lectern=2400",
+                        "minecraft:barrel=2400",
+                        "minecraft:smithing_table=2400",
+                        "#minecraft:planks=400",
+                        "minecraft:bamboo_mosaic=400",
+                        "minecraft:daylight_detector=800",
+                        "minecraft:loom=1600",
+                        "minecraft:cartography_table=1600",
+                        "minecraft:fletching_table=1600",
+                        "minecraft:composter=2800",
+                        "#minecraft:wooden_stairs=300",
+                        "minecraft:bamboo_mosaic_stairs=300",
+                        "#minecraft:wooden_doors=800",
+                        "#minecraft:boats=2000",
+                        "#minecraft:wooden_trapdoors=400",
+                        "#minecraft:wooden_pressure_plates=400",
+                        "#minecraft:wooden_slabs=200",
+                        "minecraft:bamboo_mosaic_slab=200",
+                        "#minecraft:wooden_pickaxes=1600",
+                        "#minecraft:wooden_axes=1600",
+                        "#minecraft:wooden_hoes=1000",
+                        "#minecraft:wooden_swords=1000",
+                        "#minecraft:wooden_shovels=600",
+                        "minecraft:bow=1000",
+                        "minecraft:crossbow=1600",
+                        "minecraft:fishing_rod=800",
+                        "minecraft:ladder=1000",
+                        "#minecraft:signs=600",
+                        "#minecraft:hanging_signs=800",
+                        "#minecraft:banners=800",
+                        "minecraft:stick=200",
+                        "#minecraft:wool=400",
+                        "#minecraft:wool_carpets=200",
+                        "minecraft:azalea=200",
+                        "minecraft:flowering_azalea=200",
+                        "#minecraft:saplings=200",
+                        "minecraft:bowl=200",
+                        "minecraft:scaffolding=400",
+                        "minecraft:dead_bush=100",
+                        "minecraft:bamboo=100",
+                        "#minecraft:wooden_buttons=100"
+                ), () -> "", val -> val instanceof String);
+
+        FUEL_BLACKLIST = builder
+                .comment(
+                        "Items that will NEVER act as fuel, even if they are in a burnable tag.",
+                        "Syntax: item_id",
+                        "Example: 'minecraft:stick' (if you want to save sticks from burning)"
+                )
+                .defineList("blacklist", List.of(
+                ), () -> "", val -> val instanceof String);
+
+        builder.pop();
+
         SPEC = builder.build();
     }
 
@@ -219,5 +316,63 @@ public class ModConfig {
             }
         }
         return null;
+    }
+
+    public static int getFuelValue(String itemId) {
+        if (itemId == null) return -1;
+
+        List<? extends String> blacklist = FUEL_BLACKLIST.get();
+        for (String entry : blacklist) {
+            if (entry == null) continue;
+
+            if (entry.trim().equals(itemId)) {
+                return 0;
+            }
+        }
+
+        List<? extends String> list = FUEL_VALUES.get();
+        for (String entry : list) {
+            if (entry == null) continue;
+
+            String[] parts = entry.split("=", 2);
+            if (parts.length == 2) {
+                String key = parts[0].trim();
+                boolean isMatch = false;
+
+                if (key.equals(itemId)) {
+                    isMatch = true;
+                } else if (key.startsWith("#")) {
+                    try {
+                        ResourceLocation tagRl = ResourceLocation.parse(key.substring(1));
+                        TagKey<Item> tagKey = TagKey.create(Registries.ITEM, tagRl);
+
+                        ResourceLocation itemRl = ResourceLocation.parse(itemId);
+                        Item item = BuiltInRegistries.ITEM.get(itemRl);
+
+                        if (item != Items.AIR) {
+                            isMatch = new ItemStack(item).is(tagKey);
+                        }
+                    } catch (Exception ignored) {
+                    }
+                }
+
+                if (isMatch) {
+                    try {
+                        return Integer.parseInt(parts[1].trim());
+                    } catch (NumberFormatException ignored) {
+                    }
+                }
+            }
+        }
+        return -1;
+    }
+
+    public static int getFuelValue(ItemStack stack) {
+        if (stack == null || stack.isEmpty()) return -1;
+
+        ResourceLocation rl = BuiltInRegistries.ITEM.getKey(stack.getItem());
+        if (rl.toString().equals(Items.AIR.toString())) return -1;
+
+        return getFuelValue(rl.toString());
     }
 }
